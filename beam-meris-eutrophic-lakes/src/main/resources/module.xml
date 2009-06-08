@@ -1,0 +1,74 @@
+<module>
+    <manifestVersion>1.0.0</manifestVersion>
+    <symbolicName>beam-meris-eutrophic-lakes</symbolicName>
+    <version>1.0.2</version>
+    <name>MERIS Eutrophic Lakes Processor</name>
+
+    <description>
+        This processor derives Level 2 water quality parameters of
+        eutrophic lakes from MERIS Level 1b data.
+        
+        The processor includes an algorithm for atmospheric correction and an algorithm to
+        derive properties of the water such as the inherent optical properties (IOP's)
+        absorption and scattering and the concentrations of total suspended matter (TSM)
+        and chlorophyll from the water leaving radiance reflectance spectra
+        (i.e. after atmospheric correction).
+    </description>
+    
+    <changelog>
+        <![CDATA[
+        Changes in 1.0.2<br/>
+        [CIIR-17] No ReadMe text shown in processor<br/>
+        Changes in 1.0.1<br/>
+        - improved neural net for atmospheric correction<br/>
+        - updated readme<br/>
+        ]]>
+    </changelog>
+
+    <vendor>Brockmann Consult GmbH</vendor>
+    <contactAddress>Max Planck Str.2, 21502 Geesthacht (Germany)</contactAddress>
+    <copyright>(C) 2007 by Brockmann Consult GmbH</copyright>
+    <url>http://www.brockmann-consult.de/beam-wiki/display/LAKES/Home</url>
+    <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
+
+    <dependency>
+        <module>beam-processing</module>
+    </dependency>
+    <dependency>
+        <module>beam-meris-case2-core</module>
+    </dependency>
+    <dependency>
+        <module>beam-envisat-reader</module>
+    </dependency>
+    <dependency>
+        <module>beam-meris-smile</module>
+    </dependency>
+    <dependency>
+        <module>beam-visat</module>
+        <optional>true</optional>
+    </dependency>
+
+    <categories>Application,Processor,MERIS</categories>
+
+    <extension point="beam-ui:actions">
+        <action>
+            <id>eutrophicLakesProcessor</id>
+            <class>org.esa.beam.visat.actions.ProcessorAction</class>
+            <processor>org.esa.beam.lakes.eutrophic.processor.EutrophicLakesProcessor</processor>
+            <text>Eutrophic Lakes Processor (MERIS) ...</text>
+            <shortDescr>Invoke the BEAM MERIS Eutrophic Lakes Processor.</shortDescr>
+            <mnemonic>E</mnemonic>
+            <parent>case2Processors</parent>
+            <helpID>eutrophicLakesProcessor</helpID>
+            <placeAfter>case2RegionalProcessor</placeAfter>
+        </action>
+    </extension>
+
+    <extension point="beam-ui:helpSets">
+        <helpSet>
+            <parent>beam-help</parent>
+            <path>doc/help/eutrophicLakes.hs</path>
+        </helpSet>
+    </extension>
+
+</module>
