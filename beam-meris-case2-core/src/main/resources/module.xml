@@ -1,0 +1,51 @@
+<module>
+    <manifestVersion>1.0.0</manifestVersion>
+    <symbolicName>beam-meris-case2-core</symbolicName>
+    <version>1.0</version>
+    <name>MERIS Case-2 Core Module</name>
+
+    <description>
+        A module providing core functionality to the following processors:
+        - MERIS Case-2-Regional
+        - MERIS Eutrophic Lakes
+        - MERIS Boreal Lakes
+    </description>
+    <changelog>
+        <![CDATA[
+        ]]>
+    </changelog>
+
+    <vendor>Brockmann Consult GmbH</vendor>
+    <contactAddress>Max Planck Str.2, 21502 Geesthacht (Germany)</contactAddress>
+    <copyright>(C) 2007 by Brockmann Consult GmbH</copyright>
+    <url>http://envisat.esa.int/beam</url>
+    <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
+
+    <dependency>
+        <module>beam-processing</module>
+    </dependency>
+    <dependency>
+        <module>beam-envisat-reader</module>
+    </dependency>
+    <dependency>
+        <module>beam-meris-smile</module>
+    </dependency>
+    <dependency>
+        <module>beam-visat</module>
+        <optional>true</optional>
+    </dependency>
+
+    <categories>Application,Processor,MERIS</categories>
+
+    <extension point="beam-ui:actions">
+        <action>
+            <id>case2Processors</id>
+            <class>org.esa.beam.visat.actions.ActionGroup</class>
+            <parent>tools</parent>
+            <text>MERIS Case-2 Waters Processors</text>
+            <mnemonic>C</mnemonic>
+            <shortDescr>MERIS Case-2 Processors.</shortDescr>
+        </action>
+    </extension>
+
+</module>
