@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE map
+        PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN"
+        "http://java.sun.com/products/javahelp/map_2_0.dtd">
+
+<map version="2.0">
+
+    <mapID target="case2RegionalProcessor" url="html/MerisC2RProcessor.html"/>
+    <mapID target="c2rProcessorDescription" url="html/MerisC2RProcessorDescription.html"/>
+    <mapID target="c2rAtmosphericCorrectionSpecification" url="html/MerisC2RAtmosphericCorrectionSpecification.html"/>
+    <mapID target="c2rBioOpticalModelSpecification" url="html/MerisC2RBioOpticalModelSpecification.html"/>
+    <mapID target="c2rAlgorithmParameter" url="html/MerisC2RAlgorithmParameter.html"/>
+
+</map>

@@ -1,0 +1,111 @@
+<html>
+<head>
+    <title>BEAM Data Processors - MerisC2R</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Meris Case-2 Regional Processor Description</td>
+        <td class="header" align="right"><img src="../images/MerisC2RHeader.gif" border=0></td>
+    </tr>
+</table>
+
+<p class="inote">Please note: The chapter <i><b>Data Processors - Introduction</b></i>
+    provides a general description for all BEAM data processors. It describes the common graphical user interface (GUI),
+    the command-line interface and the common processing request file format.</p>
+
+<h4>Content</h4>
+<li><a href="#InOutTab">The In- and Output Parameters tab</a></li>
+<li><a href="#ProcParamTab">The Processing Parameters tab</a></li>
+<li><a href="#ProcReqFile">The Processing Request File</a></li>
+<li><a href="MerisC2RAlgorithmParameter.html">Description of the Processing Parameters</a></li>
+
+<a name="InOutTab"></a> <h3>The In- and Output Parameters tab</h3>
+
+<p align="center"><img src="images/MerisC2RIOParameters.png"></p>
+
+<ol>
+    <li><b>Input product file</b>: Select the input product file by either typing
+        the product path into the text field or by pressing the file selection button
+        <img src="../images/FileDialogButton.jpg"> to invoke a
+        standard file dialog.</li>
+    <li><b>Output product file</b>: Select the output product file by either typing
+        the product path into the text field or by pressing the file selection button
+        <img src="../images/FileDialogButton.jpg"> to invoke a
+        standard file dialog. </li>
+    <li><b>Output product format</b>: Select one of the available output product
+        formats.</li>
+    <li><b>Log filename prefix</b>: Select the prefix of the log file.</li>
+    <li><b>Extra log to output directory</b>: Select whether to write an additional
+        log file to the directory selected for the output product.</li>
+</ol>
+
+<a name="ProcParamTab"></a> <h3>The Processing Parameters tab</h3>
+
+<p align="center"><img src="images/MerisC2RProcessingParameters.png"></p>
+
+<ol>
+    <li><img src="../images/Save24.gif" alt="Save">&nbsp;
+        Saves the edited parameters to a file.
+    </li>
+    <li><img src="../images/Undo24.gif" alt="Restore">&nbsp;
+        Resets the edited parameters text to the default text.
+    </li>
+    <li>You can select a file where the processing parameters are stored.
+        This file has to be a *.txt or a *.properties file.
+    </li>
+</ol>
+
+<p>In the text field you can edit and adjust the processing parameters for the current run of the
+    processor.</p>
+
+<h4>Format of the Parameter File</h4>
+
+<p>
+    This file uses a Java property file syntax. It is
+    composed of lines which are key-value pairs in the form <br>
+    &nbsp;&nbsp;&nbsp;&lt;<b>key</b>&gt; = &lt;<b>value</b>&gt; <br>
+    Lines with a preceding <b>#</b> are comment-lines and will not be
+    interpreted.<br>
+    If a given key is not known by the processor it will be ignored.
+    When a parameter file does not contain a parameter of the processor, this
+    parameter will be set to its default value. <br>
+    For a description of the parameters,
+    please see the <a href="MerisC2RAlgorithmParameter.html">Algorithm Parameters</a> page.
+</p>
+
+
+<a name="ProcReqFile"/><h3>The Processing Request File</h3>
+
+<p>The following table describes
+    the Meris Case-2 Regional processor specific processing request file contents. For a detailed description of the
+    processing request file concept and file specification please look at chapter
+    <i><b>Data Processors - Introduction</b></i>.</p>
+
+<table width="100%">
+    <tr>
+        <th>Parameter name</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Valueset</th>
+    </tr>
+    <tr>
+        <td>type</td>
+        <td>Request type. Mandatory attribute of the <code>Request</code> element</td>
+        <td>String</td>
+        <td>"MERISC2R"</td>
+    </tr>
+    <tr>
+        <td>property_file</td>
+        <td>Path or URL to the parameter file</td>
+        <td>String</td>
+        <td/>
+    </tr>
+</table>
+
+</body>
+</html>
