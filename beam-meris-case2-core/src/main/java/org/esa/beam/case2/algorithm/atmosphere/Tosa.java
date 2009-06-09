@@ -102,7 +102,7 @@ public class Tosa {
 
         /* calculate optical thickness of rayleigh for correction layer, lam in micrometer */
         for (int i = 0; i < tau_rayl_standard.length; i++) {
-            tau_rayl_standard[i] = 0.008735 * Math.pow(AtmosphereConstants.merband12[i] / 1000.0, -4.08);/* lam in µm */
+            tau_rayl_standard[i] = 0.008735 * Math.pow(AtmosphereConstants.merband12[i] / 1000.0, -4.08);/* lam in Âµm */
             tau_rayl_toa_tosa[i] = tau_rayl_standard[i] * rayl_rel_mass_toa_tosa;
             if (doSmileCorrection) {
                 if(detectorWavelength == null) {

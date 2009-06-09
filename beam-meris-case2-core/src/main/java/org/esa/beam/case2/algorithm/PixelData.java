@@ -10,9 +10,9 @@ import com.bc.jexp.Term;
  */
 public class PixelData {
 
-    public double[] toa_radiance = new double[15];     /* toa radiance in W m-2 sr-1 µm-1 */
+    public double[] toa_radiance = new double[15];     /* toa radiance in W m-2 sr-1 Âµm-1 */
     public double[] toa_reflectance = new double[15];         /* toa radiance reflectance in sr-1 */
-    public double[] solar_flux = new double[15];     /* at toa W m-2 µm-1, incl. sun-earth distance */
+    public double[] solar_flux = new double[15];     /* at toa W m-2 Âµm-1, incl. sun-earth distance */
     /* pixel position in image(1-based)*/
     public int column;
     public int row;
