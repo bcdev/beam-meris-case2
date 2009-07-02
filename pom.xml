@@ -44,6 +44,26 @@
                 <scope>test</scope>
             </dependency>
         </dependencies>
-
     </dependencyManagement>
+    
+    <repositories>
+        <repository>
+            <id>bc-public</id>
+            <name>Public Maven Repository at Brockmann-Consult</name>
+            <url>http://www.brockmann-consult.de/mvn/os</url>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>gt-primary</id>
+            <name>Primary GeoTools Maven Repository</name>
+            <url>http://maven.geotools.fr/repository</url>
+        </repository>
+    </repositories>
 </project>
