@@ -7,7 +7,7 @@ import java.io.File;
 public interface MerisC2RConstants extends ProcessorConstants {
 
     String PROCESSOR_NAME = "MERIS Case 2 Regional Processor";
-    String PROCESSOR_VERSION = "1.3.2";
+    String PROCESSOR_VERSION = "1.3.3";
     String PROCESSOR_COPYRIGHT_INFO = "Copyright (C) 2005 by KOF";
     String PROCESSOR_HELP_ID = "c2rIntroduction";
     String PROCESSOR_LOGGER_NAME = "beam.processor.merisc2r";

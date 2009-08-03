@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-case2-regional</symbolicName>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
     <name>MERIS Case-2-Regional Processor</name>
 
     <description>
@@ -17,6 +17,8 @@
     
     <changelog>
         <![CDATA[
+        Changes in version 1.3.3:<br/>
+        - [BEAM-1006] MER_FSG pixel geocoding not used<br>
         Changes in 1.3.2<br/>
         [CIIR-17] No ReadMe text shown in processor<br/>
         Changes in version 1.3.1:<br/>
@@ -57,12 +59,14 @@
 
     <dependency>
         <module>beam-processing</module>
+        <version>4.6.2</version>
     </dependency>
     <dependency>
         <module>beam-meris-case2-core</module>
     </dependency>    
     <dependency>
         <module>beam-envisat-reader</module>
+        <version>1.3.1</version>
     </dependency>
     <dependency>
         <module>beam-meris-smile</module>

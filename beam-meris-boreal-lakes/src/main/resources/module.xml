@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-boreal-lakes</symbolicName>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>MERIS Boreal Lakes Processor</name>
 
     <description>
@@ -17,9 +17,11 @@
     
     <changelog>
         <![CDATA[
-        Changes in 1.0.2<br/>
-        [CIIR-17] No ReadMe text shown in processor<br/>
-        Changes in version 1.0.1:<br/>
+        <br/>Changes in version 1.0.3:<br/>
+        - [BEAM-1006] MER_FSG pixel geocoding not used<br>
+        <br/>Changes in 1.0.2<br/>
+        - [CIIR-17] No ReadMe text shown in processor<br/>
+        <br/>Changes in version 1.0.1:<br/>
         - improved neural net for atmospheric correction<br/>
         ]]>
     </changelog>
@@ -32,12 +34,14 @@
 
     <dependency>
         <module>beam-processing</module>
+        <version>4.6.2</version>
     </dependency>
     <dependency>
         <module>beam-meris-case2-core</module>
     </dependency>
     <dependency>
         <module>beam-envisat-reader</module>
+        <version>1.3.1</version>
     </dependency>
     <dependency>
         <module>beam-meris-smile</module>

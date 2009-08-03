@@ -3,14 +3,14 @@
     <parent>
         <groupId>org.esa.beam</groupId>
         <artifactId>beam-case2</artifactId>
-        <version>1.0</version>
+        <version>1.0.1</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.esa.beam</groupId>
     <artifactId>beam-meris-case2-regional</artifactId>
     <name>Meris Case-2-Regional Processor</name>
-    <version>1.3.2</version>
+    <version>1.3.3-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
 
 

@@ -397,12 +397,18 @@ public class BorealLakesProcessor extends Processor {
             createOutputBands();
             pm.worked(15);                          // pm-sum 15
 
+            copyBand(EnvisatConstants.MERIS_AMORGOS_L1B_CORR_LATITUDE_BAND_NAME, inputProduct, outputProduct);
+            copyBand(EnvisatConstants.MERIS_AMORGOS_L1B_CORR_LONGITUDE_BAND_NAME, inputProduct, outputProduct);
+            copyBand(EnvisatConstants.MERIS_AMORGOS_L1B_ALTIUDE_BAND_NAME, inputProduct, outputProduct);
+
             copyTiePointGridsToOutput();
             pm.worked(30);                          // pm-sum 45
-            setGeoCodingToOutput();
-            pm.worked(10);                          // pm-sum 55
-            ProductUtils.copyFlagBands(inputProduct, outputProduct);
-            pm.worked(15);                          // pm-sum 70
+            copyFlagBands(inputProduct, outputProduct);
+            pm.worked(15);                          // pm-sum 60
+            // copy the geocoding from input to output. The geocoding
+            // tells the product which tiepoint grids define the geolocation
+            copyGeoCoding(inputProduct, outputProduct);
+            pm.worked(10);                          // pm-sum 70
             setL2FlagsToOutput();
             pm.worked(5);                           // pm-sum 75
             addBitmasksToOutput();
@@ -420,7 +426,9 @@ public class BorealLakesProcessor extends Processor {
             writer.writeProductNodes(outputProduct, outputProduct.getFileLocation());
 
             // l1_flags must be written
-            writeL1FlagsToOutput(new SubProgressMonitor(pm, 20));       // pm-sum 100
+            writeL1FlagsToOutput(new SubProgressMonitor(pm, 15));       // pm-sum 95
+            final String[] namesToCopy = getBandNamesToCopy();
+            copyBandData(namesToCopy, inputProduct, outputProduct, new SubProgressMonitor(pm, 5));  // pm-sum 100
         } finally {
             pm.done();
         }
@@ -503,12 +511,6 @@ public class BorealLakesProcessor extends Processor {
         for (String inputGridName : inputGridNames) {
             ProductUtils.copyTiePointGrid(inputGridName, inputProduct, outputProduct);
         }
-    }
-
-    private void setGeoCodingToOutput() {
-        // copy the geocoding from input to output. The geocoding
-        // tells the product which tiepoint grids define the geolocation
-        ProductUtils.copyGeoCoding(inputProduct, outputProduct);
     }
 
     private void addMetadataToProduct() {

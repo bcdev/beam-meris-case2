@@ -3,14 +3,14 @@
     <parent>
         <groupId>org.esa.beam</groupId>
         <artifactId>beam-case2</artifactId>
-        <version>1.0</version>
+        <version>1.0.1</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.esa.beam</groupId>
     <artifactId>beam-meris-boreal-lakes</artifactId>
     <name>Meris Boreal Lakes Processor</name>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
