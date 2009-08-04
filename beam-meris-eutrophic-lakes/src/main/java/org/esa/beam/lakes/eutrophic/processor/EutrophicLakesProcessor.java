@@ -361,7 +361,7 @@ public class EutrophicLakesProcessor extends Processor {
 
     private static boolean isProductFullResoultion(final Product product) {
         final String productType = product.getProductType();
-        return productType.contains("FR");
+        return productType.contains("FR") || productType.contains("FSG");
     }
 
 

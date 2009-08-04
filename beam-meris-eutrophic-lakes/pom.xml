@@ -10,7 +10,7 @@
   <groupId>org.esa.beam</groupId>
   <artifactId>beam-meris-eutrophic-lakes</artifactId>
   <name>Meris Eutrophic Lakes Processor</name>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.301-SNAPSHOT</version>
 
 
     <dependencies>

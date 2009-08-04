@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-eutrophic-lakes</symbolicName>
-    <version>1.0.3</version>
+    <version>1.0.301</version>
     <name>MERIS Eutrophic Lakes Processor</name>
 
     <description>
@@ -17,8 +17,9 @@
     
     <changelog>
         <![CDATA[
-        <br/>Changes in version 1.0.3:<br/>
-        - [BEAM-1006] MER_FSG pixel geocoding not used<br>
+        <br/>Changes in version 1.0.301:<br/>
+        - [CIIR-18] Consider MER_FSG product when loading smile auxdata<br/>
+        - [BEAM-1006] MER_FSG pixel geocoding not used<br/>>
         Changes in 1.0.2<br/>
         [CIIR-17] No ReadMe text shown in processor<br/>
         Changes in 1.0.1<br/>
