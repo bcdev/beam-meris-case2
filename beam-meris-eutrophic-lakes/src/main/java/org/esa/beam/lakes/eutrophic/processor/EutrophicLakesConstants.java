@@ -5,7 +5,7 @@ import org.esa.beam.framework.processor.ProcessorConstants;
 public interface EutrophicLakesConstants extends ProcessorConstants {
 
     String PROCESSOR_NAME = "MERIS Eutrophic Lakes Processor";
-    String PROCESSOR_VERSION = "1.0.301";
+    String PROCESSOR_VERSION = "1.4-SNAPSHOT";
     String PROCESSOR_COPYRIGHT_INFO = "BC, GKSS, HUT, SYKE, FMI, EOMAP, CEDEX, NIVA";
     String PROCESSOR_HELP_ID = "eutrophicIntroduction";
     String PROCESSOR_LOGGER_NAME = "beam.processor.lakes.eutrophic";

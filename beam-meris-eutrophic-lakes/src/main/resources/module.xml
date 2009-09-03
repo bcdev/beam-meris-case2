@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-eutrophic-lakes</symbolicName>
-    <version>1.0.301</version>
+    <version>1.4-SNAPSHOT</version>
     <name>MERIS Eutrophic Lakes Processor</name>
 
     <description>
@@ -17,9 +17,15 @@
     
     <changelog>
         <![CDATA[
+        <br/>Changes in version 1.4:<br/>
+        - [CIIR-23] Parameter 'radiance1AdjustmentFactor' has no effect<br/>
+        - [CIIR-22] Update auxdata for smile correction<br/>
+        - [CIIR-21] Bring all processors to the same version number<br/>
+        - [CIIR-20] Wrong computation of azimuth difference<br/>
+        - [CIIR-19] chi-square and chisuqare-fit bands are differently coded<br/>
         <br/>Changes in version 1.0.301:<br/>
         - [CIIR-18] Consider MER_FSG product when loading smile auxdata<br/>
-        - [BEAM-1006] MER_FSG pixel geocoding not used<br/>>
+        - [BEAM-1006] MER_FSG pixel geocoding not used<br/>
         Changes in 1.0.2<br/>
         [CIIR-17] No ReadMe text shown in processor<br/>
         Changes in 1.0.1<br/>

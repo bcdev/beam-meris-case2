@@ -592,8 +592,11 @@ public class BorealLakesProcessor extends Processor {
                             if(parameter.performAtmosphericCorrection) {
                                 pixel.detectorIndex = inputRasterBlocks.getPixelInt(detectorIndex, pixelIndex);
                                 for (int ib = 0; ib < inputBandNames.length; ib++) {
-                                    pixel.toa_radiance[ib] = inputRasterBlocks.getPixelFloat(inputBandNames[ib],
-                                                                                             pixelIndex);
+                                    final String inputBandName = inputBandNames[ib];
+                                    pixel.toa_radiance[ib] = inputRasterBlocks.getPixelFloat(inputBandName, pixelIndex);
+                                    if(EnvisatConstants.MERIS_L1B_RADIANCE_1_BAND_NAME.equals(inputBandName)) {
+                                        pixel.toa_radiance[ib] *= parameter.radiance1AdjustmentFactor;
+                                    }
                                     pixel.toa_reflectance[ib] = pixel.toa_radiance[ib] / (pixel.solar_flux[ib] * Math.cos(
                                             Math.toRadians(pixel.solzen)));
                                 }

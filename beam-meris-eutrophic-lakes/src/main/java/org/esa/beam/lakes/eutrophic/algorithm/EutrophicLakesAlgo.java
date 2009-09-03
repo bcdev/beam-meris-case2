@@ -1,6 +1,12 @@
 package org.esa.beam.lakes.eutrophic.algorithm;
 
-import org.esa.beam.case2.algorithm.*;
+import org.esa.beam.case2.algorithm.AlgorithmParameter;
+import org.esa.beam.case2.algorithm.Auxdata;
+import org.esa.beam.case2.algorithm.BandDescriptor;
+import org.esa.beam.case2.algorithm.Case2Algorithm;
+import org.esa.beam.case2.algorithm.Flags;
+import org.esa.beam.case2.algorithm.OutputBands;
+import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.algorithm.atmosphere.AtmosphereCorrection;
 import org.esa.beam.case2.algorithm.atmosphere.Tosa;
 import org.esa.beam.case2.algorithm.fit.ChiSquareFit;
@@ -12,10 +18,10 @@ import org.esa.beam.framework.processor.ProcessorException;
 import org.esa.beam.lakes.eutrophic.algorithm.case2water.EutrophicWater;
 import org.esa.beam.lakes.eutrophic.algorithm.fit.ChiSquareFitGLM;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.text.MessageFormat;
 
 
 public class EutrophicLakesAlgo implements Case2Algorithm {
@@ -48,7 +54,7 @@ public class EutrophicLakesAlgo implements Case2Algorithm {
         outputBands.addDescriptor(createToaReflectanceDesrciptors(inputProduct, inputBandNames));
         outputBands.addDescriptor(createWaterReflectanceDesrciptors(inputProduct, inputBandNames));
 
-        if(parameter.performAtmosphericCorrection) {
+        if (parameter.performAtmosphericCorrection) {
             outputBands.addDescriptor(createPathDesrciptors(inputProduct, inputBandNames));
             outputBands.addDescriptor(createTransmittanceDesrciptors(inputProduct, inputBandNames));
             outputBands.addDescriptor(createTosaReflectanceDesrciptors(inputProduct, inputBandNames));
@@ -95,15 +101,15 @@ public class EutrophicLakesAlgo implements Case2Algorithm {
 
 
         double azi_diff_deg = getAzimuthDifference(pixel);
-        if(parameter.performAtmosphericCorrection) {
-        Tosa.Result tosa = atmoCorrection.perform(pixel, Math.toRadians(azi_diff_deg), teta_view_rad, teta_sun_rad,
-                outputBands);
+        if (parameter.performAtmosphericCorrection) {
+            Tosa.Result tosa = atmoCorrection.perform(pixel, Math.toRadians(azi_diff_deg), teta_view_rad, teta_sun_rad,
+                                                      outputBands);
 
-        // estimated correction term for polarisation of path radiance
-        // inactive because of new pol correction with NN
-        experimental.doEstimatedPolCorr(tosa, outputBands);
-        /* protection against too small RLw reflectances in blue spectral part */
-        experimental.ensureValidBlueRlwReflectances(tosa, outputBands);
+            // estimated correction term for polarisation of path radiance
+            // inactive because of new pol correction with NN
+            experimental.doEstimatedPolCorr(tosa, outputBands);
+            /* protection against too small RLw reflectances in blue spectral part */
+            experimental.ensureValidBlueRlwReflectances(tosa, outputBands);
         } else {
             final int reflecLenght = outputBands.getDoubleValues("reflec").length;
             outputBands.setValues("reflec_", Arrays.copyOf(pixel.toa_reflectance, reflecLenght));
@@ -130,14 +136,14 @@ public class EutrophicLakesAlgo implements Case2Algorithm {
     }
 
     private static double getAzimuthDifference(PixelData pixel) {
-        double azi_diff_deg = Math.abs(pixel.solazi - pixel.satazi); /* azimuth difference */
+        double azi_diff_deg = Math.abs(pixel.satazi - pixel.solazi); /* azimuth difference */
 
         /* reverse azi difference */
-        azi_diff_deg = 180.0 - azi_diff_deg; /* different definitions in MERIS data and MC /HL simulation */
 
         if (azi_diff_deg > 180.0) {
             azi_diff_deg = 360.0 - azi_diff_deg;
         }
+        azi_diff_deg = 180.0 - azi_diff_deg; /* different definitions in MERIS data and MC /HL simulation */
         return azi_diff_deg;
     }
 
@@ -274,7 +280,8 @@ public class EutrophicLakesAlgo implements Case2Algorithm {
                 createCommonDescriptor("tau_550", "dl", "Spectral aerosol optical depth",
                                        ProductData.TYPE_FLOAT32, false, parameter.outputTau),
                 createCommonDescriptor("ang_443_865", "dl", "Aerosol Angstrom coefficient",
-                                       ProductData.TYPE_FLOAT32, false, parameter.outputAngstrom)};
+                                       ProductData.TYPE_FLOAT32, false, parameter.outputAngstrom)
+        };
     }
 
 
@@ -297,7 +304,7 @@ public class EutrophicLakesAlgo implements Case2Algorithm {
         descriptorList.add(createCommonDescriptor("chl_conc", "mg m^-3", "Chlorophyll concentration (CHL)",
                                                   ProductData.TYPE_FLOAT32, true, parameter.outputChlConc));
         descriptorList.add(createCommonDescriptor("chiSquare", null, "Chi Square Out of Scope",
-                                                  ProductData.TYPE_FLOAT32, false,
+                                                  ProductData.TYPE_FLOAT32, true,
                                                   parameter.outputOutOfScopeChiSquare));
         descriptorList.add(
                 createCommonDescriptor("K_min", "m^-1", "Minimum downwelling irreadiance atenuation coefficient",

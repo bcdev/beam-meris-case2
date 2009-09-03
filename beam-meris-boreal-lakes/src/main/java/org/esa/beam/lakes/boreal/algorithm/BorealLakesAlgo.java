@@ -1,6 +1,12 @@
 package org.esa.beam.lakes.boreal.algorithm;
 
-import org.esa.beam.case2.algorithm.*;
+import org.esa.beam.case2.algorithm.AlgorithmParameter;
+import org.esa.beam.case2.algorithm.Auxdata;
+import org.esa.beam.case2.algorithm.BandDescriptor;
+import org.esa.beam.case2.algorithm.Case2Algorithm;
+import org.esa.beam.case2.algorithm.Flags;
+import org.esa.beam.case2.algorithm.OutputBands;
+import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.algorithm.atmosphere.AtmosphereCorrection;
 import org.esa.beam.case2.algorithm.atmosphere.Tosa;
 import org.esa.beam.case2.algorithm.fit.ChiSquareFit;
@@ -96,7 +102,7 @@ public class BorealLakesAlgo implements Case2Algorithm {
         double azi_diff_deg = getAzimuthDifference(pixel);
         if (parameter.performAtmosphericCorrection) {
             Tosa.Result tosa = atmoCorrection.perform(pixel, Math.toRadians(azi_diff_deg), teta_view_rad, teta_sun_rad,
-                    outputBands);
+                                                      outputBands);
 
             // estimated correction term for polarisation of path radiance
             // inactive because of new pol correction with NN
@@ -124,19 +130,19 @@ public class BorealLakesAlgo implements Case2Algorithm {
 
     private static boolean shouldComputeC2W(AlgorithmParameter parameter) {
         return parameter.outputAPig || parameter.outputAGelb || parameter.outputBTsm ||
-                parameter.outputChlConc || parameter.outputTsmConc || parameter.outputOutOfScopeChiSquare ||
-                parameter.performChiSquareFit;
+               parameter.outputChlConc || parameter.outputTsmConc || parameter.outputOutOfScopeChiSquare ||
+               parameter.performChiSquareFit;
     }
 
     private static double getAzimuthDifference(PixelData pixel) {
-        double azi_diff_deg = Math.abs(pixel.solazi - pixel.satazi); /* azimuth difference */
+        double azi_diff_deg = Math.abs(pixel.satazi - pixel.solazi); /* azimuth difference */
 
         /* reverse azi difference */
-        azi_diff_deg = 180.0 - azi_diff_deg; /* different definitions in MERIS data and MC /HL simulation */
 
         if (azi_diff_deg > 180.0) {
             azi_diff_deg = 360.0 - azi_diff_deg;
         }
+        azi_diff_deg = 180.0 - azi_diff_deg; /* different definitions in MERIS data and MC /HL simulation */
         return azi_diff_deg;
     }
 
@@ -179,14 +185,14 @@ public class BorealLakesAlgo implements Case2Algorithm {
         for (int i = 0; i < bandDescriptors.length; i++) {
             Band radBand = inputProduct.getBand(inputBandNames[i]);
             String description = MessageFormat.format("Water leaving radiance reflectance at {0} nm",
-                    radBand.getSpectralWavelength());
+                                                      radBand.getSpectralWavelength());
             final boolean output = parameter.outputWaterLeavingRefl[i] && i != 10; // exclude band 11
             BandDescriptor bandDescriptor = createCommonDescriptor("reflec_" + (i + 1), "sr^-1", description,
-                    ProductData.TYPE_FLOAT32,
-                    false, output);
+                                                                   ProductData.TYPE_FLOAT32,
+                                                                   false, output);
             if (parameter.switchToIrradianceReflectance) {
                 bandDescriptor.setDescription("Water leaving irradiance reflectance at "
-                        + radBand.getSpectralWavelength() + " nm");
+                                              + radBand.getSpectralWavelength() + " nm");
                 bandDescriptor.setUnit("dl");
                 bandDescriptor.setScalingFactor(Math.PI);
             }
@@ -203,8 +209,8 @@ public class BorealLakesAlgo implements Case2Algorithm {
         BandDescriptor[] bandDescriptors = new BandDescriptor[15];
         for (int i = 0; i < bandDescriptors.length; i++) {
             BandDescriptor bandDescriptor = createCommonDescriptor("toa_reflec_" + (i + 1), "sr^-1", "TOA Reflectance",
-                    ProductData.TYPE_FLOAT32,
-                    false, parameter.outputToaRefl[i]);
+                                                                   ProductData.TYPE_FLOAT32,
+                                                                   false, parameter.outputToaRefl[i]);
             Band radBand = inputProduct.getBand(inputBandNames[i]);
             bandDescriptor.setSpectralWavelength(radBand.getSpectralWavelength());
             bandDescriptor.setSpectralBandwidth(radBand.getSpectralBandwidth());
@@ -219,9 +225,9 @@ public class BorealLakesAlgo implements Case2Algorithm {
         BandDescriptor[] bandDescriptors = new BandDescriptor[12];
         for (int i = 0; i < bandDescriptors.length; i++) {
             BandDescriptor bandDescriptor = createCommonDescriptor("tosa_reflec_" + (i + 1), "sr^-1",
-                    "TOSA Reflectance",
-                    ProductData.TYPE_FLOAT32,
-                    false, parameter.outputTosaRefl[i]);
+                                                                   "TOSA Reflectance",
+                                                                   ProductData.TYPE_FLOAT32,
+                                                                   false, parameter.outputTosaRefl[i]);
             Band radBand = inputProduct.getBand(inputBandNames[i]);
             bandDescriptor.setSpectralWavelength(radBand.getSpectralWavelength());
             bandDescriptor.setSpectralBandwidth(radBand.getSpectralBandwidth());
@@ -237,9 +243,9 @@ public class BorealLakesAlgo implements Case2Algorithm {
         for (int i = 0; i < bandDescriptors.length; i++) {
             final boolean output = parameter.outputPathRadianceRefl[i] && i != 10; // exclude band 11
             BandDescriptor bandDescriptor = createCommonDescriptor("path_" + (i + 1),
-                    "sr^-1", "Water leaving radiance reflectance path",
-                    ProductData.TYPE_FLOAT32,
-                    false, output);
+                                                                   "sr^-1", "Water leaving radiance reflectance path",
+                                                                   ProductData.TYPE_FLOAT32,
+                                                                   false, output);
             Band radBand = inputProduct.getBand(inputBandNames[i]);
             bandDescriptor.setSpectralWavelength(radBand.getSpectralWavelength());
             bandDescriptor.setSpectralBandwidth(radBand.getSpectralBandwidth());
@@ -255,10 +261,10 @@ public class BorealLakesAlgo implements Case2Algorithm {
         for (int i = 0; i < bandDescriptors.length; i++) {
             final boolean output = parameter.outputTransmittance[i] && i != 10; // exclude band 11
             BandDescriptor bandDescriptor = createCommonDescriptor("trans_" + (i + 1),
-                    "dle",
-                    "Downwelling irrediance transmittance (Ed_Boa/Ed_Tosa)",
-                    ProductData.TYPE_FLOAT32,
-                    false, output);
+                                                                   "dle",
+                                                                   "Downwelling irrediance transmittance (Ed_Boa/Ed_Tosa)",
+                                                                   ProductData.TYPE_FLOAT32,
+                                                                   false, output);
             Band radBand = inputProduct.getBand(inputBandNames[i]);
             bandDescriptor.setSpectralWavelength(radBand.getSpectralWavelength());
             bandDescriptor.setSpectralBandwidth(radBand.getSpectralBandwidth());
@@ -272,9 +278,10 @@ public class BorealLakesAlgo implements Case2Algorithm {
     private BandDescriptor[] createAngstromDesrciptors() {
         return new BandDescriptor[]{
                 createCommonDescriptor("tau_550", "dl", "Spectral aerosol optical depth",
-                        ProductData.TYPE_FLOAT32, false, parameter.outputTau),
+                                       ProductData.TYPE_FLOAT32, false, parameter.outputTau),
                 createCommonDescriptor("ang_443_865", "dl", "Aerosol Angstrom coefficient",
-                        ProductData.TYPE_FLOAT32, false, parameter.outputAngstrom)};
+                                       ProductData.TYPE_FLOAT32, false, parameter.outputAngstrom)
+        };
     }
 
 
@@ -282,26 +289,26 @@ public class BorealLakesAlgo implements Case2Algorithm {
         List<BandDescriptor> descriptorList = new ArrayList<BandDescriptor>(15);
 
         descriptorList.add(createCommonDescriptor("a_gelbstoff", "m^-1", "Gelbstoff absorbtion (A_Y) at 442 nm",
-                ProductData.TYPE_FLOAT32, true, parameter.outputAGelb));
+                                                  ProductData.TYPE_FLOAT32, true, parameter.outputAGelb));
         descriptorList.add(createCommonDescriptor("a_pig", "m^-1", "Pigment absorption at band 2 (A_PIG)",
-                ProductData.TYPE_FLOAT32, true, parameter.outputAPig));
+                                                  ProductData.TYPE_FLOAT32, true, parameter.outputAPig));
         descriptorList.add(createCommonDescriptor("a_total", "m^-1", "Absorption at 443 nm of all water constituents",
-                ProductData.TYPE_FLOAT32, false, parameter.outputATotal));
+                                                  ProductData.TYPE_FLOAT32, false, parameter.outputATotal));
         descriptorList.add(createCommonDescriptor("b_tsm", "m^-1", "Total supended matter scattering (B_TSM)",
-                ProductData.TYPE_FLOAT32, true, parameter.outputBTsm));
+                                                  ProductData.TYPE_FLOAT32, true, parameter.outputBTsm));
         descriptorList.add(
                 createCommonDescriptor("tsm", "g m^-3", "Total supended matter dry weight concentration (TSM)",
-                        ProductData.TYPE_FLOAT32, true, parameter.outputTsmConc));
+                                       ProductData.TYPE_FLOAT32, true, parameter.outputTsmConc));
         descriptorList.add(createCommonDescriptor("chl_conc", "mg m^-3", "Chlorophyll concentration (CHL)",
-                ProductData.TYPE_FLOAT32, true, parameter.outputChlConc));
+                                                  ProductData.TYPE_FLOAT32, true, parameter.outputChlConc));
         descriptorList.add(createCommonDescriptor("chiSquare", null, "Chi Square Out of Scope",
-                ProductData.TYPE_FLOAT32, false,
-                parameter.outputOutOfScopeChiSquare));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputOutOfScopeChiSquare));
         descriptorList.add(
                 createCommonDescriptor("K_min", "m^-1", "Minimum downwelling irreadiance atenuation coefficient",
-                        ProductData.TYPE_FLOAT32, false, parameter.outputKmin));
+                                       ProductData.TYPE_FLOAT32, false, parameter.outputKmin));
         descriptorList.add(createCommonDescriptor("Z90_max", "m", "Maximum signal depth",
-                ProductData.TYPE_FLOAT32, false, parameter.outputZ90max));
+                                                  ProductData.TYPE_FLOAT32, false, parameter.outputZ90max));
 
         return descriptorList.toArray(new BandDescriptor[descriptorList.size()]);
 
@@ -311,57 +318,57 @@ public class BorealLakesAlgo implements Case2Algorithm {
         List<BandDescriptor> descriptorList = new ArrayList<BandDescriptor>(20);
 
         descriptorList.add(createCommonDescriptor("a_gelbstoffFit", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitAGelb && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitAGelb && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("a_gelbstoffFit_max", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitAGelb && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitAGelb && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("a_gelbstoffFit_min", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitAGelb && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitAGelb && parameter.performChiSquareFit));
 
         descriptorList.add(createCommonDescriptor("a_pigFit", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitAPig && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitAPig && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("a_pigFit_max", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitAPig && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitAPig && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("a_pigFit_min", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitAPig && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitAPig && parameter.performChiSquareFit));
 
         descriptorList.add(createCommonDescriptor("b_tsmFit", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitBTsm && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitBTsm && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("b_tsmFit_max", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitBTsm && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitBTsm && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("b_tsmFit_min", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitBTsm && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitBTsm && parameter.performChiSquareFit));
 
         descriptorList.add(createCommonDescriptor("tsmFit", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitTsmConc && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitTsmConc && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("chl_concFit", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputFitChlConc && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputFitChlConc && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("chiSquareFit", null, null,
-                ProductData.TYPE_FLOAT32, true,
-                parameter.outputChiSquareFit && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, true,
+                                                  parameter.outputChiSquareFit && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("nIter", null, null,
-                ProductData.TYPE_INT32, false,
-                parameter.outputNIter && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_INT32, false,
+                                                  parameter.outputNIter && parameter.performChiSquareFit));
         descriptorList.add(createCommonDescriptor("paramChange", "1", "Parameter change in last fit step",
-                ProductData.TYPE_FLOAT32, false,
-                parameter.outputParamChange && parameter.performChiSquareFit));
+                                                  ProductData.TYPE_FLOAT32, false,
+                                                  parameter.outputParamChange && parameter.performChiSquareFit));
         return descriptorList.toArray(new BandDescriptor[descriptorList.size()]);
 
     }
 
     private BandDescriptor createFlagsDescriptor() {
         BandDescriptor l2_flagsDescriptor = createCommonDescriptor("l2_flags", null, null, ProductData.TYPE_INT32,
-                false, true);
+                                                                   false, true);
         l2_flagsDescriptor.setInitialValue(0);
         l2_flagsDescriptor.setValidExpression("");
         return l2_flagsDescriptor;
@@ -371,7 +378,7 @@ public class BorealLakesAlgo implements Case2Algorithm {
     private BandDescriptor createCommonDescriptor(String name, String unit, String description, int type,
                                                   boolean log10Scaled, boolean writeEnable) {
         BandDescriptor bandDescriptor = new BandDescriptor(name, description,
-                type, unit, -1);
+                                                           type, unit, -1);
         bandDescriptor.setLog10Scaled(log10Scaled);
         bandDescriptor.setValidExpression("!l2_flags.INVALID");
         bandDescriptor.setWriteEnabled(writeEnable);

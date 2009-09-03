@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-case2-core</symbolicName>
-    <version>1.0</version>
+    <version>1.4-SNAPSHOT</version>
     <name>MERIS Case-2 Core Module</name>
 
     <description>
