@@ -76,7 +76,7 @@ public class AlgorithmParameterTest extends TestCase {
 
     public void testParamsIfNotInParamsFile() throws IOException {
         final AlgorithmParameter parameter = read("test-params_nothing.properties");
-        assertEquals("./atmo_net_20080513/25x30x35x40_5407.2.net",parameter.atmCorrNnFilePath);
+        assertEquals("./atmo_net_20091105/25x30x35x40_11415.7.net",parameter.atmCorrNnFilePath);
         assertEquals("toa_reflec_10 > toa_reflec_6 AND toa_reflec_13 > 0.0475", parameter.landWaterSeparationExpression);
         assertEquals("toa_reflec_14 > 0.2", parameter.cloudIceDetectionExpression);
         
