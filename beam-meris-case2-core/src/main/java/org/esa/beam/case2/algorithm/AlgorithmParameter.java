@@ -10,7 +10,7 @@ public class AlgorithmParameter {
 
     public String waterNnInverseFilePath = "";
     public String waterNnForwardFilePath = "";
-    public String atmCorrNnFilePath = "./atmo_net_20080513/25x30x35x40_5407.2.net";
+    public String atmCorrNnFilePath = "./atmo_net_20091105/25x30x35x40_11415.7.net";
     public String polCorrNnFilePath = "./18_518.1.netPolEffekt";
     public String smileAuxdataDirPath = "./smile";
     public String inputValidMask = "not l1_flags.INVALID and not l1_flags.SUSPECT and not l1_flags.BRIGHT";
@@ -56,8 +56,8 @@ public class AlgorithmParameter {
     public boolean outputBTsm = true; // "b_tsm"
     public boolean outputChlConc = true; // "chl_conc"
     public boolean outputTsmConc = true; // "tsm_conc"
-    public boolean outputAngstrom = true;
-    public boolean outputTau = true;
+    public boolean outputAngstrom = false;
+    public boolean outputTau = false;
     public boolean outputFitBTsm = true;
     public boolean outputFitAPig = true;
     public boolean outputFitAGelb = true;

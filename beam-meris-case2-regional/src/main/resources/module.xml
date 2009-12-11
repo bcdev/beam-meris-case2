@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-case2-regional</symbolicName>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <name>MERIS Case-2-Regional Processor</name>
 
     <description>
@@ -18,6 +18,8 @@
     <changelog>
         <![CDATA[
         Changes in version 1.4:<br/>
+        - [CIIR-25] Deactivating 'tau_550' and 'ang_443_865' by default<br/>
+        - [CIIR-24] Using new neural net for better water leaving radiance<br/>
         - [CIIR-23] Parameter 'radiance1AdjustmentFactor' has no effect<br/>
         - [CIIR-22] Update auxdata for smile correction<br/>
         - [CIIR-21] Bring all processors to the same version number<br/>
