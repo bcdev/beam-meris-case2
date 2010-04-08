@@ -94,7 +94,7 @@ public class MerisC2RAlgo implements Case2Algorithm {
         }
 
         /* extract angles and ancillary data */
-        double teta_view_deg = pixel.satzen; /* viewing zenith angle */
+        double teta_view_deg = pixel.satzen * VIEW_ZENITH_CORRECTION_FACTOR; /* viewing zenith angle */
         double teta_sun_deg = pixel.solzen; /* sun zenith angle */
         double teta_view_rad = Math.toRadians(teta_view_deg);
         double teta_sun_rad = Math.toRadians(teta_sun_deg);

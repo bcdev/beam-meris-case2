@@ -16,7 +16,6 @@ public class EutrophicAlgorithmParameter extends AlgorithmParameter{
     public EutrophicAlgorithmParameter() {
         waterNnInverseFilePath = "./water_net_eutrophic_20070710/60x20_586.8inv.net";
         waterNnForwardFilePath = "./water_net_eutrophic_20070710/30x15_88.8forw.net";
-        atmCorrNnFilePath = "./atmo_net_20080515/25x30x35x40_4016.9.net";
         chlConversionFactor = 0.0318;
         chlConversionExponent = 1.0;
     }

@@ -10,7 +10,7 @@ import org.esa.beam.framework.processor.ProcessorException;
  * @version $Revision:$ $Date:$
  */
 public interface Case2Algorithm {
-
+    double VIEW_ZENITH_CORRECTION_FACTOR = 1.18;
 
     OutputBands init(Product inputProduct, String[] inputBandNames,
                             AlgorithmParameter parameter, Auxdata auxdata);

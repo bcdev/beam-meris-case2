@@ -2,8 +2,8 @@
 <project>
     <parent>
         <groupId>org.esa.beam</groupId>
-        <artifactId>beam-case2</artifactId>
-        <version>1.4</version>
+        <artifactId>beam-meris-case2</artifactId>
+        <version>1.4.1</version>
     </parent>
     
   <modelVersion>4.0.0</modelVersion>

@@ -73,7 +73,7 @@ public class BorealAlgorithmParameterTest extends TestCase {
         final BorealAlgorithmParameter parameter = read("test-params_nothing.properties");
         Assert.assertEquals("./water_net_boreal_20080605/45x16x12x8_44.8.net", parameter.waterNnInverseFilePath);
         Assert.assertEquals("./water_net_boreal_20080605/15x15x15_96.5.net", parameter.waterNnForwardFilePath);
-        Assert.assertEquals("./atmo_net_20080605/25x30x35x40_6930.0.net",parameter.atmCorrNnFilePath);
+        Assert.assertEquals("./atmo_net_20091215/25x30x40_9164.3.net",parameter.atmCorrNnFilePath);
 
     }
 

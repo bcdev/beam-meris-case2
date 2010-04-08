@@ -7,7 +7,7 @@
 #(1)
 waterNnInverseFilePath = ./water_net_boreal_20080605/45x16x12x8_44.8.net
 waterNnForwardFilePath = ./water_net_boreal_20080605/15x15x15_96.5.net
-atmCorrNnFilePath      = ./atmo_net_20091105/25x30x35x40_11415.7.net
+atmCorrNnFilePath      = ./atmo_net_20091215/25x30x40_9164.3.net
 polCorrNnFilePath      = ./18_518.1.netPolEffekt
 
 #
