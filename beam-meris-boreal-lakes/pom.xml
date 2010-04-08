@@ -36,40 +36,8 @@
         </dependency>
     </dependencies>
 
-    <distributionManagement>
-        <repository>
-            <id>bc-public</id>
-            <name>Public Maven Repository at Brockmann-Consult</name>
-            <url></url>
-        </repository>
-    </distributionManagement>
-
-    <!--
-    In version 3 of Maven the sourceEncoding property will be embedded in the
-    build tag. For now the convention is to that it as property.
-    TODO: Move the sourceEncoding property to the build tag if version 3 is released
-    -->
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <debug>true</debug>
-                    <fork>false</fork>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-
             <plugin>
                 <groupId>com.bc.maven.plugins</groupId>
                 <artifactId>maven-javahelp-plugin</artifactId>
