@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class EutrophicLakesAlgo implements Case2Algorithm {
+public class EutrophicLakesAlgo extends Case2Algorithm {
 
     private static final double RL_TOA_THRESH_13 = 0.035;
 
@@ -93,7 +93,9 @@ public class EutrophicLakesAlgo implements Case2Algorithm {
         }
 
         /* extract angles and ancillary data */
-        double teta_view_deg = pixel.satzen * VIEW_ZENITH_CORRECTION_FACTOR; /* viewing zenith angle */
+        double teta_view_deg = pixel.satzen; /* viewing zenith angle */
+        final int centerPixel = outputBands.getProduct().getSceneRasterWidth() / 2;
+        teta_view_deg = correctViewAngle(teta_view_deg, pixel.column, centerPixel, pixel.isFullResolution);
         double teta_sun_deg = pixel.solzen; /* sun zenith angle */
         double teta_view_rad = Math.toRadians(teta_view_deg);
         double teta_sun_rad = Math.toRadians(teta_sun_deg);
@@ -131,8 +133,8 @@ public class EutrophicLakesAlgo implements Case2Algorithm {
 
     private static boolean shouldComputeC2W(AlgorithmParameter parameter) {
         return parameter.outputAPig || parameter.outputAGelb || parameter.outputBTsm ||
-               parameter.outputChlConc || parameter.outputTsmConc || parameter.outputOutOfScopeChiSquare ||
-               parameter.performChiSquareFit;
+                parameter.outputChlConc || parameter.outputTsmConc || parameter.outputOutOfScopeChiSquare ||
+                parameter.performChiSquareFit;
     }
 
     private static double getAzimuthDifference(PixelData pixel) {
@@ -192,7 +194,7 @@ public class EutrophicLakesAlgo implements Case2Algorithm {
                                                                    false, output);
             if (parameter.switchToIrradianceReflectance) {
                 bandDescriptor.setDescription("Water leaving irradiance reflectance at "
-                                              + radBand.getSpectralWavelength() + " nm");
+                        + radBand.getSpectralWavelength() + " nm");
                 bandDescriptor.setUnit("dl");
                 bandDescriptor.setScalingFactor(Math.PI);
             }

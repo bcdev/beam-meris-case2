@@ -7,18 +7,18 @@
     <description>
         This processor derives Level 2 water quality parameters of
         eutrophic lakes from MERIS Level 1b data.
-        
+
         The processor includes an algorithm for atmospheric correction and an algorithm to
         derive properties of the water such as the inherent optical properties (IOP's)
         absorption and scattering and the concentrations of total suspended matter (TSM)
         and chlorophyll from the water leaving radiance reflectance spectra
         (i.e. after atmospheric correction).
     </description>
-    
+
     <changelog>
         <![CDATA[
         <br/>Changes in version 1.4.1:<br/>
-          [CIIR-27] Introduce correction factor for view zenith angle<br/>
+          [CIIR-27] Introduce correction for view zenith angle<br/>
           [CIIR-26] Include new neural net to improve glint correction<br/>
         <br/>Changes in version 1.4:<br/>
           [CIIR-25] Deactivating 'tau_550' and 'ang_443_865' by default<br/>
