@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-boreal-lakes</symbolicName>
-    <version>1.4.1</version>
+    <version>1.4.2</version>
     <name>MERIS Boreal Lakes Processor</name>
 
     <description>
