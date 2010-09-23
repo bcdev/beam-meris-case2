@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-boreal-lakes</symbolicName>
-    <version>1.4.2</version>
+    <version>1.4.3</version>
     <name>MERIS Boreal Lakes Processor</name>
 
     <description>
@@ -17,6 +17,8 @@
 
     <changelog>
         <![CDATA[
+        Changes in version 1.4.3:<br/>
+          [CIIR-28] Update for module reorganization in BEAM<br/>
         <br/>Changes in version 1.4.1:<br/>
           [CIIR-27] Introduce correction for view zenith angle<br/>
           [CIIR-26] Include new neural net to improve glint correction<br/>
@@ -54,7 +56,7 @@
         <module>beam-envisat-reader</module>
     </dependency>
     <dependency>
-        <module>beam-meris-smile</module>
+        <module>beam-meris-preprocessor</module>
     </dependency>
     <dependency>
         <module>beam-visat</module>

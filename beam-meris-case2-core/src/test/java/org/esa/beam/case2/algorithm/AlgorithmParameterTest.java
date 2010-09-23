@@ -7,7 +7,6 @@
 package org.esa.beam.case2.algorithm;
 
 import junit.framework.TestCase;
-import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.util.ObjectIO;
 
 import java.io.IOException;

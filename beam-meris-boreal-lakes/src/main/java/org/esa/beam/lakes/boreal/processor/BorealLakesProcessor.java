@@ -9,19 +9,28 @@ import com.bc.jexp.Term;
 import com.bc.jexp.WritableNamespace;
 import com.bc.jexp.impl.AbstractSymbol;
 import com.bc.jexp.impl.ParserImpl;
+import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.BandDescriptor;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
-import org.esa.beam.case2.algorithm.Auxdata;
+import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
 import org.esa.beam.case2.util.RasterBlockMap;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
-import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.dataio.envisat.EnvisatConstants;
 import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.dataio.ProductWriter;
-import org.esa.beam.framework.datamodel.*;
+import org.esa.beam.framework.datamodel.Band;
+import org.esa.beam.framework.datamodel.BitmaskDef;
+import org.esa.beam.framework.datamodel.FlagCoding;
+import org.esa.beam.framework.datamodel.GeoPos;
+import org.esa.beam.framework.datamodel.MetadataAttribute;
+import org.esa.beam.framework.datamodel.MetadataElement;
+import org.esa.beam.framework.datamodel.PixelPos;
+import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.datamodel.ProductData;
+import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.processor.Processor;
 import org.esa.beam.framework.processor.ProcessorConstants;
 import org.esa.beam.framework.processor.ProcessorException;
@@ -35,17 +44,17 @@ import org.esa.beam.framework.processor.ui.PropertyFileParameterPage;
 import org.esa.beam.lakes.boreal.algorithm.BorealAlgorithmParameter;
 import org.esa.beam.lakes.boreal.algorithm.BorealLakesAlgo;
 import org.esa.beam.lakes.boreal.algorithm.fit.FitReflCutRestrConcs_v3;
-import org.esa.beam.processor.smile.SmileAuxData;
+import org.esa.beam.preprocessor.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-import java.net.URL;
 
 
 public class BorealLakesProcessor extends Processor {
@@ -161,14 +170,14 @@ public class BorealLakesProcessor extends Processor {
         parameter.atmCorrNnFilePath = convertToAbsolutepath(auxdataDir, parameter.atmCorrNnFilePath);
         parameter.polCorrNnFilePath = convertToAbsolutepath(auxdataDir, parameter.polCorrNnFilePath);
 
-        SmileAuxData smileAuxdata = null;
+        SmileCorrectionAuxdata smileAuxdata = null;
         try {
             if (parameter.performSmileCorrection) {
                 File smileAuxdataDir = new File(auxdataDir, parameter.smileAuxdataDirPath);
                 if (isProductFullResoultion(inputProduct)) {
-                    smileAuxdata = SmileAuxData.loadFRAuxData(smileAuxdataDir);
+                    smileAuxdata = SmileCorrectionAuxdata.loadFRAuxdata(smileAuxdataDir);
                 } else {
-                    smileAuxdata = SmileAuxData.loadRRAuxData(smileAuxdataDir);
+                    smileAuxdata = SmileCorrectionAuxdata.loadRRAuxdata(smileAuxdataDir);
                 }
             }
         } catch (IOException e) {

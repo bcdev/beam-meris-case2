@@ -1,7 +1,7 @@
 package org.esa.beam.merisc2r.algorithm;
 
-import org.esa.beam.case2.algorithm.atmosphere.Tosa;
 import org.esa.beam.case2.algorithm.OutputBands;
+import org.esa.beam.case2.algorithm.atmosphere.Tosa;
 
 /**
  * Created by Marco Peters.

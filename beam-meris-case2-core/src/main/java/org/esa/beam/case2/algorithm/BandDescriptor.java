@@ -1,7 +1,6 @@
 package org.esa.beam.case2.algorithm;
 
 import org.esa.beam.framework.datamodel.ProductData;
-import org.esa.beam.framework.datamodel.Product;
 
 public class BandDescriptor {
     private String name;

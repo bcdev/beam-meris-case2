@@ -1,8 +1,8 @@
 package org.esa.beam.lakes.eutrophic.algorithm.fit;
 
+import org.esa.beam.case2.algorithm.fit.ModelInterf4LM;
 import org.esa.beam.case2.util.nn.NNCalc;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
-import org.esa.beam.case2.algorithm.fit.ModelInterf4LM;
 
 /*
 * Created on 12.09.2006

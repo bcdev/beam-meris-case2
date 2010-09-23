@@ -13,7 +13,7 @@ package org.esa.beam.merisc2r.algorithm.fit;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 
-import Jama.*;
+import Jama.Matrix;
 
 public class FitResult {
 	

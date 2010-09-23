@@ -1,7 +1,7 @@
 package org.esa.beam.case2.algorithm.atmosphere;
 
 import org.esa.beam.case2.algorithm.PixelData;
-import org.esa.beam.processor.smile.SmileAuxData;
+import org.esa.beam.preprocessor.smilecorr.SmileCorrectionAuxdata;
 
 /**
  * Created by Marco Peters.
@@ -26,7 +26,7 @@ public class Tosa {
 }
 
     private boolean doSmileCorrection;
-    private SmileAuxData smileAuxData;
+    private SmileCorrectionAuxdata smileAuxData;
 
     private double[] trans_oz_toa_tosa_down;
     private double[] trans_oz_toa_tosa_up;
@@ -43,7 +43,7 @@ public class Tosa {
     private double[] lTosa;
     private double[] lrcTosaSmileCor;
 
-    public void init(boolean performSmileCorrection, SmileAuxData smileAuxData) {
+    public void init(boolean performSmileCorrection, SmileCorrectionAuxdata smileAuxData) {
         this.doSmileCorrection = performSmileCorrection;
         this.smileAuxData = smileAuxData;
         int length = 12;
@@ -179,7 +179,7 @@ public class Tosa {
         return new Result(RL_path_rayl, rlTosa, tau_rayl_standard);
     }
 
-    private static double[] doSmileCorrection(int detectorIndex, double[] solarFlux, SmileAuxData smileAuxData){
+    private static double[] doSmileCorrection(int detectorIndex, double[] solarFlux, SmileCorrectionAuxdata smileAuxData){
         /* correct solar flux for this pixel */
         double[] solarFluxSmile = new double[solarFlux.length];
         double[] detectorSunSpectralFlux = smileAuxData.getDetectorSunSpectralFluxes()[detectorIndex];

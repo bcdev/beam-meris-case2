@@ -1,13 +1,12 @@
 package org.esa.beam.lakes.boreal.algorithm;
 
-import junit.framework.TestCase;
 import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.esa.beam.case2.util.ObjectIO;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-
-import org.esa.beam.case2.util.ObjectIO;
 
 public class BorealAlgorithmParameterTest extends TestCase {
     public void testRead() throws IOException {

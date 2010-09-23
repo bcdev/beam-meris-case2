@@ -8,8 +8,8 @@ package org.esa.beam.case2.util;
 
 import junit.framework.TestCase;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 public class FormattedReaderTest extends TestCase {

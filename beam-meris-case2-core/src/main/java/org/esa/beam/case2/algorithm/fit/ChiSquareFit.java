@@ -1,8 +1,8 @@
 package org.esa.beam.case2.algorithm.fit;
 
-import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Auxdata;
+import org.esa.beam.case2.algorithm.OutputBands;
 
 /**
  * Created by Marco Peters.

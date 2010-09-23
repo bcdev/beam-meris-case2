@@ -1,12 +1,11 @@
 package org.esa.beam.merisc2r.algorithm;
 
 import junit.framework.TestCase;
+import org.esa.beam.case2.util.ObjectIO;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-
-import org.esa.beam.case2.util.ObjectIO;
 
 public class Case2RAlgorithmParameterTest extends TestCase {
     public void testRead() throws IOException {

@@ -1,8 +1,8 @@
 package org.esa.beam.case2.algorithm;
 
-import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 import org.esa.beam.case2.algorithm.fit.ErrorFit3_v2;
-import org.esa.beam.processor.smile.SmileAuxData;
+import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
+import org.esa.beam.preprocessor.smilecorr.SmileCorrectionAuxdata;
 
 
 /**
@@ -18,11 +18,11 @@ public class Auxdata {
     private NNffbpAlphaTabFast atmosphericNet;
     private NNffbpAlphaTabFast polarizationNet;
     private ErrorFit3_v2 fitLvMq;
-    private SmileAuxData smileAuxdata;
+    private SmileCorrectionAuxdata smileAuxdata;
 
     public Auxdata(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
                    NNffbpAlphaTabFast atmosphericNet, NNffbpAlphaTabFast polarizationNet,
-                   SmileAuxData smileAuxdata,
+                   SmileCorrectionAuxdata smileAuxdata,
                    ErrorFit3_v2 errorFit3) {
         waterNet = inverseWaterNet;
         this.forwardWaterNet = forwardWaterNet;
@@ -53,7 +53,7 @@ public class Auxdata {
         return polarizationNet;
     }
 
-    public SmileAuxData getSmileAuxdata() {
+    public SmileCorrectionAuxdata getSmileAuxdata() {
         return smileAuxdata;
     }
 

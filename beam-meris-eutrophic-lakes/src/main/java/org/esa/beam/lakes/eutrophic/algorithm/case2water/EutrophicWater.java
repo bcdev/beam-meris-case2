@@ -1,8 +1,8 @@
 package org.esa.beam.lakes.eutrophic.algorithm.case2water;
 
+import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.OutputBands;
-import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 
 /**

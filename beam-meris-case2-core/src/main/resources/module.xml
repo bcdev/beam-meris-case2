@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-case2-core</symbolicName>
-    <version>1.4.2</version>
+    <version>1.4.3</version>
     <name>MERIS Case-2 Core Module</name>
 
     <description>
@@ -12,6 +12,8 @@
     </description>
     <changelog>
         <![CDATA[
+          Changes in version 1.4.3:<br/>
+          [CIIR-28] Update for module reorganization in BEAM<br/>
         ]]>
     </changelog>
 
@@ -28,7 +30,7 @@
         <module>beam-envisat-reader</module>
     </dependency>
     <dependency>
-        <module>beam-meris-smile</module>
+        <module>beam-meris-preprocessor</module>
     </dependency>
     <dependency>
         <module>beam-visat</module>

@@ -1,11 +1,11 @@
 package org.esa.beam.merisc2r.algorithm.fit;
 
+import org.esa.beam.case2.algorithm.AlgorithmParameter;
+import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.OutputBands;
-import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
-import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.fit.ChiSquareFit;
-import org.esa.beam.case2.algorithm.Auxdata;
+import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 
 public class ChiSquareFitGLM implements ChiSquareFit {
     private double tsmExponent;
