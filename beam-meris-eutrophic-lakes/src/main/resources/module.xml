@@ -57,7 +57,7 @@
         <module>beam-envisat-reader</module>
     </dependency>
     <dependency>
-        <module>beam-meris-preprocessor</module>
+        <module>beam-meris-radiometry</module>
     </dependency>
     <dependency>
         <module>beam-visat</module>

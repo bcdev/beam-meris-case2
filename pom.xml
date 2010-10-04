@@ -28,7 +28,7 @@
             </dependency>
             <dependency>
                 <groupId>org.esa.beam</groupId>
-                <artifactId>beam-meris-preprocessor</artifactId>
+                <artifactId>beam-meris-radiometry</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
