@@ -2,7 +2,7 @@ package org.esa.beam.case2.algorithm;
 
 import org.esa.beam.case2.algorithm.fit.ErrorFit3_v2;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
-import org.esa.beam.preprocessor.smilecorr.SmileCorrectionAuxdata;
+import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 
 
 /**

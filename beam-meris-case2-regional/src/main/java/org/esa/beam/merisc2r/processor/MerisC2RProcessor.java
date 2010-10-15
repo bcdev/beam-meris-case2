@@ -41,10 +41,10 @@ import org.esa.beam.framework.processor.ui.IOParameterPage;
 import org.esa.beam.framework.processor.ui.MultiPageProcessorUI;
 import org.esa.beam.framework.processor.ui.ProcessorUI;
 import org.esa.beam.framework.processor.ui.PropertyFileParameterPage;
+import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.merisc2r.algorithm.Case2RAlgorithmParameter;
 import org.esa.beam.merisc2r.algorithm.MerisC2RAlgo;
 import org.esa.beam.merisc2r.algorithm.fit.FitReflCutRestrConcs_v3;
-import org.esa.beam.preprocessor.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;

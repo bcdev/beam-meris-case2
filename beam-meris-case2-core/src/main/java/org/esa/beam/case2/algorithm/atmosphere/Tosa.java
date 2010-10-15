@@ -1,7 +1,7 @@
 package org.esa.beam.case2.algorithm.atmosphere;
 
 import org.esa.beam.case2.algorithm.PixelData;
-import org.esa.beam.preprocessor.smilecorr.SmileCorrectionAuxdata;
+import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 
 /**
  * Created by Marco Peters.

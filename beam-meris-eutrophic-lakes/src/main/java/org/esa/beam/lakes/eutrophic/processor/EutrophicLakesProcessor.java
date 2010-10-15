@@ -44,7 +44,7 @@ import org.esa.beam.framework.processor.ui.PropertyFileParameterPage;
 import org.esa.beam.lakes.eutrophic.algorithm.EutrophicAlgorithmParameter;
 import org.esa.beam.lakes.eutrophic.algorithm.EutrophicLakesAlgo;
 import org.esa.beam.lakes.eutrophic.algorithm.fit.FitReflCutRestrConcs_v3;
-import org.esa.beam.preprocessor.smilecorr.SmileCorrectionAuxdata;
+import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;

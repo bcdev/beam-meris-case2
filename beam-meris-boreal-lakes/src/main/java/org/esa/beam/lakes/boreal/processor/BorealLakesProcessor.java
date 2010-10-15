@@ -44,7 +44,7 @@ import org.esa.beam.framework.processor.ui.PropertyFileParameterPage;
 import org.esa.beam.lakes.boreal.algorithm.BorealAlgorithmParameter;
 import org.esa.beam.lakes.boreal.algorithm.BorealLakesAlgo;
 import org.esa.beam.lakes.boreal.algorithm.fit.FitReflCutRestrConcs_v3;
-import org.esa.beam.preprocessor.smilecorr.SmileCorrectionAuxdata;
+import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
