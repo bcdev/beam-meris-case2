@@ -33,18 +33,19 @@ public class NNffbpAlphaTabFastTest extends TestCase {
         final NNCalc nnCalc = tab.calcJacobi(nnInput);
 
         final double[] expNnOutput = new double[]{0.9999546066706964};
-            assertEquals(expNnOutput[0], nnCalc.nnOutput[0], 1e-6);
+        assertEquals(expNnOutput[0], nnCalc.getNnOutput()[0], 1.0e-6);
 
 
         final double[][] expJacobiMatrix = new double[][]{
-            {
-                -7.3325278006568306E-6, 3.2639459486171825E-6, 7.527711538784537E-6,
-                -8.186466522910375E-6, 9.557482758745628E-6, 1.2507178214659703E-5
-            }
+                {
+                        -7.3325278006568306E-6, 3.2639459486171825E-6, 7.527711538784537E-6,
+                        -8.186466522910375E-6, 9.557482758745628E-6, 1.2507178214659703E-5
+                }
         };
-        for (int i = 0; i < nnCalc.jacobiMatrix.length; i++) {
-            for (int j = 0; j < nnCalc.jacobiMatrix[i].length; j++) {
-                assertEquals(expJacobiMatrix[i][j], nnCalc.jacobiMatrix[i][j], 1e-6);
+        final double[][] jacobiMatrix = nnCalc.getJacobiMatrix();
+        for (int i = 0; i < jacobiMatrix.length; i++) {
+            for (int j = 0; j < jacobiMatrix[i].length; j++) {
+                assertEquals(expJacobiMatrix[i][j], jacobiMatrix[i][j], 1.0e-6);
             }
         }
 
