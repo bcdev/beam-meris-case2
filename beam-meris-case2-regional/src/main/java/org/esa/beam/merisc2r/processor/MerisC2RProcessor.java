@@ -614,7 +614,8 @@ public class MerisC2RProcessor extends Processor {
                                                                                                 pixelIndex);
                                 }
                             }
-                            // todo no usage of landWaterSymbols elsewhere
+
+                            // symbols are updated by reference and evaluated in MerisC2RAlgo.test_usable_waterpixel()
                             for (int i = 0; i < landWaterSymbols.length; i++) {
                                 ToaReflecSymbol landWaterSymbol = landWaterSymbols[i];
                                 landWaterSymbol.setValue(pixel.toa_reflectance[i]);
