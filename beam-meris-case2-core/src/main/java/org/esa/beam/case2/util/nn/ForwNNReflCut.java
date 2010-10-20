@@ -4,42 +4,36 @@ import java.io.IOException;
 
 /**
  * @author schiller
- *
  */
-public class ForwNNReflCut extends NNffbpAlphaTabFast
-{
-	double reflCut;
+public class ForwNNReflCut extends NNffbpAlphaTabFast {
 
-	public ForwNNReflCut(String netname, double reflCut)  throws IOException
-	{
-		super(netname);
-		this.reflCut = reflCut;
-	}
-	
-	public double[] calc(double[] nninp) 
-	{
-		double[] nnout = super.calc(nninp);
-		for(int i=0;i<nnout.length;i++) 
-		{
-			if(nnout[i]  < this.reflCut) 
-			{
-				nnout[i]  = this.reflCut;
-			}
-		}
-		return nnout;
-	}
-	
-	public NNCalc calcJacobi(double[] nnInp)
-	{
-		NNCalc nnCalc = super.calcJacobi(nnInp);
-		for(int i=0;i<nnCalc.nnOutput.length;i++)
-		{
-			if(nnCalc.nnOutput[i]  < this.reflCut) 
-			{
-				nnCalc.nnOutput[i]  = this.reflCut;
-			}
-		}
-		return nnCalc;
-	}
+    private double reflCut;
 
+    public ForwNNReflCut(String netname, double reflCut) throws IOException {
+        super(netname);
+        this.reflCut = reflCut;
+    }
+
+    @Override
+    public double[] calc(double[] nninp) {
+        double[] nnout = super.calc(nninp);
+        for (int i = 0; i < nnout.length; i++) {
+            if (nnout[i] < this.reflCut) {
+                nnout[i] = this.reflCut;
+            }
+        }
+        return nnout;
+    }
+
+    @Override
+    public NNCalc calcJacobi(double[] nnInp) {
+        NNCalc nnCalc = super.calcJacobi(nnInp);
+        final double[] nnOutput = nnCalc.getNnOutput();
+        for (int i = 0; i < nnOutput.length; i++) {
+            if (nnOutput[i] < this.reflCut) {
+                nnOutput[i] = this.reflCut;
+            }
+        }
+        return nnCalc;
+    }
 }

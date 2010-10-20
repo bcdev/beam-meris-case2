@@ -18,22 +18,22 @@ import java.io.IOException;
 public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
 
     private AlgorithmParameter parameter;
-    double ReflCut;
+    private double ReflCut;
     // the NN stuff
-    static InvNNReflCut invNN;
-    static ForwNNReflCut forwNN;
+    private static InvNNReflCut invNN;
+    private static ForwNNReflCut forwNN;
 
     // the outcomes of the fit
-    public static double spm, cl, yel, chisq, chisqorig, paramChange;
-    public static double[] nn2out, nn2outorig;
-    public static int niter;
+    private static double spm, cl, yel, chisq, chisqorig, paramChange;
+    private static double[] nn2out, nn2outorig;
+    private static int niter;
 
     //the stuff for chi**2-calculation
 
-    static double[] nn1in;
-    static double nn2in[];
+    private static double[] nn1in;
+    private static double nn2in[];
 
-    public static double[] posFit = new double[3];
+    private static double[] posFit = new double[3];
 
     public FitReflCutRestrConcs_v3(double ReflCut, AlgorithmParameter parameter, double errscale) throws
                                                                                                  IOException {
@@ -41,9 +41,11 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
         this.parameter = parameter;
         invNN = new InvNNReflCut(parameter.waterNnInverseFilePath, this.ReflCut);
         forwNN = new ForwNNReflCut(parameter.waterNnForwardFilePath, this.ReflCut);
+        final double[] outmin = invNN.getOutmin();
+        final double[] outmax = invNN.getOutmax();
         for (int i = 0; i < 3; i++) {
-            LvMqRestrFit3_v3.range[0][i] = invNN.outmin[i];
-            LvMqRestrFit3_v3.range[1][i] = invNN.outmax[i];
+            LvMqRestrFit3_v3.range[0][i] = outmin[i];
+            LvMqRestrFit3_v3.range[1][i] = outmax[i];
         }
 
         LvMqRestrFit3_v3.theCase = this;
@@ -66,9 +68,11 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
         this.ReflCut = ReflCut;
         invNN = new InvNNReflCut(invNet, this.ReflCut);
         forwNN = new ForwNNReflCut(forwNet, this.ReflCut);
+        final double[] inmin = forwNN.getInmin();
+        final double[] inmax = forwNN.getInmax();
         for (int i = 0; i < 3; i++) {
-            LvMqRestrFit3_v3.range[0][i] = forwNN.inmin[3 + i];
-            LvMqRestrFit3_v3.range[1][i] = forwNN.inmax[3 + i];
+            LvMqRestrFit3_v3.range[0][i] = inmin[3 + i];
+            LvMqRestrFit3_v3.range[1][i] = inmax[3 + i];
         }
 
         LvMqRestrFit3_v3.theCase = this;
@@ -84,6 +88,7 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
 
     }
 
+    @Override
     public void processPixelMod(double[] inFit) {
         double[] refl = new double[8];
         for (int i = 0; i < 8; i++) {
@@ -96,8 +101,8 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
         nn1in[0] = sz;
         nn1in[1] = vz;
         double ad = sa - va;
-        if (ad > 180.) {
-            ad = 360. - ad;
+        if (ad > 180.0) {
+            ad = 360.0 - ad;
         }
         nn1in[2] = ad;
         int count = 0;
@@ -132,6 +137,7 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
         opt2conc();
     }
 
+    @Override
     public void theError(double[] concs) {
         for (int i = 0; i < 3; i++) {
             nn2in[i + 3] = concs[i];
@@ -140,43 +146,41 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
         //System.out.println(invNN.netname);
 
         NNCalc forwres = forwNN.calcJacobi(nn2in);
-        double sum = 0.;
+        double sum = 0.0;
+        final double[][] jacobiMatrix = forwres.getJacobiMatrix();
+        final double[] nnOutput = forwres.getNnOutput();
         for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 3; j++) {
-                LvMqRestrFit3_v3.jacobi[i][j] = forwres.jacobiMatrix[i][j + 3];
-            }
-            LvMqRestrFit3_v3.residuals[i] = forwres.nnOutput[i] - nn1in[i + 3];
-            sum += LvMqRestrFit3_v3.residuals[i]
-                   * LvMqRestrFit3_v3.residuals[i];
+            System.arraycopy(jacobiMatrix[i], 3, LvMqRestrFit3_v3.jacobi[i], 0, 3);
+            LvMqRestrFit3_v3.residuals[i] = nnOutput[i] - nn1in[i + 3];
+            sum += LvMqRestrFit3_v3.residuals[i] * LvMqRestrFit3_v3.residuals[i];
         }
         //System.out.println("sum "+sum);
-        LvMqRestrFit3_v3.errorsquared = sum / 2.;
+        LvMqRestrFit3_v3.errorsquared = sum / 2.0;
     }
 
+    @Override
     public void jactrjac_grad() {
         for (int i = 0; i < 3; i++) {
             for (int k = 0; k < 3; k++) {
                 double sum = 0;
                 for (int l = 0; l < 8; l++) {
-                    sum += LvMqRestrFit3_v3.jacobi[l][i]
-                           * LvMqRestrFit3_v3.jacobi[l][k];
+                    sum += LvMqRestrFit3_v3.jacobi[l][i] * LvMqRestrFit3_v3.jacobi[l][k];
                 }
                 LvMqRestrFit3_v3.jactrjac[i][k] = sum;
             }
         }
 
         for (int i = 0; i < 3; i++) {
-            LvMqRestrFit3_v3.grad[i] = 0.;
+            LvMqRestrFit3_v3.grad[i] = 0.0;
             for (int l = 0; l < 8; l++) {
-                LvMqRestrFit3_v3.grad[i] += LvMqRestrFit3_v3.jacobi[l][i]
-                                            * LvMqRestrFit3_v3.residuals[l];
+                LvMqRestrFit3_v3.grad[i] += LvMqRestrFit3_v3.jacobi[l][i] * LvMqRestrFit3_v3.residuals[l];
             }
         }
     }
 
     private void opt2conc() {
         spm = 1.73 * Math.exp(LvMqRestrFit3_v3.posmin[0]);
-        cl = 24. * Math.exp(LvMqRestrFit3_v3.posmin[1]);
+        cl = 24.0 * Math.exp(LvMqRestrFit3_v3.posmin[1]);
         yel = Math.exp(LvMqRestrFit3_v3.posmin[2]);
     }
 

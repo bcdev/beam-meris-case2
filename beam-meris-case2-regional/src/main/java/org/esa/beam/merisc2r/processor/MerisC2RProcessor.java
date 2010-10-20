@@ -493,23 +493,23 @@ public class MerisC2RProcessor extends Processor {
 
     private void setL2FlagsToOutput() {
         final FlagCoding flagCoding = new FlagCoding("l2_flags");
-        flagCoding.addFlag("RAD_ERR", Flags.RAD_ERR, "TOAR out of valid range"); // not used
-        flagCoding.addFlag("LAND", Flags.LAND, "land pixels");
-        flagCoding.addFlag("CLOUD_ICE", Flags.CLOUD_ICE, "cloud or ice");
-        flagCoding.addFlag("SUNGLINT", Flags.SUNGLINT, "sunglint risk"); // not used
-        flagCoding.addFlag("ANCIL", Flags.ANCIL, "missing/OOR auxiliary data");  // not used
-        flagCoding.addFlag("TOSA_OOR", Flags.TOSA_OOR, "TOSA out of range");
-        flagCoding.addFlag("WLR_OOR", Flags.WLR_OOR, "WLR out of scope");
-        flagCoding.addFlag("SOLZEN", Flags.SOLZEN, "large solar zenith angle");
-        flagCoding.addFlag("SATZEN", Flags.SATZEN, "large spacecraft zenith angle"); // not used
-        flagCoding.addFlag("ATC_OOR", Flags.ATC_OOR, "atmos. correct. out of range");
-        flagCoding.addFlag("CONC_OOR", Flags.CONC_OOR, "concentration out of training range");
-        flagCoding.addFlag("OOTR", Flags.OOTR, "RLw out of training range");
-        flagCoding.addFlag("WHITECAPS", Flags.WHITECAPS, "Whitecaps pixels");
-        flagCoding.addFlag("FIT_FAILED", Flags.FIT_FAILED, "fit failed");
-        flagCoding.addFlag("SPAREFLAG06", Flags.SPAREFLAG06, "spare flag 06");   // not used
-        flagCoding.addFlag("SPAREFLAG07", Flags.SPAREFLAG07, "spare flag 07");   // not used
-        flagCoding.addFlag("INVALID", Flags.INVALID, "not valid");
+        flagCoding.addFlag("RAD_ERR", Flags.RAD_ERR, "TOAR out of valid range");                    // not used
+        flagCoding.addFlag("LAND", Flags.LAND, "land pixels");                                      // water / ac
+        flagCoding.addFlag("CLOUD_ICE", Flags.CLOUD_ICE, "cloud or ice");                           // water  / ac
+        flagCoding.addFlag("SUNGLINT", Flags.SUNGLINT, "sunglint risk");                            // not used
+        flagCoding.addFlag("ANCIL", Flags.ANCIL, "missing/OOR auxiliary data");                     // not used
+        flagCoding.addFlag("TOSA_OOR", Flags.TOSA_OOR, "TOSA out of range");                        // water
+        flagCoding.addFlag("WLR_OOR", Flags.WLR_OOR, "WLR out of scope");                           // water
+        flagCoding.addFlag("SOLZEN", Flags.SOLZEN, "large solar zenith angle");                     // ac
+        flagCoding.addFlag("SATZEN", Flags.SATZEN, "large spacecraft zenith angle");                // not used
+        flagCoding.addFlag("ATC_OOR", Flags.ATC_OOR, "atmos. correct. out of range");               // ac
+        flagCoding.addFlag("CONC_OOR", Flags.CONC_OOR, "concentration out of training range");      // water
+        flagCoding.addFlag("OOTR", Flags.OOTR, "RLw out of training range");                        // water
+        flagCoding.addFlag("WHITECAPS", Flags.WHITECAPS, "Whitecaps pixels");                       // water
+        flagCoding.addFlag("FIT_FAILED", Flags.FIT_FAILED, "fit failed");                           // optional water
+        flagCoding.addFlag("SPAREFLAG06", Flags.SPAREFLAG06, "spare flag 06");                      // not used
+        flagCoding.addFlag("SPAREFLAG07", Flags.SPAREFLAG07, "spare flag 07");                      // not used
+        flagCoding.addFlag("INVALID", Flags.INVALID, "not valid");                                  // water / ac
         outputProduct.addFlagCoding(flagCoding);
         outputProduct.getBand("l2_flags").setFlagCoding(flagCoding);
     }
@@ -614,6 +614,7 @@ public class MerisC2RProcessor extends Processor {
                                                                                                 pixelIndex);
                                 }
                             }
+                            // todo no usage of landWaterSymbols elsewhere
                             for (int i = 0; i < landWaterSymbols.length; i++) {
                                 ToaReflecSymbol landWaterSymbol = landWaterSymbols[i];
                                 landWaterSymbol.setValue(pixel.toa_reflectance[i]);

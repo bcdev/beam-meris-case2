@@ -10,23 +10,33 @@ import junit.framework.TestCase;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
 
-public class FormattedReaderTest extends TestCase {
+public class FormattedStringReaderTest extends TestCase {
     private static final double EPS = 1.0e-8;
 
-    private FormattedReader r;
+    private FormattedStringReader r;
 
     @Override
     protected void setUp() throws Exception {
-        URL resource = getClass().getResource("fr_test.txt");
-        File testFile = new File(resource.toURI());
-        r = new FormattedReader(testFile.getCanonicalPath());
+        r = new FormattedStringReader(new StringReader("ranges repeated for easier input\n" +
+                                                       "#\n" +
+                                                       "6\n" +
+                                                       "-1.610930\n" +
+                                                       "3.998400\n" +
+                                                       "-5.928960 3.881530\n" +
+                                                       "-4.234020 8.997880\n" +
+                                                       "198134 4493 -72345\n" +
+                                                       "$\n" +
+                                                       "#planes=3 6 50 1\n" +
+                                                       "bias 1 50\n" +
+                                                       "7.890334 8.897559 8.359957\n" +
+                                                       "-23.919953 44.968232 4.968232"));
     }
 
     @Override
     protected void tearDown() throws Exception {
-        r.close();
         r = null;
     }
 

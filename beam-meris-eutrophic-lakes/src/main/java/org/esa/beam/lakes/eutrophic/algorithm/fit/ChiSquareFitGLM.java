@@ -18,6 +18,7 @@ public class ChiSquareFitGLM implements ChiSquareFit {
     private AlgorithmParameter parameter;
 
 
+    @Override
     public void init(AlgorithmParameter parameter, Auxdata auxdata) {
         this.parameter = parameter;
         tsmExponent = parameter.tsmConversionExponent;
@@ -34,6 +35,7 @@ public class ChiSquareFitGLM implements ChiSquareFit {
         initSingleFit.ln_b_SPM_b_White = 0.0;
     }
 
+    @Override
     public void perform(double teta_sun_deg, double teta_view_deg, double azi_diff_deg, double[] RLw_cut,
                         OutputBands outputBands) {
         initSingleFit.theta_sun_grad = teta_sun_deg;
@@ -49,30 +51,32 @@ public class ChiSquareFitGLM implements ChiSquareFit {
         initSingleFit.wlRefl[7] = Math.log(RLw_cut[8]);
 
         myFitLvMq.initSingleFit(initSingleFit);
-        FitResult fitRes = myFitLvMq.myLM.LMFit();
+        FitResult fitRes = myFitLvMq.getMyLM().LMFit();
 
         outputBands.setValue("tsmFit", Math.exp(Math.log(tsmFactor) + fitRes.parsfit[0] * tsmExponent));
         outputBands.setValue("chl_concFit", Math.exp(Math.log(chlFactor) + fitRes.parsfit[1] * chlExponent));
 
         outputBands.setValue("b_tsmFit", Math.exp(fitRes.parsfit[0]));
         double deltaBtsm = getDelta(fitRes.CovPars.get(0, 0));
-        double btsmMax = Math.exp(getMax(fitRes.parsfit[0], deltaBtsm, forwardWaterNet.inmax[3]));
+        final double[] inmax = forwardWaterNet.getInmax();
+        final double[] inmin = forwardWaterNet.getInmin();
+        double btsmMax = Math.exp(getMax(fitRes.parsfit[0], deltaBtsm, inmax[3]));
         outputBands.setValue("b_tsmFit_max", btsmMax);
-        double btsmMin = Math.exp(getMin(fitRes.parsfit[0], deltaBtsm, forwardWaterNet.inmin[3]));
+        double btsmMin = Math.exp(getMin(fitRes.parsfit[0], deltaBtsm, inmin[3]));
         outputBands.setValue("b_tsmFit_min", btsmMin);
 
         outputBands.setValue("a_pigFit", Math.exp(fitRes.parsfit[1]));
         double deltaApig = getDelta(fitRes.CovPars.get(1, 1));
-        double apigMax = Math.exp(getMax(fitRes.parsfit[1], deltaApig, forwardWaterNet.inmax[4]));
+        double apigMax = Math.exp(getMax(fitRes.parsfit[1], deltaApig, inmax[4]));
         outputBands.setValue("a_pigFit_max", apigMax);
-        double apigMin = Math.exp(getMin(fitRes.parsfit[1], deltaApig,forwardWaterNet.inmin[4]));
+        double apigMin = Math.exp(getMin(fitRes.parsfit[1], deltaApig, inmin[4]));
         outputBands.setValue("a_pigFit_min", apigMin);
 
         outputBands.setValue("a_gelbstoffFit", Math.exp(fitRes.parsfit[2]));
         double deltaGelbstoff = getDelta(fitRes.CovPars.get(2, 2));
-        double gelbstoffMax = Math.exp(getMax(fitRes.parsfit[2], deltaGelbstoff, forwardWaterNet.inmax[5]));
+        double gelbstoffMax = Math.exp(getMax(fitRes.parsfit[2], deltaGelbstoff, inmax[5]));
         outputBands.setValue("a_gelbstoffFit_max", gelbstoffMax);
-        double gelbstoffMin = Math.exp(getMin(fitRes.parsfit[2], deltaGelbstoff, forwardWaterNet.inmin[5]));
+        double gelbstoffMin = Math.exp(getMin(fitRes.parsfit[2], deltaGelbstoff, inmin[5]));
         outputBands.setValue("a_gelbstoffFit_min", gelbstoffMin);
 
 

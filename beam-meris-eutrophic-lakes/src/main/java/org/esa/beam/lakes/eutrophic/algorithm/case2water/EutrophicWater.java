@@ -40,8 +40,9 @@ public class EutrophicWater {
 
         /* determine cut_thresh from waterNet minimum */
         double cut_thresh = 1000.0;
+        final double[] inmin = waterNet.getInmin();
         for (int i = 0; i < 7; i++) {
-            double inmini = Math.exp(waterNet.inmin[i]);
+            double inmini = Math.exp(inmin[i]);
             if (inmini < cut_thresh) {
                 cut_thresh = inmini;
             }
@@ -136,13 +137,15 @@ public class EutrophicWater {
      **	if out of range set to lower or upper boundary value
     -----------------------------------------------------------------------------------*/
     private boolean test_logRLw(double[] innet) {
+        final double[] inmax = waterNet.getInmax();
         for (int i = 0; i < innet.length; i++) {
-            if (innet[i] > waterNet.inmax[i]) {
-                innet[i] = waterNet.inmax[i];
+            if (innet[i] > inmax[i]) {
+                innet[i] = inmax[i];
                return false;
             }
-            if (innet[i] < waterNet.inmin[i]) {
-                innet[i] = waterNet.inmin[i];
+            final double[] inmin = waterNet.getInmin();
+            if (innet[i] < inmin[i]) {
+                innet[i] = inmin[i];
                 return false;
             }
         }
@@ -157,13 +160,15 @@ public class EutrophicWater {
         double log_spm = Math.log(bTsm);
         double log_pig = Math.log(aPig);
         double log_gelb = Math.log(aGelbstoff);
-        if (log_spm > waterNet.outmax[0] || log_spm < waterNet.outmin[0]) {
+        final double[] outmax = waterNet.getOutmax();
+        final double[] outmin = waterNet.getOutmin();
+        if (log_spm > outmax[0] || log_spm < outmin[0]) {
             return false;
         }
-        if (log_pig > waterNet.outmax[1] || log_pig < waterNet.outmin[1]) {
+        if (log_pig > outmax[1] || log_pig < outmin[1]) {
             return false;
         }
-        if (log_gelb > waterNet.outmax[2] || log_gelb < waterNet.outmin[2]) {
+        if (log_gelb > outmax[2] || log_gelb < outmin[2]) {
             return false;
         }
         return true;

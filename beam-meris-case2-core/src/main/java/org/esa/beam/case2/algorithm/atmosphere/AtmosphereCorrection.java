@@ -43,7 +43,7 @@ public class AtmosphereCorrection {
         if (!validTosaReflectance(tosaResult.rlTosa)) {
             outputBands.setValue("l2_flags", outputBands.getIntValue("l2_flags") | Flags.TOSA_OOR);
         }
-        if (pixel.solzen > atmosphereNet.inmax[0] || pixel.solzen < atmosphereNet.inmin[0]) {
+        if (pixel.solzen > atmosphereNet.getInmax()[0] || pixel.solzen < atmosphereNet.getInmin()[0]) {
             outputBands.setValue("l2_flags", outputBands.getIntValue("l2_flags") | Flags.SOLZEN);
         }
 
@@ -132,11 +132,11 @@ public class AtmosphereCorrection {
         outputBands.setValue("ang_443_865", ang_443_865);
         outputBands.setValue("tau_550", atmoOutnet[37]);
 
-        if (outputBands.getDoubleValue("tau_550") > atmosphereNet.outmax[37] * MAX_TAU_FACTOR) {
+        if (outputBands.getDoubleValue("tau_550") > atmosphereNet.getOutmax()[37] * MAX_TAU_FACTOR) {
             outputBands.setValue("l2_flags", outputBands.getIntValue("l2_flags") | Flags.ATC_OOR);
         }
 
-        if(atmoOutnet[40] > atmosphereNet.outmax[40] * 0.97) {
+        if(atmoOutnet[40] > atmosphereNet.getOutmax()[40] * 0.97) {
             outputBands.setValue("l2_flags", outputBands.getIntValue("l2_flags") | Flags.SUNGLINT);
         }
 
@@ -151,7 +151,8 @@ public class AtmosphereCorrection {
     private boolean validTosaReflectance(double[] rL_tosa) {
         for (int i = 0; i < rL_tosa.length; i++) {
             double currentRlTosa = Math.log(rL_tosa[i]);
-            if (currentRlTosa > atmosphereNet.inmax[i + 4] || currentRlTosa < atmosphereNet.inmin[i + 4]) {
+            final int netIndex = i + 4;
+            if (currentRlTosa > atmosphereNet.getInmax()[netIndex] || currentRlTosa < atmosphereNet.getInmin()[netIndex]) {
                 return false;
             }
         }
