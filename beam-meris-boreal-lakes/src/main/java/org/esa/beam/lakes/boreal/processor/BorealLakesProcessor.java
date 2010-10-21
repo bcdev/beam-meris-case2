@@ -49,6 +49,7 @@ import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -144,7 +145,7 @@ public class BorealLakesProcessor extends Processor {
         final PropertyFileParameterPage propertyFilePage = new PropertyFileParameterPage(parameterFile);
 
         final MultiPageProcessorUI processorUI = new MultiPageProcessorUI(BorealLakesConstants.PROCESSING_REQUEST_TYPE);
-            final URL url = getClass().getResource("/"+BorealLakesConstants.README_FILE_NAME);
+        final URL url = getClass().getResource("/" + BorealLakesConstants.README_FILE_NAME);
         processorUI.addPage(new ReadMePage(url));
         processorUI.addPage(ioPage);
         processorUI.addPage(propertyFilePage);
@@ -185,10 +186,14 @@ public class BorealLakesProcessor extends Processor {
         }
 
         try {
-            final NNffbpAlphaTabFast inverseWaterNet = new NNffbpAlphaTabFast(parameter.waterNnInverseFilePath);
-            final NNffbpAlphaTabFast forwardWaterNet = new NNffbpAlphaTabFast(parameter.waterNnForwardFilePath);
-            final NNffbpAlphaTabFast atmosphericNet = new NNffbpAlphaTabFast(parameter.atmCorrNnFilePath);
-            final NNffbpAlphaTabFast polarizationNet = new NNffbpAlphaTabFast(parameter.polCorrNnFilePath);
+            final NNffbpAlphaTabFast inverseWaterNet = new NNffbpAlphaTabFast(
+                    new FileInputStream(parameter.waterNnInverseFilePath));
+            final NNffbpAlphaTabFast forwardWaterNet = new NNffbpAlphaTabFast(
+                    new FileInputStream(parameter.waterNnForwardFilePath));
+            final NNffbpAlphaTabFast atmosphericNet = new NNffbpAlphaTabFast(
+                    new FileInputStream(parameter.atmCorrNnFilePath));
+            final NNffbpAlphaTabFast polarizationNet = new NNffbpAlphaTabFast(
+                    new FileInputStream(parameter.polCorrNnFilePath));
             final FitReflCutRestrConcs_v3 fitReflCutRestrConcs_v3 = new FitReflCutRestrConcs_v3(parameter.fitCut,
                                                                                                 parameter, 1.0);
             auxdata = new Auxdata(inverseWaterNet, forwardWaterNet,
@@ -269,7 +274,7 @@ public class BorealLakesProcessor extends Processor {
 
                 // and process the MacNN1
                 processCase2(new SubProgressMonitor(pm, 190));
-            }catch(Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 throw new ProcessorException(e.getMessage(), e);
             } finally {
@@ -320,6 +325,7 @@ public class BorealLakesProcessor extends Processor {
     /*
      * Loads the input product from the request. Opens the product and opens both bands needed to process the ndvi.
      */
+
     private void loadInputProduct() throws ProcessorException, IOException {
         inputProduct = loadInputProduct(0);
         validTerm = ProcessorUtils.createTerm(parameter.inputValidMask, inputProduct);
@@ -377,9 +383,10 @@ public class BorealLakesProcessor extends Processor {
     /*
       Creates the output product skeleton.
      */
+
     private void createOutputProduct(ProgressMonitor pm) throws
-                                       ProcessorException,
-                                       IOException {
+                                                         ProcessorException,
+                                                         IOException {
         // get the request from the base class
         final Request request = getRequest();
 
@@ -396,7 +403,8 @@ public class BorealLakesProcessor extends Processor {
         }
 
         // create the in memory represenation of the output product the product itself
-        outputProduct = new Product(new File(outputRef.getFilePath()).getName(), BorealLakesConstants.OUTPUT_PRODUCT_TYPE,
+        outputProduct = new Product(new File(outputRef.getFilePath()).getName(),
+                                    BorealLakesConstants.OUTPUT_PRODUCT_TYPE,
                                     sceneWidth,
                                     sceneHeight);
 
@@ -536,6 +544,7 @@ public class BorealLakesProcessor extends Processor {
      * Performs the actual processing of the output product. Reads both input bands line by line, calculates the ndvi
      * and writes the result to the output band
      */
+
     private void processCase2(ProgressMonitor pm) throws IOException, ProcessorException {
 
         final PixelData pixel = new PixelData();
@@ -598,12 +607,12 @@ public class BorealLakesProcessor extends Processor {
                             double meridWind = inputRasterBlocks.getPixelFloat(merid_wind, pixelIndex);
                             pixel.windspeed = Math.sqrt(zonalWind * zonalWind + meridWind * meridWind);
 
-                            if(parameter.performAtmosphericCorrection) {
+                            if (parameter.performAtmosphericCorrection) {
                                 pixel.detectorIndex = inputRasterBlocks.getPixelInt(detectorIndex, pixelIndex);
                                 for (int ib = 0; ib < inputBandNames.length; ib++) {
                                     final String inputBandName = inputBandNames[ib];
                                     pixel.toa_radiance[ib] = inputRasterBlocks.getPixelFloat(inputBandName, pixelIndex);
-                                    if(EnvisatConstants.MERIS_L1B_RADIANCE_1_BAND_NAME.equals(inputBandName)) {
+                                    if (EnvisatConstants.MERIS_L1B_RADIANCE_1_BAND_NAME.equals(inputBandName)) {
                                         pixel.toa_radiance[ib] *= parameter.radiance1AdjustmentFactor;
                                     }
                                     pixel.toa_reflectance[ib] = pixel.toa_radiance[ib] / (pixel.solar_flux[ib] * Math.cos(
@@ -611,7 +620,8 @@ public class BorealLakesProcessor extends Processor {
                                 }
                             } else {
                                 for (int ib = 0; ib < inputBandNames.length; ib++) {
-                                    pixel.toa_reflectance[ib] = inputRasterBlocks.getPixelFloat(inputBandNames[ib], pixelIndex);
+                                    pixel.toa_reflectance[ib] = inputRasterBlocks.getPixelFloat(inputBandNames[ib],
+                                                                                                pixelIndex);
                                 }
                             }
                             for (int i = 0; i < landWaterSymbols.length; i++) {
@@ -684,6 +694,7 @@ public class BorealLakesProcessor extends Processor {
                                       ProductData.createInstance(BorealLakesConstants.PROCESSOR_COPYRIGHT_INFO), true));
         return metadata;
     }
+
     private static class ToaReflecSymbol extends AbstractSymbol.D {
 
         private double value;

@@ -23,11 +23,7 @@ public class FormattedStringReader {
      * @param inp
      */
     public FormattedStringReader(StringReader inp) {
-        this.inp = inp;
-        this.delimiters = " \t\n\r,;:";
-        this.file_has_comments = true;
-        this.echo_comments = false;
-        this.comment_begin = "#";
+        this(inp, " \t\n\r,;:");
     }
 
     /**
@@ -81,16 +77,21 @@ public class FormattedStringReader {
      * Method readLine
      *
      * @param sr
+     *
      * @return The line just read.
      */
     private static String readLine(StringReader sr) throws IOException {
         String res = "";
         char[] helper = new char[1];
-        while (helper[0] != '\n') {
-            sr.read(helper, 0, 1);
+        int readCount = 0;
+        while (helper[0] != '\n' ) {
+            readCount = sr.read(helper, 0, 1);
+            if(readCount == -1){
+                break;
+            }
             res = res.concat(String.copyValueOf(helper));
         }
-        return res;
+        return res.trim();
     }
 
     /**
@@ -99,15 +100,15 @@ public class FormattedStringReader {
      * @return The long just read.
      */
     public long rlong() throws IOException {
-        String eing;
         boolean ready = false;
         long res = 0;
         while (!ready) {
-            eing = FormattedStringReader.readLine(inp);
+            String eing = readLine(inp);
             if (this.file_has_comments) {
                 if (eing.startsWith(this.comment_begin)) {
-                    if (this.echo_comments)
+                    if (this.echo_comments) {
                         System.out.println(eing);
+                    }
                     continue;
                 }
             }
@@ -124,15 +125,15 @@ public class FormattedStringReader {
      * @return The double just read.
      */
     public double rdouble() throws IOException {
-        String eing;
         boolean ready = false;
         double res = 0;
         while (!ready) {
-            eing = FormattedStringReader.readLine(inp);
+            String eing = readLine(inp);
             if (this.file_has_comments) {
                 if (eing.startsWith(this.comment_begin)) {
-                    if (this.echo_comments)
+                    if (this.echo_comments) {
                         System.out.println(eing);
+                    }
                     continue;
                 }
             }
@@ -152,11 +153,12 @@ public class FormattedStringReader {
         String eing = null;
         boolean ready = false;
         while (!ready) {
-            eing = FormattedStringReader.readLine(inp);
+            eing = readLine(inp);
             if (this.file_has_comments) {
                 if (eing.startsWith(this.comment_begin)) {
-                    if (this.echo_comments)
+                    if (this.echo_comments) {
                         System.out.println(eing);
+                    }
                     continue;
                 }
             }
@@ -169,19 +171,20 @@ public class FormattedStringReader {
      * Method rlong Read some long's.
      *
      * @param how_many long's should be read.
+     *
      * @return Less than <code>how_many</code> long's if EOF is met.
      */
     public long[] rlong(int how_many) throws IOException {
-        String eing;
         boolean ready = false;
         long[] res = new long[how_many];
         int got = 0;
         while (!ready) {
-            eing = FormattedStringReader.readLine(inp);
+            String eing = readLine(inp);
             if (this.file_has_comments) {
                 if (eing.startsWith(this.comment_begin)) {
-                    if (this.echo_comments)
+                    if (this.echo_comments) {
                         System.out.println(eing);
+                    }
                     continue;
                 }
             }
@@ -196,9 +199,9 @@ public class FormattedStringReader {
                 }
             }
         }
-        if (got == how_many)
+        if (got == how_many) {
             return res;
-        else {
+        } else {
             long[] less = new long[got];
             System.arraycopy(res, 0, less, 0, got);
             return less;
@@ -209,24 +212,29 @@ public class FormattedStringReader {
      * Method rdouble Read some double's.
      *
      * @param how_many double's should be read.
+     *
      * @return Less than <code>how_many</code> double's if EOF is met.
      */
     public double[] rdouble(int how_many) throws IOException {
-        String eing;
         boolean ready = false;
         double[] res = new double[how_many];
         int got = 0;
         while (!ready) {
-            eing = FormattedStringReader.readLine(inp);
+            String eing = readLine(inp);
+
             if (this.file_has_comments) {
                 if (eing.startsWith(this.comment_begin)) {
-                    if (this.echo_comments)
+                    if (this.echo_comments) {
                         System.out.println(eing);
+                    }
                     continue;
                 }
             }
             StringTokenizer st = new StringTokenizer(eing, this.delimiters);
             int nn = st.countTokens();
+            if(nn == 0) {
+                break;
+            }
             for (int i = 0; i < nn; i++) {
                 res[got] = Double.valueOf(st.nextToken());
                 got++;
@@ -236,9 +244,9 @@ public class FormattedStringReader {
                 }
             }
         }
-        if (got == how_many)
+        if (got == how_many) {
             return res;
-        else {
+        } else {
             double[] less = new double[got];
             System.arraycopy(res, 0, less, 0, got);
             return less;
@@ -249,6 +257,7 @@ public class FormattedStringReader {
      * Method rdoubleAll Read array of points of known dimension.
      *
      * @param dimension components belong to one point.
+     *
      * @return The points[][dimension] read until EOF is met
      */
     public double[][] rdoubleAll(int dimension) throws IOException {
@@ -258,7 +267,9 @@ public class FormattedStringReader {
         double[] p;
         while (true) {
             p = this.rdouble(dimension);
-            if (p.length < dimension) break;
+            if (p.length < dimension) {
+                break;
+            }
             npoints++;
         }
         this.inp.reset();

@@ -18,8 +18,15 @@ package org.esa.beam.case2.util.nn;
  */
 
 import junit.framework.TestCase;
+import org.esa.beam.framework.gpf.OperatorException;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 public class NNffbpAlphaTabFastTest extends TestCase {
@@ -53,14 +60,14 @@ public class NNffbpAlphaTabFastTest extends TestCase {
 
     private static NNffbpAlphaTabFast loadTestNet() {
         NNffbpAlphaTabFast tabFast = null;
+        final InputStream stream = NNffbpAlphaTabFastTest.class.getResourceAsStream("nn_test.net");
         try {
-            URL resource = NNffbpAlphaTabFastTest.class.getResource("nn_test.net");
-            File testFile = new File(resource.toURI());
-            tabFast = new NNffbpAlphaTabFast(testFile.getCanonicalPath());
+            tabFast = new NNffbpAlphaTabFast(stream);
         } catch (Exception e) {
-            fail("Failed to load test net.");
             e.printStackTrace();
+            fail("Failed to load test net.");
         }
         return tabFast;
     }
+
 }

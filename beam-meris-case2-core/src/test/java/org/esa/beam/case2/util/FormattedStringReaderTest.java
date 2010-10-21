@@ -8,10 +8,8 @@ package org.esa.beam.case2.util;
 
 import junit.framework.TestCase;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URL;
 
 public class FormattedStringReaderTest extends TestCase {
     private static final double EPS = 1.0e-8;

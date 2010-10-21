@@ -49,6 +49,7 @@ import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -186,10 +187,14 @@ public class MerisC2RProcessor extends Processor {
         }
 
         try {
-            final NNffbpAlphaTabFast inverseWaterNet = new NNffbpAlphaTabFast(parameter.waterNnInverseFilePath);
-            final NNffbpAlphaTabFast forwardWaterNet = new NNffbpAlphaTabFast(parameter.waterNnForwardFilePath);
-            final NNffbpAlphaTabFast atmosphericNet = new NNffbpAlphaTabFast(parameter.atmCorrNnFilePath);
-            final NNffbpAlphaTabFast polarizationNet = new NNffbpAlphaTabFast(parameter.polCorrNnFilePath);
+            final NNffbpAlphaTabFast inverseWaterNet = new NNffbpAlphaTabFast(
+                    new FileInputStream(parameter.waterNnInverseFilePath));
+            final NNffbpAlphaTabFast forwardWaterNet = new NNffbpAlphaTabFast(
+                    new FileInputStream(parameter.waterNnForwardFilePath));
+            final NNffbpAlphaTabFast atmosphericNet = new NNffbpAlphaTabFast(
+                    new FileInputStream(parameter.atmCorrNnFilePath));
+            final NNffbpAlphaTabFast polarizationNet = new NNffbpAlphaTabFast(
+                    new FileInputStream(parameter.polCorrNnFilePath));
             final FitReflCutRestrConcs_v3 fitReflCutRestrConcs_v3 = new FitReflCutRestrConcs_v3(parameter.fitCut,
                                                                                                 parameter, 1.0);
             auxdata = new Auxdata(inverseWaterNet, forwardWaterNet,

@@ -1,10 +1,12 @@
 package org.esa.beam.case2.util.nn;
 
 
-
 import org.esa.beam.case2.util.FormattedStringReader;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 
 /**
@@ -95,16 +97,26 @@ public class NNffbpAlphaTabFast {
     private NNCalc NNresjacob;
 
     /**
-     * Creates a neural net by read it from the string containing the definition.
+     * Creates a neural net by reading the definition from the string.
      *
-     * @param neuralNet the neural net as a string
+     * @param neuralNet the neural net definition as a string
      * @throws java.io.IOException if the neural net could not be read
      */
     public NNffbpAlphaTabFast(String neuralNet) throws IOException  {
-        readNeuralNet(neuralNet);
+        readNeuralNetFromString(neuralNet);
         makeAlphaTab();
         NNresjacob = new NNCalc();
         declareArrays();
+    }
+
+    /**
+     * Creates a neural net by reading the definition from the input stream.
+     *
+     * @param neuralNetStream the neural net definition as a input stream
+     * @throws java.io.IOException if the neural net could not be read
+     */
+    public NNffbpAlphaTabFast(InputStream neuralNetStream) throws IOException  {
+        this(readNeuralNet(neuralNetStream));
     }
 
     public double[] getInmin() {
@@ -146,8 +158,25 @@ public class NNffbpAlphaTabFast {
         this.recDeltaAlpha = 1.0 / delta;
     }
 
+    private static String readNeuralNet(InputStream neuralNetStream) throws IOException {
+        String neuralNet;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(neuralNetStream));
+        try {
+            String line = reader.readLine();
+            final StringBuilder sb = new StringBuilder();
+            while (line != null) {
+                // have to append line terminator, cause it's not included in line
+                sb.append(line).append('\n');
+                line = reader.readLine();
+            }
+            neuralNet = sb.toString();
+        } finally {
+            reader.close();
+        }
+        return neuralNet;
+    }
 
-    private void readNeuralNet(String net) throws IOException {
+    private void readNeuralNetFromString(String net) throws IOException {
         StringReader in = null;
         try {
             in = new StringReader(net);

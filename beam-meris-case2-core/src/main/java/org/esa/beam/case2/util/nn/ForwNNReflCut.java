@@ -1,6 +1,7 @@
 package org.esa.beam.case2.util.nn;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author schiller
@@ -9,8 +10,8 @@ public class ForwNNReflCut extends NNffbpAlphaTabFast {
 
     private double reflCut;
 
-    public ForwNNReflCut(String netname, double reflCut) throws IOException {
-        super(netname);
+    public ForwNNReflCut(InputStream neuralNetStream, double reflCut) throws IOException {
+        super(neuralNetStream);
         this.reflCut = reflCut;
     }
 

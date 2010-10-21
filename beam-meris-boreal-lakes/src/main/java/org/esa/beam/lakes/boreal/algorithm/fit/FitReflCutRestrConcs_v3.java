@@ -6,6 +6,7 @@ import org.esa.beam.case2.util.nn.ForwNNReflCut;
 import org.esa.beam.case2.util.nn.InvNNReflCut;
 import org.esa.beam.case2.util.nn.NNCalc;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 /*
  * Created on Jul 9, 2004
@@ -39,8 +40,8 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
                                                                                                  IOException {
         this.ReflCut = ReflCut;
         this.parameter = parameter;
-        invNN = new InvNNReflCut(parameter.waterNnInverseFilePath, this.ReflCut);
-        forwNN = new ForwNNReflCut(parameter.waterNnForwardFilePath, this.ReflCut);
+        invNN = new InvNNReflCut(new FileInputStream(parameter.waterNnInverseFilePath), this.ReflCut);
+        forwNN = new ForwNNReflCut(new FileInputStream(parameter.waterNnForwardFilePath), this.ReflCut);
         final double[] outmin = invNN.getOutmin();
         final double[] outmax = invNN.getOutmax();
         for (int i = 0; i < 3; i++) {
@@ -50,32 +51,6 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
 
         LvMqRestrFit3_v3.theCase = this;
 
-        LvMqRestrFit3_v3.jacobi = new double[8][3];
-        LvMqRestrFit3_v3.residuals = new double[8];
-        LvMqRestrFit3_v3.posmin = new double[3];
-        LvMqRestrFit3_v3.jactrjac = new double[3][3];
-        LvMqRestrFit3_v3.grad = new double[3];
-
-        nn1in = new double[11];
-        nn2in = new double[6];
-        nn2out = new double[8];
-
-    }
-
-    //Konstruktor nur fuer hiesige main-Methode
-    public FitReflCutRestrConcs_v3(double ReflCut, String invNet, String forwNet, double errscale) throws
-                                                                                                   IOException {
-        this.ReflCut = ReflCut;
-        invNN = new InvNNReflCut(invNet, this.ReflCut);
-        forwNN = new ForwNNReflCut(forwNet, this.ReflCut);
-        final double[] inmin = forwNN.getInmin();
-        final double[] inmax = forwNN.getInmax();
-        for (int i = 0; i < 3; i++) {
-            LvMqRestrFit3_v3.range[0][i] = inmin[3 + i];
-            LvMqRestrFit3_v3.range[1][i] = inmax[3 + i];
-        }
-
-        LvMqRestrFit3_v3.theCase = this;
         LvMqRestrFit3_v3.jacobi = new double[8][3];
         LvMqRestrFit3_v3.residuals = new double[8];
         LvMqRestrFit3_v3.posmin = new double[3];
