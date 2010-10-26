@@ -12,6 +12,7 @@
         <module>beam-meris-case2-regional</module>
         <module>beam-meris-boreal-lakes</module>
         <module>beam-meris-eutrophic-lakes</module>
+        <module>beam-meris-case2-water</module>
     </modules>
 
     <dependencyManagement>
