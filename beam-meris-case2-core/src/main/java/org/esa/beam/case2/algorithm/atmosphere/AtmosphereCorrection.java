@@ -64,10 +64,10 @@ public class AtmosphereCorrection {
         x = -Math.sin(teta_view_rad) * Math.cos(azi_diff_rad);
         y = Math.abs(-Math.sin(teta_view_rad) * Math.sin(azi_diff_rad));
         z = Math.cos(teta_view_rad);
-        azi_diff_deg = azi_diff_rad * 180.0 / Math.PI;
+        azi_diff_deg = Math.toDegrees(azi_diff_rad);
 
 
-        atmoInnet[0] = teta_sun_rad * 180.0 / 3.1416; //input is teta_sun_deg
+        atmoInnet[0] = Math.toDegrees(teta_sun_rad); //input is teta_sun_deg
         atmoInnet[1] = x;
         atmoInnet[2] = y;
         atmoInnet[3] = z;
