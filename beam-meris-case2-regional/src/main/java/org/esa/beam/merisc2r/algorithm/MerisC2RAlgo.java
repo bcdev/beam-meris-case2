@@ -100,7 +100,6 @@ public class MerisC2RAlgo extends Case2Algorithm {
         double teta_sun_deg = pixel.solzen; /* sun zenith angle */
         double teta_view_rad = Math.toRadians(teta_view_deg);
         double teta_sun_rad = Math.toRadians(teta_sun_deg);
-        double cos_teta_sun = Math.cos(teta_sun_rad);
 
 
         double azi_diff_deg = getAzimuthDifference(pixel);
@@ -114,8 +113,8 @@ public class MerisC2RAlgo extends Case2Algorithm {
             /* protection against too small RLw reflectances in blue spectral part */
             experimental.ensureValidBlueRlwReflectances(tosa, outputBands);
         } else {
-            final int reflecLenght = outputBands.getDoubleValues("reflec").length;
-            outputBands.setValues("reflec_", Arrays.copyOf(pixel.toa_reflectance, reflecLenght));
+            final int reflecLength = outputBands.getDoubleValues("reflec").length;
+            outputBands.setValues("reflec_", Arrays.copyOf(pixel.toa_reflectance, reflecLength));
         }
 
         /* check if only atmospheric correction, then stop */
