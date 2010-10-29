@@ -1,5 +1,6 @@
 package org.esa.beam.meris.case2;
 
+import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.FlagCoding;
@@ -223,7 +224,10 @@ public class MerisCase2WaterOp extends PixelOperator {
 //        configurator.defineSample(SOURCE_CLOUD_ICE_INDEX, cloudIceBand.getName());
         configurator.defineSample(SOURCE_AGC_INVALID_INDEX, "agc_invalid");
 
+        // todo - what's correct?
         centerPixel = sourceProduct.getSceneRasterWidth() / 2;
+//        centerPixel = new MerisFlightDirection(sourceProduct).getNadirColumnIndex();
+        
         isFullResolution = !sourceProduct.getProductType().contains("RR");
         case2Water = new Case2Water(tsmConversionExponent, tsmConversionFactor,
                                     chlConversionFactor, chlConversionFactor, spectrumOutOfScopeThreshold);
@@ -255,7 +259,7 @@ public class MerisCase2WaterOp extends PixelOperator {
     protected void computePixel(int x, int y, Sample[] sourceSamples, WritableSample[] targetSamples) {
         final double solazi = sourceSamples[SOURCE_SOLAZI_INDEX].getDouble();
         final double satazi = sourceSamples[SOURCE_SATAZI_INDEX].getDouble();
-        double azi_diff_deg = getAzimuthDifference(Math.toDegrees(satazi), Math.toDegrees(solazi));
+        double azi_diff_deg = getAzimuthDifference(satazi, solazi);
         double solzen = sourceSamples[SOURCE_SOLZEN_INDEX].getDouble();
         double satzen = sourceSamples[SOURCE_SATZEN_INDEX].getDouble();
         satzen = correctViewAngle(satzen, x, centerPixel, isFullResolution);

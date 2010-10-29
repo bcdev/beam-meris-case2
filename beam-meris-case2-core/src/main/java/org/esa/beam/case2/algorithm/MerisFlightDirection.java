@@ -42,6 +42,10 @@ public class MerisFlightDirection {
         
     }
 
+    public int getNadirColumnIndex() {
+        return nadirColumnIndex;
+    }
+
     public double getNadirSunZenith(int line) {
         return sunZenNadir[line];
     }
