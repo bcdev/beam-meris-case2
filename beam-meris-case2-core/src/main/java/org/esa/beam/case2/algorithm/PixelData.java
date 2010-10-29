@@ -32,4 +32,8 @@ public class PixelData {
 
     public Term landWaterTerm;
     public Term cloudIceTerm;
+    public double viewzenMer;
+    public double viewaziMer;
+    public double solzenMer;
+    public double solaziMer;
 }

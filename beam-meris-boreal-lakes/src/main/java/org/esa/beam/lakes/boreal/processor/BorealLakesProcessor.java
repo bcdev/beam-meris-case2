@@ -12,6 +12,7 @@ import com.bc.jexp.impl.ParserImpl;
 import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.BandDescriptor;
 import org.esa.beam.case2.algorithm.Flags;
+import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.processor.ReadMePage;
@@ -563,6 +564,12 @@ public class BorealLakesProcessor extends Processor {
 
         pm.beginTask("Processing MERIS Level-1b Pixels...", height);
 
+        final MerisFlightDirection direction;
+        try {
+            direction = new MerisFlightDirection(inputProduct);
+        } catch (IllegalArgumentException e) {
+            throw new ProcessorException("Not able to compute flioght direction.", e);
+        }
         try {
             // now loop over all scanlines
             for (int y = 0; y < height; y += inputRasterBlocks.getLinesPerBlock()) {
@@ -580,6 +587,10 @@ public class BorealLakesProcessor extends Processor {
                 for (int by = 0; by < linesPerBlock; by++) {
 
                     pixel.row = y + by;
+
+                    final double alpha = direction.computeFlightDirectionAlpha(pixel.row);
+                    pixel.solzenMer = direction.getNadirSunZenith(pixel.row);
+                    pixel.solaziMer = direction.getNadirSunAzimuth(pixel.row);
 
                     // process the complete scanline
                     for (int x = 0; x < width; x++) {
@@ -601,6 +612,10 @@ public class BorealLakesProcessor extends Processor {
                             pixel.satazi = inputRasterBlocks.getPixelFloat(view_azimuth, pixelIndex);
                             pixel.ozone = inputRasterBlocks.getPixelFloat(ozone, pixelIndex);
                             pixel.pressure = inputRasterBlocks.getPixelFloat(atm_press, pixelIndex);
+                            // todo - different to breadboard line 159 in mer_wat_***01.c
+                            pixel.viewzenMer = pixel.satzen / 1.1364;
+
+                            pixel.viewaziMer = direction.computeMerisFlightDirection(pixel.column, alpha);
 
 
                             double zonalWind = inputRasterBlocks.getPixelFloat(zonal_wind, pixelIndex);
