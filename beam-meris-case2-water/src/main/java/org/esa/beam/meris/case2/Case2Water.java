@@ -88,7 +88,7 @@ public class Case2Water {
         targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + waterOutnet[0] * tsmExponent));
 
         double aPig = Math.exp(waterOutnet[1]);
-        targetSamples[TARGET_A_PIGMENT_INDEX].set(bTsm);
+        targetSamples[TARGET_A_PIGMENT_INDEX].set(aPig);
         targetSamples[TARGET_CHL_CONC_INDEX].set(Math.exp(Math.log(chlFactor) + waterOutnet[1] * chlExponent));
         double aGelbstoff = Math.exp(waterOutnet[2]);
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
