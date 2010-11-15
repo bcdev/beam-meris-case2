@@ -114,16 +114,6 @@ public class MerisCase2WaterOp extends PixelOperator {
                description = "Expression defining pixels not considered for processing")
     private String invalidPixelExpression;
 
-//    @Parameter(defaultValue = "agc_flags.LAND",
-//               //defaultValue = "tosa_reflec_10 > tosa_reflec_6 AND tosa_reflec_13 > 0.0475",
-//               description = "Expression for land-water-separation")
-//    private String landWaterSeparationExpression;
-//    // todo - changed expression from toa to tosa. Still correct or do we have to adopt values?
-//    // maybe use a flag of source product?
-//    @Parameter(defaultValue = "agc_flags.CLOUD_ICE", // defaultValue = "tosa_reflec_14 > 0.2",
-//               description = "Expression for cloud-ice-detection")
-//    private String cloudIceDetectionExpression;
-
     @Parameter(label = "Inverse water neural net (optional)",
                description = "The file of the inverse water neural net to be used instead of the default.")
     private File inverseWaterNnFile;
@@ -210,27 +200,13 @@ public class MerisCase2WaterOp extends PixelOperator {
         configurator.defineSample(SOURCE_SATZEN_INDEX, MERIS_VIEW_ZENITH_DS_NAME);
         configurator.defineSample(SOURCE_ZONAL_WIND_INDEX, MERIS_ZONAL_WIND_DS_NAME);
         configurator.defineSample(SOURCE_MERID_WIND_INDEX, MERIS_MERID_WIND_DS_NAME);
-//        final VirtualBand landWaterBand = new VirtualBand("case2_land_water", ProductData.TYPE_INT8,
-//                                                          sourceProduct.getSceneRasterWidth(),
-//                                                          sourceProduct.getSceneRasterHeight(),
-//                                                          landWaterSeparationExpression);
-//        sourceProduct.addBand(landWaterBand);
-//        configurator.defineSample(SOURCE_LAND_WATER_INDEX, landWaterBand.getName());
-//        final VirtualBand cloudIceBand = new VirtualBand("case2_cloud_ice", ProductData.TYPE_INT8,
-//                                                         sourceProduct.getSceneRasterWidth(),
-//                                                         sourceProduct.getSceneRasterHeight(),
-//                                                         cloudIceDetectionExpression);
-//        sourceProduct.addBand(cloudIceBand);
-//        configurator.defineSample(SOURCE_CLOUD_ICE_INDEX, cloudIceBand.getName());
         configurator.defineSample(SOURCE_AGC_INVALID_INDEX, "agc_invalid");
 
-        // todo - what's correct?
-        centerPixel = sourceProduct.getSceneRasterWidth() / 2;
-//        centerPixel = new MerisFlightDirection(sourceProduct).getNadirColumnIndex();
-        
+        centerPixel = new MerisFlightDirection(sourceProduct).getNadirColumnIndex();
+
         isFullResolution = !sourceProduct.getProductType().contains("RR");
         case2Water = new Case2Water(tsmConversionExponent, tsmConversionFactor,
-                                    chlConversionFactor, chlConversionFactor, spectrumOutOfScopeThreshold);
+                                    chlConversionExponent, chlConversionFactor, spectrumOutOfScopeThreshold);
         inverseWaterNnString = readNeuralNetString(DEFAULT_INVERSE_WATER_NET_NAME, inverseWaterNnFile);
         forwardWaterNnString = readNeuralNetString(DEFAULT_FORWARD_WATER_NET_NAME, forwardWaterNnFile);
         threadLocalInverseWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
@@ -282,20 +258,9 @@ public class MerisCase2WaterOp extends PixelOperator {
 
     }
 
-    // todo -remove
-//    private boolean isCloudIceOrLand(Sample[] sourceSamples, WritableSample[] targetSamples) {
-//        if (sourceSamples[SOURCE_CLOUD_ICE_INDEX].getBoolean()) { // check for ice or cloud
-//            targetSamples[TARGET_FLAG_INDEX].set(CLOUD_ICE_BIT_INDEX, true);
-//            return true;
-//        }
-//        if (sourceSamples[SOURCE_LAND_WATER_INDEX].getBoolean()) { // check for land
-//            targetSamples[TARGET_FLAG_INDEX].set(LAND_BIT_INDEX, true);
-//            return true;
-//        }
-//        return false;
-//    }
+    // todo - originally this method was invoked with the center column index of the scene? Now it is invoked with the
+    // index of the nadir line. Is it correct?
 
-    // todo - is it correct to use the center pixel? what about subsets?
     private double correctViewAngle(double satelliteZenith, int pixelX, int centerPixel, boolean isFullResolution) {
         final double ang_coef_1 = -0.004793;
         final double ang_coef_2 = isFullResolution ? 0.0093247 / 4 : 0.0093247;
