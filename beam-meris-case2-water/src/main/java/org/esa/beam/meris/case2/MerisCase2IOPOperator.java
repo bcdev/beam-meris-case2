@@ -27,39 +27,38 @@ import org.esa.beam.meris.radiometry.MerisRadiometryCorrectionOp;
 import org.esa.beam.meris.radiometry.equalization.ReprocessingVersion;
 
 import static org.esa.beam.dataio.envisat.EnvisatConstants.*;
-import static org.esa.beam.dataio.envisat.EnvisatConstants.MERIS_L1B_RADIANCE_15_BAND_NAME;
 
 /**
  * An operator that computes case 2 IOPs from MERISL L1b products.
  * This includes radiometric corrections, atmospheric correction and the actual IOP retrieval.
  */
 @OperatorMetadata(alias = "Meris.Case2IOP",
-        description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
-        authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
-        copyright = "(c) 2010 by Brockmann Consult",
-        version = "1.0",
-        internal = true)
+                  description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
+                  authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
+                  copyright = "(c) 2010 by Brockmann Consult",
+                  version = "1.0",
+                  internal = true)
 public class MerisCase2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.",
-            bands = {
-                    MERIS_L1B_FLAGS_DS_NAME, MERIS_DETECTOR_INDEX_DS_NAME,
-                    MERIS_L1B_RADIANCE_1_BAND_NAME,
-                    MERIS_L1B_RADIANCE_2_BAND_NAME,
-                    MERIS_L1B_RADIANCE_3_BAND_NAME,
-                    MERIS_L1B_RADIANCE_4_BAND_NAME,
-                    MERIS_L1B_RADIANCE_5_BAND_NAME,
-                    MERIS_L1B_RADIANCE_6_BAND_NAME,
-                    MERIS_L1B_RADIANCE_7_BAND_NAME,
-                    MERIS_L1B_RADIANCE_8_BAND_NAME,
-                    MERIS_L1B_RADIANCE_9_BAND_NAME,
-                    MERIS_L1B_RADIANCE_10_BAND_NAME,
-                    MERIS_L1B_RADIANCE_11_BAND_NAME,
-                    MERIS_L1B_RADIANCE_12_BAND_NAME,
-                    MERIS_L1B_RADIANCE_13_BAND_NAME,
-                    MERIS_L1B_RADIANCE_14_BAND_NAME,
-                    MERIS_L1B_RADIANCE_15_BAND_NAME
-            })
+                   bands = {
+                           MERIS_L1B_FLAGS_DS_NAME, MERIS_DETECTOR_INDEX_DS_NAME,
+                           MERIS_L1B_RADIANCE_1_BAND_NAME,
+                           MERIS_L1B_RADIANCE_2_BAND_NAME,
+                           MERIS_L1B_RADIANCE_3_BAND_NAME,
+                           MERIS_L1B_RADIANCE_4_BAND_NAME,
+                           MERIS_L1B_RADIANCE_5_BAND_NAME,
+                           MERIS_L1B_RADIANCE_6_BAND_NAME,
+                           MERIS_L1B_RADIANCE_7_BAND_NAME,
+                           MERIS_L1B_RADIANCE_8_BAND_NAME,
+                           MERIS_L1B_RADIANCE_9_BAND_NAME,
+                           MERIS_L1B_RADIANCE_10_BAND_NAME,
+                           MERIS_L1B_RADIANCE_11_BAND_NAME,
+                           MERIS_L1B_RADIANCE_12_BAND_NAME,
+                           MERIS_L1B_RADIANCE_13_BAND_NAME,
+                           MERIS_L1B_RADIANCE_14_BAND_NAME,
+                           MERIS_L1B_RADIANCE_15_BAND_NAME
+                   })
     private Product sourceProduct;
 
     @Override
