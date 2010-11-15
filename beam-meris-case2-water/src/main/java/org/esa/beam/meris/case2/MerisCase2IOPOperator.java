@@ -37,7 +37,8 @@ import static org.esa.beam.dataio.envisat.EnvisatConstants.MERIS_L1B_RADIANCE_15
         description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
         authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
         copyright = "(c) 2010 by Brockmann Consult",
-        version = "1.0")
+        version = "1.0",
+        internal = true)
 public class MerisCase2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.",
