@@ -150,7 +150,7 @@ public class MerisC2RAlgo extends Case2Algorithm {
         return azi_diff_deg;
     }
 
-    private boolean test_usable_waterpixel(final PixelData pixel, OutputBands outputBands) throws ProcessorException {
+    private boolean test_usable_waterpixel(final PixelData pixel, OutputBands outputBands) {
 
         // check for ice or cloud
         if (pixel.cloudIceTerm.evalB(new RasterDataEvalEnv(pixel.column, pixel.row, 1, 1))) {
