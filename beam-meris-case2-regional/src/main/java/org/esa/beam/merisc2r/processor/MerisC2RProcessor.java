@@ -15,6 +15,7 @@ import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
+import org.esa.beam.case2.algorithm.fit.FitReflCutRestrConcs_v3;
 import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
 import org.esa.beam.case2.util.RasterBlockMap;
@@ -45,7 +46,6 @@ import org.esa.beam.framework.processor.ui.PropertyFileParameterPage;
 import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.merisc2r.algorithm.Case2RAlgorithmParameter;
 import org.esa.beam.merisc2r.algorithm.MerisC2RAlgo;
-import org.esa.beam.merisc2r.algorithm.fit.FitReflCutRestrConcs_v3;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
@@ -326,6 +326,7 @@ public class MerisC2RProcessor extends Processor {
     /*
      * Loads the input product from the request. Opens the product and opens both bands needed to process the ndvi.
      */
+
     private void loadInputProduct() throws ProcessorException, IOException {
         inputProduct = loadInputProduct(0);
         validTerm = ProcessorUtils.createTerm(parameter.inputValidMask, inputProduct);
@@ -383,6 +384,7 @@ public class MerisC2RProcessor extends Processor {
     /*
       Creates the output product skeleton.
      */
+
     private void createOutputProduct(ProgressMonitor pm) throws ProcessorException, IOException {
         // get the request from the base class
         final Request request = getRequest();
@@ -540,6 +542,7 @@ public class MerisC2RProcessor extends Processor {
      * Performs the actual processing of the output product. Reads both input bands line by line, calculates the ndvi
      * and writes the result to the output band
      */
+
     private void processCase2(ProgressMonitor pm) throws IOException, ProcessorException {
 
         final PixelData pixel = new PixelData();
@@ -620,7 +623,7 @@ public class MerisC2RProcessor extends Processor {
                                 for (int ib = 0; ib < inputBandNames.length; ib++) {
                                     final String inputBandName = inputBandNames[ib];
                                     pixel.toa_radiance[ib] = inputRasterBlocks.getPixelFloat(inputBandName, pixelIndex);
-                                    if(EnvisatConstants.MERIS_L1B_RADIANCE_1_BAND_NAME.equals(inputBandName)) {
+                                    if (EnvisatConstants.MERIS_L1B_RADIANCE_1_BAND_NAME.equals(inputBandName)) {
                                         pixel.toa_radiance[ib] *= parameter.radiance1AdjustmentFactor;
                                     }
 

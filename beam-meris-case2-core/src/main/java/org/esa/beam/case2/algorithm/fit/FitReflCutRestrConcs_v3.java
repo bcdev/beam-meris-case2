@@ -1,7 +1,6 @@
-package org.esa.beam.merisc2r.algorithm.fit;
+package org.esa.beam.case2.algorithm.fit;
 
 import org.esa.beam.case2.algorithm.AlgorithmParameter;
-import org.esa.beam.case2.algorithm.fit.ErrorFit3_v2;
 import org.esa.beam.case2.util.nn.ForwNNReflCut;
 import org.esa.beam.case2.util.nn.InvNNReflCut;
 import org.esa.beam.case2.util.nn.NNCalc;
@@ -37,7 +36,7 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
     private static double[] posFit = new double[3];
 
     public FitReflCutRestrConcs_v3(double ReflCut, AlgorithmParameter parameter, double errscale) throws
-                                                                                                 IOException {
+                                                                                                  IOException {
         this.ReflCut = ReflCut;
         this.parameter = parameter;
         invNN = new InvNNReflCut(new FileInputStream(parameter.waterNnInverseFilePath), this.ReflCut);
@@ -115,12 +114,12 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
         double sum = 0.0;
         final double[][] jacobiMatrix = forwres.getJacobiMatrix();
         final double[] nnOutput = forwres.getNnOutput();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 7; i++) {
             System.arraycopy(jacobiMatrix[i], 3, LvMqRestrFit3_v3.jacobi[i], 0, 3);
             LvMqRestrFit3_v3.residuals[i] = nnOutput[i] - nn1in[i + 3];
             sum += LvMqRestrFit3_v3.residuals[i] * LvMqRestrFit3_v3.residuals[i];
         }
-        //System.out.println("sum "+sum);
+        //System.out.println("sum " + sum);
         LvMqRestrFit3_v3.errorsquared = sum / 2.0;
     }
 

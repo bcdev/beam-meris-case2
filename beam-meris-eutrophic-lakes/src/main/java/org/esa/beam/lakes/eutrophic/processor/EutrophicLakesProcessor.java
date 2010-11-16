@@ -15,6 +15,7 @@ import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
+import org.esa.beam.case2.algorithm.fit.FitReflCutRestrConcs_v3;
 import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
 import org.esa.beam.case2.util.RasterBlockMap;
@@ -44,7 +45,6 @@ import org.esa.beam.framework.processor.ui.ProcessorUI;
 import org.esa.beam.framework.processor.ui.PropertyFileParameterPage;
 import org.esa.beam.lakes.eutrophic.algorithm.EutrophicAlgorithmParameter;
 import org.esa.beam.lakes.eutrophic.algorithm.EutrophicLakesAlgo;
-import org.esa.beam.lakes.eutrophic.algorithm.fit.FitReflCutRestrConcs_v3;
 import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.util.ProductUtils;
 
@@ -126,7 +126,7 @@ public class EutrophicLakesProcessor extends Processor {
      */
     public EutrophicLakesProcessor() {
         logger = Logger.getLogger(EutrophicLakesConstants.PROCESSOR_LOGGER_NAME);
-        setDefaultHelpId(EutrophicLakesConstants.PROCESSOR_HELP_ID);        
+        setDefaultHelpId(EutrophicLakesConstants.PROCESSOR_HELP_ID);
     }
 
     /**
@@ -276,7 +276,7 @@ public class EutrophicLakesProcessor extends Processor {
 
                 // and process the MacNN1
                 processCase2(new SubProgressMonitor(pm, 190));
-            }catch(Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 throw new ProcessorException(e.getMessage(), e);
             } finally {
@@ -327,6 +327,7 @@ public class EutrophicLakesProcessor extends Processor {
     /*
      * Loads the input product from the request. Opens the product and opens both bands needed to process the ndvi.
      */
+
     private void loadInputProduct() throws ProcessorException, IOException {
         inputProduct = loadInputProduct(0);
         validTerm = ProcessorUtils.createTerm(parameter.inputValidMask, inputProduct);
@@ -384,6 +385,7 @@ public class EutrophicLakesProcessor extends Processor {
     /*
       Creates the output product skeleton.
      */
+
     private void createOutputProduct(ProgressMonitor pm) throws ProcessorException, IOException {
         // get the request from the base class
         final Request request = getRequest();
@@ -401,7 +403,8 @@ public class EutrophicLakesProcessor extends Processor {
         }
 
         // create the in memory represenation of the output product the product itself
-        outputProduct = new Product(new File(outputRef.getFilePath()).getName(), EutrophicLakesConstants.OUTPUT_PRODUCT_TYPE,
+        outputProduct = new Product(new File(outputRef.getFilePath()).getName(),
+                                    EutrophicLakesConstants.OUTPUT_PRODUCT_TYPE,
                                     sceneWidth,
                                     sceneHeight);
 
@@ -541,6 +544,7 @@ public class EutrophicLakesProcessor extends Processor {
      * Performs the actual processing of the output product. Reads both input bands line by line, calculates the ndvi
      * and writes the result to the output band
      */
+
     private void processCase2(ProgressMonitor pm) throws IOException, ProcessorException {
 
         final PixelData pixel = new PixelData();
@@ -617,21 +621,22 @@ public class EutrophicLakesProcessor extends Processor {
                             double meridWind = inputRasterBlocks.getPixelFloat(merid_wind, pixelIndex);
                             pixel.windspeed = Math.sqrt(zonalWind * zonalWind + meridWind * meridWind);
 
-                            if(parameter.performAtmosphericCorrection) {
+                            if (parameter.performAtmosphericCorrection) {
                                 pixel.detectorIndex = inputRasterBlocks.getPixelInt(detectorIndex, pixelIndex);
-                            for (int ib = 0; ib < inputBandNames.length; ib++) {
-                                final String inputBandName = inputBandNames[ib];
-                                pixel.toa_radiance[ib] = inputRasterBlocks.getPixelFloat(inputBandName, pixelIndex);
-                                if(EnvisatConstants.MERIS_L1B_RADIANCE_1_BAND_NAME.equals(inputBandName)) {
-                                    pixel.toa_radiance[ib] *= parameter.radiance1AdjustmentFactor;
-                                }
+                                for (int ib = 0; ib < inputBandNames.length; ib++) {
+                                    final String inputBandName = inputBandNames[ib];
+                                    pixel.toa_radiance[ib] = inputRasterBlocks.getPixelFloat(inputBandName, pixelIndex);
+                                    if (EnvisatConstants.MERIS_L1B_RADIANCE_1_BAND_NAME.equals(inputBandName)) {
+                                        pixel.toa_radiance[ib] *= parameter.radiance1AdjustmentFactor;
+                                    }
 
-                                pixel.toa_reflectance[ib] = pixel.toa_radiance[ib] / (pixel.solar_flux[ib] * Math.cos(
-                                        Math.toRadians(pixel.solzen)));
-                            }
+                                    pixel.toa_reflectance[ib] = pixel.toa_radiance[ib] / (pixel.solar_flux[ib] * Math.cos(
+                                            Math.toRadians(pixel.solzen)));
+                                }
                             } else {
                                 for (int ib = 0; ib < inputBandNames.length; ib++) {
-                                    pixel.toa_reflectance[ib] = inputRasterBlocks.getPixelFloat(inputBandNames[ib], pixelIndex);
+                                    pixel.toa_reflectance[ib] = inputRasterBlocks.getPixelFloat(inputBandNames[ib],
+                                                                                                pixelIndex);
                                 }
                             }
                             for (int i = 0; i < landWaterSymbols.length; i++) {
@@ -695,15 +700,19 @@ public class EutrophicLakesProcessor extends Processor {
     private static MetadataElement getProcessorMetadata() {
         final MetadataElement metadata = new MetadataElement("Processor");
         metadata.addAttribute(
-                new MetadataAttribute("Name", ProductData.createInstance(EutrophicLakesConstants.PROCESSOR_NAME), true));
+                new MetadataAttribute("Name", ProductData.createInstance(EutrophicLakesConstants.PROCESSOR_NAME),
+                                      true));
         metadata.addAttribute(new MetadataAttribute("Version",
-                                                    ProductData.createInstance(EutrophicLakesConstants.PROCESSOR_VERSION),
+                                                    ProductData.createInstance(
+                                                            EutrophicLakesConstants.PROCESSOR_VERSION),
                                                     true));
         metadata.addAttribute(
                 new MetadataAttribute("Copyright",
-                                      ProductData.createInstance(EutrophicLakesConstants.PROCESSOR_COPYRIGHT_INFO), true));
+                                      ProductData.createInstance(EutrophicLakesConstants.PROCESSOR_COPYRIGHT_INFO),
+                                      true));
         return metadata;
     }
+
     private static class ToaReflecSymbol extends AbstractSymbol.D {
 
         private double value;

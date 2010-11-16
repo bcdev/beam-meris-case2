@@ -15,6 +15,7 @@ import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
+import org.esa.beam.case2.algorithm.fit.FitReflCutRestrConcs_v3;
 import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
 import org.esa.beam.case2.util.RasterBlockMap;
@@ -44,7 +45,6 @@ import org.esa.beam.framework.processor.ui.ProcessorUI;
 import org.esa.beam.framework.processor.ui.PropertyFileParameterPage;
 import org.esa.beam.lakes.boreal.algorithm.BorealAlgorithmParameter;
 import org.esa.beam.lakes.boreal.algorithm.BorealLakesAlgo;
-import org.esa.beam.lakes.boreal.algorithm.fit.FitReflCutRestrConcs_v3;
 import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.util.ProductUtils;
 

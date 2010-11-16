@@ -1,8 +1,7 @@
-package org.esa.beam.lakes.boreal.algorithm.fit;
+package org.esa.beam.case2.algorithm.fit;
 
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;
-import org.esa.beam.case2.algorithm.fit.ModelInterf4LM;
 
 /**
  * @author Schiller
@@ -133,9 +132,9 @@ public class GenLM {
         double[] sg = myd.getSingularValues();
         for (int i = 0; i < sg.length; i++) {
             if (sg[i] < eps) {
-                sg[i] = 0.;
+                sg[i] = 0.0;
             } else {
-                sg[i] = 1. / sg[i];
+                sg[i] = 1.0 / sg[i];
             }
             S.set(i, i, sg[i]);
         }

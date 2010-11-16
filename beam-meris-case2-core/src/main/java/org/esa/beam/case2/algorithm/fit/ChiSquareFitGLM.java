@@ -1,13 +1,13 @@
-package org.esa.beam.lakes.boreal.algorithm.fit;
+package org.esa.beam.case2.algorithm.fit;
 
 import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.OutputBands;
-import org.esa.beam.case2.algorithm.fit.ChiSquareFit;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 
 public class ChiSquareFitGLM implements ChiSquareFit {
+
     private double tsmExponent;
     private double tsmFactor;
     private double chlExponent;
@@ -19,14 +19,14 @@ public class ChiSquareFitGLM implements ChiSquareFit {
 
 
     @Override
-    public void init(AlgorithmParameter parameter, Auxdata auxdata) {
+    public void init(AlgorithmParameter parameter, Auxdata auxdata, MerisC2R_GLM glm) {
         this.parameter = parameter;
         tsmExponent = parameter.tsmConversionExponent;
         tsmFactor = parameter.tsmConversionFactor;
         chlExponent = parameter.chlConversionExponent;
         chlFactor = parameter.chlConversionFactor;
         forwardWaterNet = auxdata.getForwardWaterNet();
-        myFitLvMq = new MerisC2R_GLM();
+        myFitLvMq = glm;
         myFitLvMq.initSetOfFits(forwardWaterNet, parameter.waterReflLogVariance);
         initSingleFit = new Data4SingleFitInitialization();
         // it's suffiecient to initialize these constant values only once
@@ -45,10 +45,10 @@ public class ChiSquareFitGLM implements ChiSquareFit {
         initSingleFit.ln_a_Yellow_a_SPM = outputBands.getDoubleValue("a_gelbstoff");
         initSingleFit.ln_b_SPM_b_White = outputBands.getDoubleValue("b_tsm");
 
-        for (int k = 1; k < 7; k++) {
-            initSingleFit.wlRefl[k-1] = Math.log(RLw_cut[k]);
+        for (int k = 0; k < 7; k++) {
+            initSingleFit.wlRefl[k] = Math.log(RLw_cut[k]);
         }
-        initSingleFit.wlRefl[6] = Math.log(RLw_cut[8]);
+        initSingleFit.wlRefl[7] = Math.log(RLw_cut[8]);
 
         myFitLvMq.initSingleFit(initSingleFit);
         FitResult fitRes = myFitLvMq.getMyLM().LMFit();
@@ -81,7 +81,7 @@ public class ChiSquareFitGLM implements ChiSquareFit {
 
 
         outputBands.setValue("chiSquareFit", fitRes.ChiSq);
-        if(fitRes.ChiSq > parameter.fitFailedThreshold) {
+        if (fitRes.ChiSq > parameter.fitFailedThreshold) {
             outputBands.setValue("l2_flags", outputBands.getIntValue("l2_flags") | Flags.FIT_FAILED);
         }
 
@@ -91,7 +91,7 @@ public class ChiSquareFitGLM implements ChiSquareFit {
 
     private double getMax(double value, double delta, double absMax) {
         double actualMax = value + delta;
-        if(actualMax > absMax) {
+        if (actualMax > absMax) {
             actualMax = absMax;
         }
         return actualMax;
@@ -99,7 +99,7 @@ public class ChiSquareFitGLM implements ChiSquareFit {
 
     private double getMin(double value, double delta, double absMin) {
         double actualMin = value - delta;
-        if(actualMin < absMin) {
+        if (actualMin < absMin) {
             actualMin = absMin;
         }
         return actualMin;
@@ -117,8 +117,8 @@ public class ChiSquareFitGLM implements ChiSquareFit {
     }
 
 
+    public static class Data4SingleFitInitialization {
 
-    public static class Data4SingleFitInitialization{
         public double theta_sun_grad;
         public double theta_view_grad;
         public double azi_diff_grad;

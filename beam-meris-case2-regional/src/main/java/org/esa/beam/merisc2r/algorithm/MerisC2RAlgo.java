@@ -11,13 +11,14 @@ import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.algorithm.atmosphere.AtmosphereCorrection;
 import org.esa.beam.case2.algorithm.atmosphere.Tosa;
 import org.esa.beam.case2.algorithm.fit.ChiSquareFit;
+import org.esa.beam.case2.algorithm.fit.ChiSquareFitGLM;
+import org.esa.beam.case2.algorithm.fit.MerisC2R_GLM;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.dataop.barithm.RasterDataEvalEnv;
 import org.esa.beam.framework.processor.ProcessorException;
 import org.esa.beam.merisc2r.algorithm.case2water.Case2Water;
-import org.esa.beam.merisc2r.algorithm.fit.ChiSquareFitGLM;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class MerisC2RAlgo extends Case2Algorithm {
         case2Water = new Case2Water();
         case2Water.init(auxdata.getWaterNet(), auxdata.getForwardWaterNet(), parameter);
         chiSquareFit = new ChiSquareFitGLM();
-        chiSquareFit.init(parameter, auxdata);
+        chiSquareFit.init(parameter, auxdata, new MerisC2R_GLM(11, 8));
 
         OutputBands outputBands = new OutputBands();
         outputBands.addDescriptor(createToaReflectanceDesrciptors(inputProduct, inputBandNames));
