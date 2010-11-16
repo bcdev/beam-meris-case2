@@ -2,6 +2,7 @@ package org.esa.beam.lakes.eutrophic.algorithm.case2water;
 
 import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Flags;
+import org.esa.beam.case2.algorithm.KMin;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 
@@ -12,6 +13,7 @@ import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
  * @version $Revision: 1.5 $ $Date: 2007-07-12 12:10:43 $
  */
 public class EutrophicWater {
+
     private NNffbpAlphaTabFast waterNet;
     private NNffbpAlphaTabFast forwardWaterNet;
 
@@ -22,7 +24,7 @@ public class EutrophicWater {
 
     private double spectrumOutOfScopeThreshold;
 
-    public void init(NNffbpAlphaTabFast waterNet, NNffbpAlphaTabFast forwardWaterNet,AlgorithmParameter parameter) {
+    public void init(NNffbpAlphaTabFast waterNet, NNffbpAlphaTabFast forwardWaterNet, AlgorithmParameter parameter) {
         this.waterNet = waterNet;
         this.forwardWaterNet = forwardWaterNet;
         tsmExponent = parameter.tsmConversionExponent;
@@ -66,7 +68,7 @@ public class EutrophicWater {
         waterInnet[8] = teta_view_deg;
         waterInnet[9] = azi_diff_deg;
         for (int i = 0; i < 6; i++) {
-            waterInnet[i ] = Math.log(RLw_cut[i+1]); /* bands 1-7 == 442 - 664 nm */
+            waterInnet[i] = Math.log(RLw_cut[i + 1]); /* bands 1-7 == 442 - 664 nm */
         }
         waterInnet[6] = Math.log(RLw_cut[8]); /* band 708 nm */
 
@@ -83,7 +85,7 @@ public class EutrophicWater {
         outputBands.setValue("b_tsm", bTsm);
         outputBands.setValue("tsm", Math.exp(Math.log(tsmFactor) + waterOutnet[3] * tsmExponent));
 
-        double aPig = Math.exp(waterOutnet[2])*chlFactor;
+        double aPig = Math.exp(waterOutnet[2]) * chlFactor;
         outputBands.setValue("a_pig", aPig);
         //outputBands.setValue("chl_conc", Math.exp(Math.log(chlFactor) + waterOutnet[2] * chlExponent));
         outputBands.setValue("chl_conc", Math.exp(Math.log(1.0) + waterOutnet[2] * chlExponent));
@@ -91,7 +93,7 @@ public class EutrophicWater {
         outputBands.setValue("a_gelbstoff", aGelbstoff);
         double aBtsm = Math.exp(waterOutnet[1]);
         outputBands.setValue("a_btsm", aBtsm); // bleached suspended matter absorption at 442
-        outputBands.setValue("a_total", aPig + aGelbstoff+aBtsm);
+        outputBands.setValue("a_total", aPig + aGelbstoff + aBtsm);
 
         /* test if concentrations are within training range */
         if (!test_watconc(bTsm, aPig, aGelbstoff)) {
@@ -116,8 +118,9 @@ public class EutrophicWater {
                            Math.pow(forwardWaterOutnet[3] - Math.log(RLw_cut[4]), 2) +
                            Math.pow(forwardWaterOutnet[4] - Math.log(RLw_cut[5]), 2) +
                            Math.pow(forwardWaterOutnet[5] - Math.log(RLw_cut[6]), 2) +
-                           Math.pow(forwardWaterOutnet[6] - Math.log(RLw_cut[8]), 2);/* in outnet 7 corresponds to RLw 8 */
-                        
+                           Math.pow(forwardWaterOutnet[6] - Math.log(RLw_cut[8]),
+                                    2);/* in outnet 7 corresponds to RLw 8 */
+
 
         outputBands.setValue("chiSquare", chiSquare);
 
@@ -126,7 +129,12 @@ public class EutrophicWater {
 
         }
         // compute k_min and z90_max RD 20060811
-        double k_min = EutrophicKMean.perform(bTsm, aPig, aGelbstoff, aBtsm);
+        final KMin kMin = new KMin();
+        kMin.setA_gelb_mer8(new double[]{
+                1.9220648, 0.9934217, 0.3501478, 0.2260046,
+                0.0832423, 0.0753961, 0.0201853, 0.0075169
+        });
+        double k_min = kMin.perform(bTsm, aPig, aGelbstoff, aBtsm);
         outputBands.setValue("K_min", k_min);
         outputBands.setValue("Z90_max", -1.0 / k_min);
         return RLw_cut;
@@ -136,12 +144,13 @@ public class EutrophicWater {
      **	test water leaving radiances as input to neural network for out of training range
      **	if out of range set to lower or upper boundary value
     -----------------------------------------------------------------------------------*/
+
     private boolean test_logRLw(double[] innet) {
         final double[] inmax = waterNet.getInmax();
         for (int i = 0; i < innet.length; i++) {
             if (innet[i] > inmax[i]) {
                 innet[i] = inmax[i];
-               return false;
+                return false;
             }
             final double[] inmin = waterNet.getInmin();
             if (innet[i] < inmin[i]) {
@@ -156,6 +165,7 @@ public class EutrophicWater {
      **	test water constituents as output of neural network for out of training range
      **
     --------------------------------------------------------------------------------*/
+
     private boolean test_watconc(double bTsm, double aPig, double aGelbstoff) {
         double log_spm = Math.log(bTsm);
         double log_pig = Math.log(aPig);

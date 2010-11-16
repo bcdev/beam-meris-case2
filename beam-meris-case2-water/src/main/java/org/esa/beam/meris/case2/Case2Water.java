@@ -1,5 +1,6 @@
 package org.esa.beam.meris.case2;
 
+import org.esa.beam.case2.algorithm.KMin;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 import org.esa.beam.framework.gpf.experimental.PointOperator;
 
@@ -121,7 +122,8 @@ public class Case2Water {
             targetSamples[TARGET_FLAG_INDEX].set(OOTR_BIT_INDEX, true);
         }
         // compute k_min and z90_max RD 20060811
-        double k_min = KMin.perform(bTsm, aPig, aGelbstoff);
+        final KMin kMin = new KMin();
+        double k_min = kMin.perform(bTsm, aPig, aGelbstoff, 0);
         targetSamples[TARGET_K_MIN_INDEX].set(k_min);
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
         return RLw_cut;
@@ -131,12 +133,13 @@ public class Case2Water {
      **	test water leaving radiances as input to neural network for out of training range
      **	if out of range set to lower or upper boundary value
     -----------------------------------------------------------------------------------*/
+
     private boolean test_logRLw(double[] innet, NNffbpAlphaTabFast waterNet) {
         final double[] inmax = waterNet.getInmax();
         for (int i = 0; i < innet.length; i++) {
             if (innet[i] > inmax[i]) {
                 innet[i] = inmax[i];
-               return false;
+                return false;
             }
             final double[] inmin = waterNet.getInmin();
             if (innet[i] < inmin[i]) {
@@ -151,6 +154,7 @@ public class Case2Water {
      **	test water constituents as output of neural network for out of training range
      **
     --------------------------------------------------------------------------------*/
+
     private boolean test_watconc(double bTsm, double aPig, double aGelbstoff, NNffbpAlphaTabFast waterNet) {
         double log_spm = Math.log(bTsm);
         double log_pig = Math.log(aPig);

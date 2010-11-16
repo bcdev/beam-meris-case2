@@ -2,6 +2,7 @@ package org.esa.beam.merisc2r.algorithm.case2water;
 
 import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Flags;
+import org.esa.beam.case2.algorithm.KMin;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 
@@ -12,6 +13,7 @@ import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
  * @version $Revision: 1.5 $ $Date: 2007-07-12 12:10:43 $
  */
 public class Case2Water {
+
     private NNffbpAlphaTabFast waterNet;
     private NNffbpAlphaTabFast forwardWaterNet;
 
@@ -112,7 +114,8 @@ public class Case2Water {
                            Math.pow(forwardWaterOutnet[4] - Math.log(RLw_cut[4]), 2) +
                            Math.pow(forwardWaterOutnet[5] - Math.log(RLw_cut[5]), 2) +
                            Math.pow(forwardWaterOutnet[6] - Math.log(RLw_cut[6]), 2) +
-                           Math.pow(forwardWaterOutnet[7] - Math.log(RLw_cut[8]), 2); /* in outnet 7 corresponds to RLw 8 */
+                           Math.pow(forwardWaterOutnet[7] - Math.log(RLw_cut[8]),
+                                    2); /* in outnet 7 corresponds to RLw 8 */
 
         outputBands.setValue("chiSquare", chiSquare);
 
@@ -121,7 +124,8 @@ public class Case2Water {
 
         }
         // compute k_min and z90_max RD 20060811
-        double k_min = KMean.perform(bTsm, aPig, aGelbstoff);
+        final KMin kMin = new KMin();
+        double k_min = kMin.perform(bTsm, aPig, aGelbstoff);
         outputBands.setValue("K_min", k_min);
         outputBands.setValue("Z90_max", -1.0 / k_min);
         return RLw_cut;
@@ -131,6 +135,7 @@ public class Case2Water {
      **	test water leaving radiances as input to neural network for out of training range
      **	if out of range set to lower or upper boundary value
     -----------------------------------------------------------------------------------*/
+
     private boolean test_logRLw(double[] innet) {
         final double[] inmax = waterNet.getInmax();
         final double[] inmin = waterNet.getInmin();
@@ -151,6 +156,7 @@ public class Case2Water {
      **	test water constituents as output of neural network for out of training range
      **
     --------------------------------------------------------------------------------*/
+
     private boolean test_watconc(double bTsm, double aPig, double aGelbstoff) {
         double log_spm = Math.log(bTsm);
         double log_pig = Math.log(aPig);
