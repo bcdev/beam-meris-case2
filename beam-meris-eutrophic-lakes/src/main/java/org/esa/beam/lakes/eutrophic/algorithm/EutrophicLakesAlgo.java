@@ -12,7 +12,6 @@ import org.esa.beam.case2.algorithm.atmosphere.AtmosphereCorrection;
 import org.esa.beam.case2.algorithm.atmosphere.Tosa;
 import org.esa.beam.case2.algorithm.fit.ChiSquareFit;
 import org.esa.beam.case2.algorithm.fit.ChiSquareFitGLM;
-import org.esa.beam.case2.algorithm.fit.MerisC2R_GLM;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
@@ -50,7 +49,7 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
         case2Water = new EutrophicWater();
         case2Water.init(auxdata.getWaterNet(), auxdata.getForwardWaterNet(), parameter);
         chiSquareFit = new ChiSquareFitGLM();
-        chiSquareFit.init(parameter, auxdata, new MerisC2R_GLM(11, 8));
+        chiSquareFit.init(parameter, auxdata, createGLM());
 
         OutputBands outputBands = new OutputBands();
         outputBands.addDescriptor(createToaReflectanceDesrciptors(inputProduct, inputBandNames));

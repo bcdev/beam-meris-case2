@@ -50,7 +50,7 @@ public class BorealLakesAlgo extends Case2Algorithm {
         case2Water = new BorealWater();
         case2Water.init(auxdata.getWaterNet(), auxdata.getForwardWaterNet(), parameter);
         chiSquareFit = new ChiSquareFitGLM();
-        chiSquareFit.init(parameter, auxdata, new MerisC2R_GLM(10, 7));
+        chiSquareFit.init(parameter, auxdata, createGLM());
 
         OutputBands outputBands = new OutputBands();
         outputBands.addDescriptor(createToaReflectanceDesrciptors(inputProduct, inputBandNames));
@@ -69,6 +69,10 @@ public class BorealLakesAlgo extends Case2Algorithm {
         return outputBands;
     }
 
+    @Override
+    protected MerisC2R_GLM createGLM() {
+        return new MerisC2R_GLM(10, 7);
+    }
 
     @Override
     public void perform(PixelData pixel, OutputBands outputBands) throws ProcessorException {
