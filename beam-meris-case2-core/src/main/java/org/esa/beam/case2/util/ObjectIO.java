@@ -23,6 +23,9 @@ import java.util.Set;
  */
 public class ObjectIO {
 
+    private ObjectIO() {
+    }
+
     /**
      * Creates an instance of the given type and sets the fields of the resulting object with the values found in the
      * specified properties file. (For a description of the properties file format refer to {@link java.util.Properties#load}).
@@ -61,8 +64,15 @@ public class ObjectIO {
      *                                  value in the property map is not convertible to the required field type.
      */
     public static <T> T readObject(final Class<T> type, final InputStream inputStream) throws IOException {
+        final T object = createInstance(type);
         final Properties properties = new Properties();
         properties.load(inputStream);
+        setObjectProperties(object, properties);
+        checkPropertiesForCorrespondingField(object, properties);
+        return object;
+    }
+
+    private static <T> T createInstance(Class<T> type) {
         final T object;
         try {
             object = type.newInstance();
@@ -71,17 +81,15 @@ public class ObjectIO {
         } catch (IllegalAccessException e) {
             throw createIllegalArgError(type, e);
         }
-        setObjectProperties(object, properties);
-        checkPropertiesForCorrespondingField(object, properties);
         return object;
     }
 
     private static void checkPropertiesForCorrespondingField(Object object, Properties properties) throws IOException {
         Field[] fields = object.getClass().getFields();
-        Set propertyNames = properties.keySet();
+        Set<Object> propertyNames = properties.keySet();
         Iterator iterator = propertyNames.iterator();
-        List wrongProperties = new ArrayList(propertyNames);
-        while(iterator.hasNext()) {
+        List<Object> wrongProperties = new ArrayList<Object>(propertyNames);
+        while (iterator.hasNext()) {
             String propertyName = (String) iterator.next();
             for (Field field : fields) {
                 if (propertyName.startsWith(field.getName())) {
@@ -90,15 +98,13 @@ public class ObjectIO {
                 }
             }
         }
-        if(!wrongProperties.isEmpty()) {
+        if (!wrongProperties.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Object wrongProperty : wrongProperties) {
                 sb.append("\n");
                 sb.append(wrongProperty);
             }
-            throw new IOException("Not able to find a field for one or more properties: \n" +
-                                  sb.toString()
-            );
+            throw new IOException("Not able to find a field for one or more properties: \n" + sb);
         }
     }
 
@@ -190,7 +196,7 @@ public class ObjectIO {
     public static Properties getObjectProperties(final Object object) {
         final Properties properties = new Properties();
         Class<?> type = object.getClass();
-        while(!type.equals(Object.class)) {
+        while (!type.equals(Object.class)) {
             collectFieldProperties(object, type, properties);
             type = type.getSuperclass();
         }
@@ -201,6 +207,7 @@ public class ObjectIO {
     Collects the declared fields of the given object for the given type and stores them
     in the properties parameter if not already contained
      */
+
     private static void collectFieldProperties(Object object, final Class<?> type, Properties properties) {
         final Field[] fields = type.getDeclaredFields();
         for (final Field field : fields) {
@@ -218,37 +225,36 @@ public class ObjectIO {
                 }
             } else {
                 final ProductData propertyData;
-                final Object fieldValue;
                 try {
                     if (field.getType().equals(boolean.class)) {
-                        fieldValue = getFieldValue(field, object);
+                        Object fieldValue = getFieldValue(field, object);
                         propertyData = ProductData.createInstance(fieldValue.toString());
                     } else if (field.getType().equals(byte.class)) {
-                        fieldValue = getFieldValue(field, object);
+                        Object fieldValue = getFieldValue(field, object);
                         propertyData = ProductData.createInstance(ProductData.TYPE_INT8, 1);
                         propertyData.setElemInt((Byte) fieldValue);
                     } else if (field.getType().equals(short.class)) {
-                        fieldValue = getFieldValue(field, object);
+                        Object fieldValue = getFieldValue(field, object);
                         propertyData = ProductData.createInstance(ProductData.TYPE_INT16, 1);
                         propertyData.setElemInt((Short) fieldValue);
                     } else if (field.getType().equals(int.class)) {
-                        fieldValue = getFieldValue(field, object);
+                        Object fieldValue = getFieldValue(field, object);
                         propertyData = ProductData.createInstance(ProductData.TYPE_INT32, 1);
                         propertyData.setElemInt((Integer) fieldValue);
                     } else if (field.getType().equals(long.class)) {
-                        fieldValue = getFieldValue(field, object);
+                        Object fieldValue = getFieldValue(field, object);
                         propertyData = ProductData.createInstance(ProductData.TYPE_FLOAT64, 1);
                         propertyData.setElemDouble((Long) fieldValue);
                     } else if (field.getType().equals(float.class)) {
-                        fieldValue = getFieldValue(field, object);
+                        Object fieldValue = getFieldValue(field, object);
                         propertyData = ProductData.createInstance(ProductData.TYPE_FLOAT32, 1);
                         propertyData.setElemFloat((Float) fieldValue);
                     } else if (field.getType().equals(double.class)) {
-                        fieldValue = getFieldValue(field, object);
+                        Object fieldValue = getFieldValue(field, object);
                         propertyData = ProductData.createInstance(ProductData.TYPE_FLOAT64, 1);
                         propertyData.setElemDouble((Double) fieldValue);
                     } else if (field.getType().equals(String.class)) {
-                        fieldValue = getFieldValue(field, object);
+                        Object fieldValue = getFieldValue(field, object);
                         propertyData = ProductData.createInstance((String) fieldValue);
                     } else {
                         // ignore all other objects
@@ -257,7 +263,7 @@ public class ObjectIO {
                 } catch (NumberFormatException e) {
                     throw createIllegalArgError(object.getClass(), field, e);
                 }
-                if(!properties.containsKey(propertyName)) {
+                if (!properties.containsKey(propertyName)) {
                     properties.setProperty(propertyName, propertyData.getElemString());
                 }
 
@@ -270,8 +276,8 @@ public class ObjectIO {
         final MetadataElement metadata = new MetadataElement("Processor Parameter");
         final Enumeration<?> enumeration = objectProperties.propertyNames();
         while (enumeration.hasMoreElements()) {
-            final String propertyName =  (String) enumeration.nextElement();
-            final String propertyValue = (String) objectProperties.get(propertyName);
+            final String propertyName = (String) enumeration.nextElement();
+            final String propertyValue = objectProperties.getProperty(propertyName);
             final MetadataAttribute attribute = new MetadataAttribute(propertyName,
                                                                       ProductData.createInstance(propertyValue),
                                                                       true);
