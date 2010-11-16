@@ -9,6 +9,7 @@ import com.bc.jexp.Term;
 import com.bc.jexp.WritableNamespace;
 import com.bc.jexp.impl.AbstractSymbol;
 import com.bc.jexp.impl.ParserImpl;
+import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.BandDescriptor;
 import org.esa.beam.case2.algorithm.Flags;
@@ -94,7 +95,7 @@ public class MerisC2RProcessor extends Processor {
 
     private MerisC2RAlgo algo;
     private File auxdataDir;
-    private Case2RAlgorithmParameter parameter;
+    private AlgorithmParameter parameter;
     private static final BitmaskDef[] bitmaskDefs = new BitmaskDef[]{
             new BitmaskDef("l2_land", "land pixels", "l2_flags.LAND", Color.GREEN, 0.5f),
             new BitmaskDef("cloud_ice", "cloud or ice pixels", "l2_flags.CLOUD_ICE", Color.YELLOW, 0.5f),

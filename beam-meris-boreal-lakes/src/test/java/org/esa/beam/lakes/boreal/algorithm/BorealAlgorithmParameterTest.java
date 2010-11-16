@@ -9,18 +9,19 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 
 public class BorealAlgorithmParameterTest extends TestCase {
+
     public void testRead() throws IOException {
         final BorealAlgorithmParameter parameter = read("test-params.properties");
         assertTrue(parameter.performChiSquareFit);
         Assert.assertEquals("C:\\auxdata\\water-inv.net", parameter.waterNnInverseFilePath);
         Assert.assertEquals("C:\\auxdata\\water-forw.net", parameter.waterNnForwardFilePath);
         Assert.assertEquals("C:\\auxdata\\atm-corr.net", parameter.atmCorrNnFilePath);
-        Assert.assertEquals(0.34, parameter.tsmConversionFactor, 1e-10);
-        Assert.assertEquals(-0.24, parameter.tsmConversionExponent, 1e-10);
-        Assert.assertEquals(0.129, parameter.chlConversionFactor, 1e-10);
-        Assert.assertEquals(-0.5, parameter.chlConversionExponent, 1e-10);
-        Assert.assertEquals(0.61, parameter.spectrumOutOfScopeThreshold, 1e-10);
-        Assert.assertEquals(0.33, parameter.radiance1AdjustmentFactor, 1e-10);
+        Assert.assertEquals(0.34, parameter.tsmConversionFactor, 1.0e-10);
+        Assert.assertEquals(-0.24, parameter.tsmConversionExponent, 1.0e-10);
+        Assert.assertEquals(0.129, parameter.chlConversionFactor, 1.0e-10);
+        Assert.assertEquals(-0.5, parameter.chlConversionExponent, 1.0e-10);
+        Assert.assertEquals(0.61, parameter.spectrumOutOfScopeThreshold, 1.0e-10);
+        Assert.assertEquals(0.33, parameter.radiance1AdjustmentFactor, 1.0e-10);
 
 
         assertTrue(parameter.outputAPig);
@@ -30,40 +31,40 @@ public class BorealAlgorithmParameterTest extends TestCase {
         assertTrue(parameter.outputTsmConc);
         assertFalse(parameter.outputOutOfScopeChiSquare);
 
-        testArray("outputPathRadianceRefl", new boolean[] {
-            true, // 1
-            true, // 2
-            false, // 3
-            false, // 4
-            false, // 5
-            false, // 6
-            false, // 7
-            false, // 8
-            false, // 9
+        testArray("outputPathRadianceRefl", new boolean[]{
+                true, // 1
+                true, // 2
+                false, // 3
+                false, // 4
+                false, // 5
+                false, // 6
+                false, // 7
+                false, // 8
+                false, // 9
         }, parameter.outputPathRadianceRefl);
 
-        testArray("outputWaterLeavingRefl", new boolean[] {
-            false, // 1
-            false, // 2
-            true, // 3
-            false, // 4
-            false, // 5
-            false, // 6
-            true, // 7
-            false, // 8
-            false, // 9
-       }, parameter.outputWaterLeavingRefl);
+        testArray("outputWaterLeavingRefl", new boolean[]{
+                false, // 1
+                false, // 2
+                true, // 3
+                false, // 4
+                false, // 5
+                false, // 6
+                true, // 7
+                false, // 8
+                false, // 9
+        }, parameter.outputWaterLeavingRefl);
 
-        testArray("outputTransmittance", new boolean[] {
-            true, // 1
-            false, // 2
-            false, // 3
-            true, // 4
-            false, // 5
-            false, // 6
-            false, // 7
-            true, // 8
-            false, // 9
+        testArray("outputTransmittance", new boolean[]{
+                true, // 1
+                false, // 2
+                false, // 3
+                true, // 4
+                false, // 5
+                false, // 6
+                false, // 7
+                true, // 8
+                false, // 9
         }, parameter.outputTransmittance);
 
     }
@@ -72,7 +73,7 @@ public class BorealAlgorithmParameterTest extends TestCase {
         final BorealAlgorithmParameter parameter = read("test-params_nothing.properties");
         Assert.assertEquals("./water_net_boreal_20080605/45x16x12x8_44.8.net", parameter.waterNnInverseFilePath);
         Assert.assertEquals("./water_net_boreal_20080605/15x15x15_96.5.net", parameter.waterNnForwardFilePath);
-        Assert.assertEquals("./atmo_net_20091215/25x30x40_9164.3.net",parameter.atmCorrNnFilePath);
+        Assert.assertEquals("./atmo_net_20091215/25x30x40_9164.3.net", parameter.atmCorrNnFilePath);
 
     }
 
