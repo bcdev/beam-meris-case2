@@ -36,20 +36,30 @@ public class AlgorithmParameter {
     public double tsmConversionExponent = 1.0;
     public double chlConversionFactor = 21.0;
     public double chlConversionExponent = 1.04;
-    
+
     public double radiance1AdjustmentFactor = 1.0;         /* adjustment of TOA reflectance MERIS band 1 (412 nm)*/
     public double spectrumOutOfScopeThreshold = 4.0;
     public boolean outputPathRadianceReflAll = false;
-    public final boolean[] outputPathRadianceRefl = new boolean[]{true, true, true, true, true, true, true, true, true, true, false, true, true}; // 12, band 11 is skiped
+    public final boolean[] outputPathRadianceRefl = new boolean[]{
+            true, true, true, true, true, true, true, true, true, true, false, true, true
+    }; // 12, band 11 is skiped
     public boolean switchToIrradianceReflectance = false;
     public boolean outputWaterLeavingReflAll = false;
-    public final boolean[] outputWaterLeavingRefl = new boolean[]{true, true, true, true, true, true, true, true, true, true, false, true, true}; // 12, band 11 is skiped
+    public final boolean[] outputWaterLeavingRefl = new boolean[]{
+            true, true, true, true, true, true, true, true, true, true, false, true, true
+    }; // 12, band 11 is skiped
     public boolean outputTransmittanceAll = false;
-    public final boolean[] outputTransmittance = new boolean[]{true, true, true, true, true, true, true, true, true, true, false, true, true}; // 12, band 11 is skiped
+    public final boolean[] outputTransmittance = new boolean[]{
+            true, true, true, true, true, true, true, true, true, true, false, true, true
+    }; // 12, band 11 is skiped
     public boolean outputToaReflAll = false;
-    public final boolean[] outputToaRefl = new boolean[]{true, true, true, true, true, true, true, true, true, true, true, true, true, true, true}; // 15
+    public final boolean[] outputToaRefl = new boolean[]{
+            true, true, true, true, true, true, true, true, true, true, true, true, true, true, true
+    }; // 15
     public boolean outputTosaReflAll = false;
-    public final boolean[] outputTosaRefl = new boolean[]{true, true, true, true, true, true, true, true, true, true, false, true, true, false, false}; // 15
+    public final boolean[] outputTosaRefl = new boolean[]{
+            true, true, true, true, true, true, true, true, true, true, false, true, true, false, false
+    }; // 15
     public boolean outputRlToa13 = false;
     public boolean outputAPig = true; // "a_pig"
     public boolean outputAGelb = true; // "a_gelb"
@@ -70,4 +80,5 @@ public class AlgorithmParameter {
     public boolean outputZ90max = true;
     public boolean outputATotal = true;
     public boolean outputOutOfScopeChiSquare = true; // "oos_chi2"
+    public boolean outputABtsm = false; // "a_btsm"  only for eutrophic
 }

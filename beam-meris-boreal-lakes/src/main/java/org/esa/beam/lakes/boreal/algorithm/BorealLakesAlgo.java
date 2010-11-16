@@ -4,6 +4,7 @@ import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.BandDescriptor;
 import org.esa.beam.case2.algorithm.Case2Algorithm;
+import org.esa.beam.case2.algorithm.Experimental;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;

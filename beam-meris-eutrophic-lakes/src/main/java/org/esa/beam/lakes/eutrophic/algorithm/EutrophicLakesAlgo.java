@@ -4,6 +4,7 @@ import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.BandDescriptor;
 import org.esa.beam.case2.algorithm.Case2Algorithm;
+import org.esa.beam.case2.algorithm.Experimental;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
@@ -29,16 +30,17 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
     private static final double RL_TOA_THRESH_13 = 0.035;
 
 
-    private EutrophicAlgorithmParameter parameter;
+    private AlgorithmParameter parameter;
 
     private Experimental experimental;
     private AtmosphereCorrection atmoCorrection;
     private EutrophicWater case2Water;
     private ChiSquareFit chiSquareFit;
 
+    @Override
     public OutputBands init(Product inputProduct, String[] inputBandNames,
                             AlgorithmParameter parameter, Auxdata auxdata) {
-        this.parameter = (EutrophicAlgorithmParameter) parameter;
+        this.parameter = parameter;
         experimental = new Experimental(false);
 
         atmoCorrection = new AtmosphereCorrection();
@@ -46,7 +48,6 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
 
         case2Water = new EutrophicWater();
         case2Water.init(auxdata.getWaterNet(), auxdata.getForwardWaterNet(), parameter);
-
         chiSquareFit = new ChiSquareFitGLM();
         chiSquareFit.init(parameter, auxdata);
 
@@ -68,6 +69,7 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
     }
 
 
+    @Override
     public void perform(PixelData pixel, OutputBands outputBands) throws ProcessorException {
 
         double[] toaReflecs = outputBands.getDoubleValues("toa_reflec");
@@ -99,7 +101,6 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
         double teta_sun_deg = pixel.solzen; /* sun zenith angle */
         double teta_view_rad = Math.toRadians(teta_view_deg);
         double teta_sun_rad = Math.toRadians(teta_sun_deg);
-        double cos_teta_sun = Math.cos(teta_sun_rad);
 
 
         double azi_diff_deg = getAzimuthDifference(pixel);
@@ -113,8 +114,8 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
             /* protection against too small RLw reflectances in blue spectral part */
             experimental.ensureValidBlueRlwReflectances(tosa, outputBands);
         } else {
-            final int reflecLenght = outputBands.getDoubleValues("reflec").length;
-            outputBands.setValues("reflec_", Arrays.copyOf(pixel.toa_reflectance, reflecLenght));
+            final int reflecLength = outputBands.getDoubleValues("reflec").length;
+            outputBands.setValues("reflec_", Arrays.copyOf(pixel.toa_reflectance, reflecLength));
         }
 
         /* check if only atmospheric correction, then stop */
@@ -133,8 +134,8 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
 
     private static boolean shouldComputeC2W(AlgorithmParameter parameter) {
         return parameter.outputAPig || parameter.outputAGelb || parameter.outputBTsm ||
-                parameter.outputChlConc || parameter.outputTsmConc || parameter.outputOutOfScopeChiSquare ||
-                parameter.performChiSquareFit;
+               parameter.outputChlConc || parameter.outputTsmConc || parameter.outputOutOfScopeChiSquare ||
+               parameter.performChiSquareFit;
     }
 
     private static double getAzimuthDifference(PixelData pixel) {
@@ -166,6 +167,7 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
         return true;
     }
 
+
     /*---------------------------------------------------------------------------
     *test if ozone and atmospheric pressure is within valid range
     *Doerffer 20061106
@@ -194,7 +196,7 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
                                                                    false, output);
             if (parameter.switchToIrradianceReflectance) {
                 bandDescriptor.setDescription("Water leaving irradiance reflectance at "
-                        + radBand.getSpectralWavelength() + " nm");
+                                              + radBand.getSpectralWavelength() + " nm");
                 bandDescriptor.setUnit("dl");
                 bandDescriptor.setScalingFactor(Math.PI);
             }
@@ -381,8 +383,7 @@ public class EutrophicLakesAlgo extends Case2Algorithm {
 
     private BandDescriptor createCommonDescriptor(String name, String unit, String description, int type,
                                                   boolean log10Scaled, boolean writeEnable) {
-        BandDescriptor bandDescriptor = new BandDescriptor(name, description,
-                                                           type, unit, -1);
+        BandDescriptor bandDescriptor = new BandDescriptor(name, description, type, unit, -1);
         bandDescriptor.setLog10Scaled(log10Scaled);
         bandDescriptor.setValidExpression("!l2_flags.INVALID");
         bandDescriptor.setWriteEnabled(writeEnable);

@@ -4,6 +4,7 @@ import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.BandDescriptor;
 import org.esa.beam.case2.algorithm.Case2Algorithm;
+import org.esa.beam.case2.algorithm.Experimental;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
@@ -97,7 +98,6 @@ public class MerisC2RAlgo extends Case2Algorithm {
         double teta_view_deg = pixel.satzen; /* viewing zenith angle */
         final int centerPixel = outputBands.getProduct().getSceneRasterWidth() / 2;
         teta_view_deg = correctViewAngle(teta_view_deg, pixel.column, centerPixel, pixel.isFullResolution);
-
         double teta_sun_deg = pixel.solzen; /* sun zenith angle */
         double teta_view_rad = Math.toRadians(teta_view_deg);
         double teta_sun_rad = Math.toRadians(teta_sun_deg);
