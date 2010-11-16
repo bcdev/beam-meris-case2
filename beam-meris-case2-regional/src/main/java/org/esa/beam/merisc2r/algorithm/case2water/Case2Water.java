@@ -42,8 +42,8 @@ public class Case2Water {
 
         /* determine cut_thresh from waterNet minimum */
         double cut_thresh = 1000.0;
-        for (int i = 0; i < 8; i++) {
-            double inmini = Math.exp(waterNet.getInmin()[i + 3]);
+        for (int i = 3; i < 11; i++) {
+            double inmini = Math.exp(waterNet.getInmin()[i]);
             if (inmini < cut_thresh) {
                 cut_thresh = inmini;
             }
@@ -66,10 +66,12 @@ public class Case2Water {
         waterInnet[0] = teta_sun_deg;
         waterInnet[1] = teta_view_deg;
         waterInnet[2] = azi_diff_deg;
-        for (int i = 0; i < 7; i++) {
-            waterInnet[i + 3] = Math.log(RLw_cut[i]); /* bands 1-7 == 412 - 664 nm */
+
+        for (int i = 3; i < 10; i++) {
+            waterInnet[i] = Math.log(RLw_cut[i - 3]); /* bands 1-7 == 412 - 664 nm */
         }
         waterInnet[10] = Math.log(RLw_cut[8]); /* band 708 nm */
+
 
         // test if water leaving radiance reflectance are within training range,
         // otherwise set to training range
@@ -87,6 +89,7 @@ public class Case2Water {
         double aPig = Math.exp(waterOutnet[1]);
         outputBands.setValue("a_pig", aPig);
         outputBands.setValue("chl_conc", Math.exp(Math.log(chlFactor) + waterOutnet[1] * chlExponent));
+
         double aGelbstoff = Math.exp(waterOutnet[2]);
         outputBands.setValue("a_gelbstoff", aGelbstoff);
         outputBands.setValue("a_total", aPig + aGelbstoff);

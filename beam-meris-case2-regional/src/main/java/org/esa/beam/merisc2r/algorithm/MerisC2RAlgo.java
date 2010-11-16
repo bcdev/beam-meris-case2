@@ -36,6 +36,7 @@ public class MerisC2RAlgo extends Case2Algorithm {
     private Case2Water case2Water;
     private ChiSquareFit chiSquareFit;
 
+    @Override
     public OutputBands init(Product inputProduct, String[] inputBandNames,
                             AlgorithmParameter parameter, Auxdata auxdata) {
         this.parameter = parameter;
@@ -46,7 +47,6 @@ public class MerisC2RAlgo extends Case2Algorithm {
 
         case2Water = new Case2Water();
         case2Water.init(auxdata.getWaterNet(), auxdata.getForwardWaterNet(), parameter);
-
         chiSquareFit = new ChiSquareFitGLM();
         chiSquareFit.init(parameter, auxdata);
 
@@ -68,6 +68,7 @@ public class MerisC2RAlgo extends Case2Algorithm {
     }
 
 
+    @Override
     public void perform(PixelData pixel, OutputBands outputBands) throws ProcessorException {
 
         double[] toaReflecs = outputBands.getDoubleValues("toa_reflec");
@@ -80,7 +81,6 @@ public class MerisC2RAlgo extends Case2Algorithm {
             return;
         }
 
-        // ATMO
         if (pixel.toa_reflectance[12] > RL_TOA_THRESH_13) {
             outputBands.setValue("l2_flags", outputBands.getIntValue("l2_flags") | Flags.RAD_ERR);
         }
@@ -97,6 +97,7 @@ public class MerisC2RAlgo extends Case2Algorithm {
         double teta_view_deg = pixel.satzen; /* viewing zenith angle */
         final int centerPixel = outputBands.getProduct().getSceneRasterWidth() / 2;
         teta_view_deg = correctViewAngle(teta_view_deg, pixel.column, centerPixel, pixel.isFullResolution);
+
         double teta_sun_deg = pixel.solzen; /* sun zenith angle */
         double teta_view_rad = Math.toRadians(teta_view_deg);
         double teta_sun_rad = Math.toRadians(teta_sun_deg);
@@ -133,8 +134,8 @@ public class MerisC2RAlgo extends Case2Algorithm {
 
     private static boolean shouldComputeC2W(AlgorithmParameter parameter) {
         return parameter.outputAPig || parameter.outputAGelb || parameter.outputBTsm ||
-                parameter.outputChlConc || parameter.outputTsmConc || parameter.outputOutOfScopeChiSquare ||
-                parameter.performChiSquareFit;
+               parameter.outputChlConc || parameter.outputTsmConc || parameter.outputOutOfScopeChiSquare ||
+               parameter.performChiSquareFit;
     }
 
     private static double getAzimuthDifference(PixelData pixel) {
@@ -166,6 +167,7 @@ public class MerisC2RAlgo extends Case2Algorithm {
         return true;
     }
 
+
     /*---------------------------------------------------------------------------
     *test if ozone and atmospheric pressure is within valid range
     *Doerffer 20061106
@@ -194,7 +196,7 @@ public class MerisC2RAlgo extends Case2Algorithm {
                                                                    false, output);
             if (parameter.switchToIrradianceReflectance) {
                 bandDescriptor.setDescription("Water leaving irradiance reflectance at "
-                        + radBand.getSpectralWavelength() + " nm");
+                                              + radBand.getSpectralWavelength() + " nm");
                 bandDescriptor.setUnit("dl");
                 bandDescriptor.setScalingFactor(Math.PI);
             }

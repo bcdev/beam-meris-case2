@@ -13,22 +13,6 @@ public class BorealWater {
 
     private double spectrumOutOfScopeThreshold;
 
-    public static final double[] fin_pig_a = {    //13 bands
-//        0.0354, 0.04, 0.022, 0.0153,
-//        0.0078, 0.0075, 0.0091, 0.0141,
-//        0.0176, 0.0019, 0.000024, 0.00001,
-//        0.000001
-            0.0385, 0.0405, 0.0242, 0.01651, 0.0078, 0.007, 0.0076,
-            0.0145, 0.0183, 0.00181, 0.0002, 0.00001, 0.000001
-    };
-    public static final double[] fin_pig_b = {    //13 bands
-//        0.1397, 0.1496, 0.0944, 0.0576,
-//        0.0472, 0.045, 0.0729, 0.1134,
-//        0.126, 0.003, 0.0, 0.0, 0.0
-            0.2289, 0.223, 0.2033, 0.1703, 0.170, 0.1423,
-            0.077, 0.142, 0.153, 0.0, 0.0, 0.0, 0.0
-    };
-
     public void init(NNffbpAlphaTabFast waterNet, NNffbpAlphaTabFast forwardWaterNet, AlgorithmParameter parameter) {
         this.waterNet = waterNet;
         this.forwardWaterNet = forwardWaterNet;
@@ -82,22 +66,18 @@ public class BorealWater {
         /* calculate concentrations using the water nn */
         double[] waterOutnet = waterNet.calc(waterInnet);
 
-        double aGelbstoff = Math.exp(waterOutnet[2]);
-        outputBands.setValue("a_gelbstoff", aGelbstoff);
+        double bTsm = Math.exp(waterOutnet[0]);
+        outputBands.setValue("b_tsm", bTsm);
+        outputBands.setValue("tsm", bTsm / 0.95);
 
         double aPig = Math.exp(waterOutnet[1]);
         outputBands.setValue("a_pig", aPig);
+        outputBands.setValue("chl_conc", 62.6 * Math.pow(aPig, 1.29));
 
-        double chlConc = 62.6 * Math.pow(aPig, 1.29);
-        outputBands.setValue("chl_conc", chlConc);
-
-        double bTsm = Math.exp(waterOutnet[0]);
-        ;
-        outputBands.setValue("b_tsm", bTsm);
-        double tsm = bTsm / 0.95;
-        outputBands.setValue("tsm", tsm);
-
-        outputBands.setValue("a_total", aPig + aGelbstoff + tsm * 0.089);   // absorption of all water constituents
+        double aGelbstoff = Math.exp(waterOutnet[2]);
+        outputBands.setValue("a_gelbstoff", aGelbstoff);
+        outputBands.setValue("a_total",
+                             aPig + aGelbstoff + bTsm / 0.95 * 0.089);   // absorption of all water constituents
 
         /* test if concentrations are within training range */
         if (!test_watconc(bTsm, aPig, aGelbstoff)) {
