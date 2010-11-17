@@ -24,7 +24,6 @@ public class AlgorithmParameter {
 
     public double fitFailedThreshold = 14.0;
     public double waterReflLogVariance = 1.5; // Variance of Log of Water Reflectance
-    public boolean useInvNN = false;
     public double fitCut = -10; // cut value used in LvMq routine
     public int nIterMax = 30;
     public double nu = 2.0;
@@ -60,7 +59,6 @@ public class AlgorithmParameter {
     public final boolean[] outputTosaRefl = new boolean[]{
             true, true, true, true, true, true, true, true, true, true, false, true, true, false, false
     }; // 15
-    public boolean outputRlToa13 = false;
     public boolean outputAPig = true; // "a_pig"
     public boolean outputAGelb = true; // "a_gelb"
     public boolean outputBTsm = true; // "b_tsm"
