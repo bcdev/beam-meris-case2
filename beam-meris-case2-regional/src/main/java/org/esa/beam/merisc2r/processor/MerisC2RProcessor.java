@@ -12,11 +12,13 @@ import com.bc.jexp.impl.ParserImpl;
 import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.BandDescriptor;
+import org.esa.beam.case2.algorithm.Case2Algorithm;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.algorithm.fit.FitReflCutRestrConcs_v3;
+import org.esa.beam.case2.algorithm.fit.MerisC2R_GLM;
 import org.esa.beam.case2.processor.Case2ProcessorConstants;
 import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
@@ -48,7 +50,7 @@ import org.esa.beam.framework.processor.ui.ProcessorUI;
 import org.esa.beam.framework.processor.ui.PropertyFileParameterPage;
 import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.merisc2r.algorithm.Case2RAlgorithmParameter;
-import org.esa.beam.merisc2r.algorithm.MerisC2RAlgo;
+import org.esa.beam.merisc2r.algorithm.case2water.Case2Water;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
@@ -95,7 +97,7 @@ public class MerisC2RProcessor extends Processor {
     private final RasterBlockMap inputRasterBlocks = new RasterBlockMap(LINES_PER_BLOCK);
     private final RasterBlockMap outputRasterBlocks = new RasterBlockMap(LINES_PER_BLOCK);
 
-    private MerisC2RAlgo algo;
+    private Case2Algorithm algo;
     private File auxdataDir;
     private AlgorithmParameter parameter;
     private Auxdata auxdata;
@@ -245,8 +247,10 @@ public class MerisC2RProcessor extends Processor {
                 loadAuxdata();
                 pm.worked(1);
 
-                algo = new MerisC2RAlgo();
-                outputBands = algo.init(inputProduct, inputBandNames, parameter, auxdata);
+                algo = new Case2Algorithm();
+                outputBands = algo.init(inputProduct, inputBandNames, new Case2Water(), new MerisC2R_GLM(11, 8),
+                                        parameter, auxdata
+                );
                 if (pm.isCanceled()) {
                     return;
                 }

@@ -12,11 +12,13 @@ import com.bc.jexp.impl.ParserImpl;
 import org.esa.beam.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.BandDescriptor;
+import org.esa.beam.case2.algorithm.Case2Algorithm;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.algorithm.fit.FitReflCutRestrConcs_v3;
+import org.esa.beam.case2.algorithm.fit.MerisC2R_GLM;
 import org.esa.beam.case2.processor.Case2ProcessorConstants;
 import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
@@ -47,7 +49,7 @@ import org.esa.beam.framework.processor.ui.MultiPageProcessorUI;
 import org.esa.beam.framework.processor.ui.ProcessorUI;
 import org.esa.beam.framework.processor.ui.PropertyFileParameterPage;
 import org.esa.beam.lakes.boreal.algorithm.BorealAlgorithmParameter;
-import org.esa.beam.lakes.boreal.algorithm.BorealLakesAlgo;
+import org.esa.beam.lakes.boreal.algorithm.case2water.BorealWater;
 import org.esa.beam.meris.radiometry.smilecorr.SmileCorrectionAuxdata;
 import org.esa.beam.util.ProductUtils;
 
@@ -95,7 +97,7 @@ public class BorealLakesProcessor extends Processor {
     private final RasterBlockMap inputRasterBlocks = new RasterBlockMap(LINES_PER_BLOCK);
     private final RasterBlockMap outputRasterBlocks = new RasterBlockMap(LINES_PER_BLOCK);
 
-    private BorealLakesAlgo algo;
+    private Case2Algorithm algo;
     private File auxdataDir;
     private AlgorithmParameter parameter;
     private Auxdata auxdata;
@@ -245,8 +247,10 @@ public class BorealLakesProcessor extends Processor {
                 loadAuxdata();
                 pm.worked(1);
 
-                algo = new BorealLakesAlgo();
-                outputBands = algo.init(inputProduct, inputBandNames, parameter, auxdata);
+                algo = new Case2Algorithm();
+                outputBands = algo.init(inputProduct, inputBandNames, new BorealWater(), new MerisC2R_GLM(10, 7),
+                                        parameter, auxdata
+                );
                 if (pm.isCanceled()) {
                     return;
                 }
