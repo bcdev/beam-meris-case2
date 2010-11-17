@@ -97,7 +97,7 @@ public class MerisC2RProcessor extends Processor {
     private File auxdataDir;
     private AlgorithmParameter parameter;
     private static final BitmaskDef[] bitmaskDefs = new BitmaskDef[]{
-            new BitmaskDef("l2_land", "land pixels", "l2_flags.LAND", Color.GREEN, 0.5f),
+            new BitmaskDef("l2_land", "land pixels", "l2_flags.LAND", Color.GREEN, 0.8f),
             new BitmaskDef("cloud_ice", "cloud or ice pixels", "l2_flags.CLOUD_ICE", Color.YELLOW, 0.5f),
             new BitmaskDef("ancil", "missing/OOR auxiliary data", "l2_flags.ANCIL", Color.GRAY, 0.5f),
             new BitmaskDef("solzen", "large solar zenith angle", "l2_flags.SOLZEN", Color.LIGHT_GRAY, 0.5f),
@@ -197,6 +197,7 @@ public class MerisC2RProcessor extends Processor {
                     new FileInputStream(parameter.atmCorrNnFilePath));
             final NNffbpAlphaTabFast polarizationNet = new NNffbpAlphaTabFast(
                     new FileInputStream(parameter.polCorrNnFilePath));
+
             final FitReflCutRestrConcs_v3 fitReflCutRestrConcs_v3 = new FitReflCutRestrConcs_v3(parameter.fitCut,
                                                                                                 parameter, 1.0);
             auxdata = new Auxdata(inverseWaterNet, forwardWaterNet,
@@ -403,9 +404,9 @@ public class MerisC2RProcessor extends Processor {
         }
 
         // create the in memory represenation of the output product the product itself
-        outputProduct = new Product(new File(outputRef.getFilePath()).getName(), MerisC2RConstants.OUTPUT_PRODUCT_TYPE,
-                                    sceneWidth,
-                                    sceneHeight);
+        outputProduct = new Product(new File(outputRef.getFilePath()).getName(),
+                                    MerisC2RConstants.OUTPUT_PRODUCT_TYPE,
+                                    sceneWidth, sceneHeight);
 
         pm.beginTask("Initializing output product..", 100);
         try {
@@ -585,6 +586,7 @@ public class MerisC2RProcessor extends Processor {
                 for (int by = 0; by < linesPerBlock; by++) {
 
                     pixel.row = y + by;
+
                     final double alpha = direction.computeFlightDirectionAlpha(pixel.row);
                     pixel.solzenMer = direction.getNadirSunZenith(pixel.row);
                     pixel.solaziMer = direction.getNadirSunAzimuth(pixel.row);
@@ -627,7 +629,6 @@ public class MerisC2RProcessor extends Processor {
                                     if (EnvisatConstants.MERIS_L1B_RADIANCE_1_BAND_NAME.equals(inputBandName)) {
                                         pixel.toa_radiance[ib] *= parameter.radiance1AdjustmentFactor;
                                     }
-
                                     pixel.toa_reflectance[ib] = pixel.toa_radiance[ib] / (pixel.solar_flux[ib] * Math.cos(
                                             Math.toRadians(pixel.solzen)));
                                 }
@@ -699,14 +700,16 @@ public class MerisC2RProcessor extends Processor {
 
     private static MetadataElement getProcessorMetadata() {
         final MetadataElement metadata = new MetadataElement("Processor");
-        metadata.addAttribute(
-                new MetadataAttribute("Name", ProductData.createInstance(MerisC2RConstants.PROCESSOR_NAME), true));
+        metadata.addAttribute(new MetadataAttribute("Name",
+                                                    ProductData.createInstance(MerisC2RConstants.PROCESSOR_NAME),
+                                                    true));
         metadata.addAttribute(new MetadataAttribute("Version",
                                                     ProductData.createInstance(MerisC2RConstants.PROCESSOR_VERSION),
                                                     true));
-        metadata.addAttribute(
-                new MetadataAttribute("Copyright",
-                                      ProductData.createInstance(MerisC2RConstants.PROCESSOR_COPYRIGHT_INFO), true));
+        metadata.addAttribute(new MetadataAttribute("Copyright",
+                                                    ProductData.createInstance(
+                                                            MerisC2RConstants.PROCESSOR_COPYRIGHT_INFO),
+                                                    true));
         return metadata;
     }
 
@@ -714,11 +717,12 @@ public class MerisC2RProcessor extends Processor {
 
         private double value;
 
-        public ToaReflecSymbol(final String name) {
+        private ToaReflecSymbol(final String name) {
             super(name);
             this.value = 0;
         }
 
+        @Override
         public double evalD(EvalEnv env) throws EvalException {
             return value;
         }
