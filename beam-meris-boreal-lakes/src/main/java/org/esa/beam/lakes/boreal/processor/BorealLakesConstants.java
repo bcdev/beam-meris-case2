@@ -11,7 +11,6 @@ public interface BorealLakesConstants extends ProcessorConstants {
     String PROCESSOR_HELP_ID = "borealIntroduction";
     String PROCESSING_REQUEST_TYPE = "BOREAL_LAKES";
     String OUTPUT_PRODUCT_TYPE = "MER_2P_LAKES_BOR";
-    String OUTPUT_FORMAT = "BEAM-DIMAP";
     String DEFAULT_LOG_PREFIX = "lakes_boreal";
     String AUXDATA_DIR_PROPERTY = "lakes.boreal.auxdata.dir";
     String DEFAULT_PARAMETER_FILE_NAME = "default-parameters.txt";

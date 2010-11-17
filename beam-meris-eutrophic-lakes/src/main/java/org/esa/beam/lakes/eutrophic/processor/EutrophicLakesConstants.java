@@ -11,7 +11,6 @@ public interface EutrophicLakesConstants extends ProcessorConstants {
     String PROCESSOR_LOGGER_NAME = "beam.processor.lakes.eutrophic";
     String PROCESSING_REQUEST_TYPE = "EUTROPHIC_LAKES";
     String OUTPUT_PRODUCT_TYPE = "MER_2P_LAKES_EUT";
-    String OUTPUT_FORMAT = "BEAM-DIMAP";
     String DEFAULT_LOG_PREFIX = "lakes_eutrophic";
     String AUXDATA_DIR_PROPERTY = "lakes.eutrophic.auxdata.dir";
     String DEFAULT_PARAMETER_FILE_NAME = "default-parameters.txt";

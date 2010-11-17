@@ -2,8 +2,6 @@ package org.esa.beam.merisc2r.processor;
 
 import org.esa.beam.framework.processor.ProcessorConstants;
 
-import java.io.File;
-
 public interface MerisC2RConstants extends ProcessorConstants {
 
     String PROCESSOR_NAME = "MERIS Case 2 Regional Processor";
@@ -13,11 +11,8 @@ public interface MerisC2RConstants extends ProcessorConstants {
     String PROCESSOR_LOGGER_NAME = "beam.processor.merisc2r";
     String PROCESSING_REQUEST_TYPE = "MERISC2R";
     String OUTPUT_PRODUCT_TYPE = "MER_2P_C2R";
-    String OUTPUT_FORMAT = "BEAM-DIMAP";
     String DEFAULT_LOG_PREFIX = "merisc2r";
-    String AUXDATA_DIRNAME = "merisc2r";
     String AUXDATA_DIR_PROPERTY = "merisc2r.auxdata.dir";
-    File DEFAULT_AUXDATA_DIR = new File("auxdata", AUXDATA_DIRNAME);
     String DEFAULT_PARAMETER_FILE_NAME = "default-parameters.txt";
     /**
      * Name of the parameter which holds the processing parameter file path
