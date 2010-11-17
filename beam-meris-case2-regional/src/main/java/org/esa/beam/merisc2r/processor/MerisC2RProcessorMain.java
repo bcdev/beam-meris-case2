@@ -9,7 +9,7 @@ import org.esa.beam.framework.processor.ProcessorRunner;
  * <ul>
  * <li>-i or --interactive (optional): open the user interface - in this case just a default interface
  * stating that this processor has no user interface implementation</li>
- * <li>-d or --debug (optional): swicth the BEAM framework into debugging mode. This will give a wealth of
+ * <li>-d or --debug (optional): switch the BEAM framework into debugging mode. This will give a wealth of
  * additional state information logged to the console window</li>
  * <li>the path to a request file (mandatory)</li>
  * </ul>
