@@ -6,12 +6,7 @@ import org.esa.beam.framework.gpf.experimental.PointOperator;
 
 import static org.esa.beam.meris.case2.MerisCase2WaterOp.*;
 
-/**
- * Created by Marco Peters.
- *
- * @author Marco Peters
- * @version $Revision: 1.5 $ $Date: 2007-07-12 12:10:43 $
- */
+
 public class Case2Water {
 
     private final double tsmExponent;
@@ -30,15 +25,15 @@ public class Case2Water {
         this.spectrumOutOfScopeThreshold = spectrumOutOfScopeThreshold;
     }
 
-    public double[] perform(NNffbpAlphaTabFast waterNet, NNffbpAlphaTabFast forwardWaterNet,
+    public double[] perform(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
                             double solzen, double satzen, double azi_diff_deg, PointOperator.Sample[] sourceSamples,
                             PointOperator.WritableSample[] targetSamples) {
 
         /* determine cut_thresh from waterNet minimum */
         double cut_thresh = 1000.0;
-        final double[] inmin = waterNet.getInmin();
-        for (int i = 0; i < 8; i++) {
-            double inmini = Math.exp(inmin[i + 3]);
+        final double[] inmin = inverseWaterNet.getInmin();
+        for (int i = 3; i < 11; i++) {
+            double inmini = Math.exp(inmin[i]);
             if (inmini < cut_thresh) {
                 cut_thresh = inmini;
             }
@@ -77,12 +72,12 @@ public class Case2Water {
 
         // test if water leaving radiance reflectance are within training range,
         // otherwise set to training range
-        if (!test_logRLw(waterInnet, waterNet)) {
+        if (!test_logRLw(waterInnet, inverseWaterNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(WLR_OOR_BIT_INDEX, true);
         }
 
         /* calculate concentrations using the water nn */
-        double[] waterOutnet = waterNet.calc(waterInnet);
+        double[] waterOutnet = inverseWaterNet.calc(waterInnet);
 
         double bTsm = Math.exp(waterOutnet[0]);
         targetSamples[TARGET_B_TSM_INDEX].set(bTsm);
@@ -96,7 +91,7 @@ public class Case2Water {
         targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff);
 
         /* test if concentrations are within training range */
-        if (!test_watconc(bTsm, aPig, aGelbstoff, waterNet)) {
+        if (!test_watconc(bTsm, aPig, aGelbstoff, inverseWaterNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(CONC_OOR_BIT_INDEX, true);
         }
 
@@ -123,7 +118,7 @@ public class Case2Water {
         }
         // compute k_min and z90_max RD 20060811
         final KMin kMin = new KMin();
-        double k_min = kMin.perform(bTsm, aPig, aGelbstoff, 0);
+        double k_min = kMin.perform(bTsm, aPig, aGelbstoff);
         targetSamples[TARGET_K_MIN_INDEX].set(k_min);
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
         return RLw_cut;
@@ -133,15 +128,14 @@ public class Case2Water {
      **	test water leaving radiances as input to neural network for out of training range
      **	if out of range set to lower or upper boundary value
     -----------------------------------------------------------------------------------*/
-
-    private boolean test_logRLw(double[] innet, NNffbpAlphaTabFast waterNet) {
-        final double[] inmax = waterNet.getInmax();
+    private boolean test_logRLw(double[] innet, NNffbpAlphaTabFast inverseWaterNet) {
+        final double[] inmax = inverseWaterNet.getInmax();
+        final double[] inmin = inverseWaterNet.getInmin();
         for (int i = 0; i < innet.length; i++) {
             if (innet[i] > inmax[i]) {
                 innet[i] = inmax[i];
                 return false;
             }
-            final double[] inmin = waterNet.getInmin();
             if (innet[i] < inmin[i]) {
                 innet[i] = inmin[i];
                 return false;
@@ -154,13 +148,12 @@ public class Case2Water {
      **	test water constituents as output of neural network for out of training range
      **
     --------------------------------------------------------------------------------*/
-
-    private boolean test_watconc(double bTsm, double aPig, double aGelbstoff, NNffbpAlphaTabFast waterNet) {
+    private boolean test_watconc(double bTsm, double aPig, double aGelbstoff, NNffbpAlphaTabFast inverseWaterNet) {
         double log_spm = Math.log(bTsm);
         double log_pig = Math.log(aPig);
         double log_gelb = Math.log(aGelbstoff);
-        final double[] outmax = waterNet.getOutmax();
-        final double[] outmin = waterNet.getOutmin();
+        final double[] outmax = inverseWaterNet.getOutmax();
+        final double[] outmin = inverseWaterNet.getOutmin();
         final boolean ootr0 = log_spm > outmax[0] || log_spm < outmin[0];
         final boolean ootr1 = log_pig > outmax[1] || log_pig < outmin[1];
         final boolean ootr2 = log_gelb > outmax[2] || log_gelb < outmin[2];

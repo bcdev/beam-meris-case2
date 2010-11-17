@@ -4,12 +4,6 @@ import org.esa.beam.case2.algorithm.fit.MerisC2R_GLM;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.processor.ProcessorException;
 
-/**
- * Created by Marco Peters.
- *
- * @author Marco Peters
- * @version $Revision:$ $Date:$
- */
 public abstract class Case2Algorithm {
 
     public abstract OutputBands init(Product inputProduct, String[] inputBandNames,
