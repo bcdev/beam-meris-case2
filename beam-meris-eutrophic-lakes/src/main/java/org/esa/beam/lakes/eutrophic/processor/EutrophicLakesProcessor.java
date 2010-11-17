@@ -17,6 +17,7 @@ import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.algorithm.fit.FitReflCutRestrConcs_v3;
+import org.esa.beam.case2.processor.Case2ProcessorConstants;
 import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
 import org.esa.beam.case2.util.RasterBlockMap;
@@ -121,13 +122,15 @@ public class EutrophicLakesProcessor extends Processor {
     };
     private Auxdata auxdata;
     private OutputBands outputBands;
+    private Case2ProcessorConstants constants;
 
     /**
      * Creates an instance of Meris Case-2 Regional processor
      */
     public EutrophicLakesProcessor() {
-        logger = Logger.getLogger(EutrophicLakesConstants.PROCESSOR_LOGGER_NAME);
-        setDefaultHelpId(EutrophicLakesConstants.PROCESSOR_HELP_ID);
+        constants = new EutrophicLakesConstants();
+        logger = Logger.getLogger(constants.getProcessorLoggerName());
+        setDefaultHelpId(constants.getProcessorHelpId());
     }
 
     /**
@@ -138,17 +141,16 @@ public class EutrophicLakesProcessor extends Processor {
                                   ProcessorException {
 
         final IOParameterPage ioPage = new IOParameterPage();
-        ioPage.setDefaultOutputProductFileName(EutrophicLakesConstants.DEFAULT_OUPUT_FILE_NAME);
-        ioPage.setDefaultLogPrefix(EutrophicLakesConstants.DEFAULT_LOG_PREFIX);
-        ioPage.setDefaultLogToOutputParameter(EutrophicLakesConstants.DEFAULT_LOG_TO_OUTPUT);
+        ioPage.setDefaultOutputProductFileName(constants.getDefaultOutputFileName());
+        ioPage.setDefaultLogPrefix(constants.getDefaultLogPrefix());
+        ioPage.setDefaultLogToOutputParameter(constants.getDefaultLogToOutput());
 
-        final File parameterFile = new File(auxdataDir, EutrophicLakesConstants.DEFAULT_PARAMETER_FILE_NAME);
+        final File parameterFile = new File(auxdataDir, constants.getDefaultParameterFileName());
 
         final PropertyFileParameterPage propertyFilePage = new PropertyFileParameterPage(parameterFile);
 
-        final MultiPageProcessorUI processorUI = new MultiPageProcessorUI(
-                EutrophicLakesConstants.PROCESSING_REQUEST_TYPE);
-        final URL url = getClass().getResource("/" + EutrophicLakesConstants.README_FILE_NAME);
+        final MultiPageProcessorUI processorUI = new MultiPageProcessorUI(constants.getProcessingRequestType());
+        final URL url = getClass().getResource("/" + constants.getReadmeFileName());
         processorUI.addPage(new ReadMePage(url));
         processorUI.addPage(ioPage);
         processorUI.addPage(propertyFilePage);
@@ -162,8 +164,8 @@ public class EutrophicLakesProcessor extends Processor {
     @Override
     public void initProcessor() throws ProcessorException {
         File defaultAuxdataInstallDir = getDefaultAuxdataInstallDir();
-        defaultAuxdataInstallDir = new File(defaultAuxdataInstallDir, EutrophicLakesConstants.PROCESSOR_VERSION);
-        setAuxdataInstallDir(EutrophicLakesConstants.AUXDATA_DIR_PROPERTY, defaultAuxdataInstallDir);
+        defaultAuxdataInstallDir = new File(defaultAuxdataInstallDir, constants.getProcessorVersion());
+        setAuxdataInstallDir(constants.getAuxdataDirProperty(), defaultAuxdataInstallDir);
         installAuxdata();
         auxdataDir = getAuxdataInstallDir();
     }
@@ -238,9 +240,10 @@ public class EutrophicLakesProcessor extends Processor {
 
             final Request request = getRequest();
             // check the request type
-            Request.checkRequestType(request, EutrophicLakesConstants.PROCESSING_REQUEST_TYPE);
+            Request.checkRequestType(request, constants.getProcessingRequestType());
+
             //init algorithm
-            final String paramName = EutrophicLakesConstants.PROPERTY_FILE_PARAM_NAME;
+            final String paramName = constants.getPropertyFileParamName();
             final Object paramValue = request.getParameter(paramName).getValue();
             final File paramFile;
             if (paramValue instanceof File) {
@@ -306,7 +309,7 @@ public class EutrophicLakesProcessor extends Processor {
      */
     @Override
     public String getName() {
-        return EutrophicLakesConstants.PROCESSOR_NAME;
+        return constants.getProcessorName();
     }
 
     /**
@@ -314,7 +317,7 @@ public class EutrophicLakesProcessor extends Processor {
      */
     @Override
     public String getVersion() {
-        return EutrophicLakesConstants.PROCESSOR_VERSION;
+        return constants.getProcessorVersion();
     }
 
     /**
@@ -322,7 +325,7 @@ public class EutrophicLakesProcessor extends Processor {
      */
     @Override
     public String getCopyrightInformation() {
-        return EutrophicLakesConstants.PROCESSOR_COPYRIGHT_INFO;
+        return constants.getProcessorCopyrightInfo();
     }
 
     /*
@@ -405,7 +408,7 @@ public class EutrophicLakesProcessor extends Processor {
 
         // create the in memory represenation of the output product the product itself
         outputProduct = new Product(new File(outputRef.getFilePath()).getName(),
-                                    EutrophicLakesConstants.OUTPUT_PRODUCT_TYPE,
+                                    constants.getOutputProductType(),
                                     sceneWidth, sceneHeight);
 
         pm.beginTask("Initializing output product..", 100);
@@ -698,18 +701,16 @@ public class EutrophicLakesProcessor extends Processor {
         return (float) (Math.log10(value));
     }
 
-    private static MetadataElement getProcessorMetadata() {
+    private MetadataElement getProcessorMetadata() {
         final MetadataElement metadata = new MetadataElement("Processor");
         metadata.addAttribute(new MetadataAttribute("Name",
-                                                    ProductData.createInstance(EutrophicLakesConstants.PROCESSOR_NAME),
+                                                    ProductData.createInstance(constants.getProcessorName()),
                                                     true));
         metadata.addAttribute(new MetadataAttribute("Version",
-                                                    ProductData.createInstance(
-                                                            EutrophicLakesConstants.PROCESSOR_VERSION),
+                                                    ProductData.createInstance(constants.getProcessorVersion()),
                                                     true));
         metadata.addAttribute(new MetadataAttribute("Copyright",
-                                                    ProductData.createInstance(
-                                                            EutrophicLakesConstants.PROCESSOR_COPYRIGHT_INFO),
+                                                    ProductData.createInstance(constants.getProcessorCopyrightInfo()),
                                                     true));
         return metadata;
     }

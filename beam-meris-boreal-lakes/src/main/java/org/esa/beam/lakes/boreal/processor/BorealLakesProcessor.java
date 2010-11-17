@@ -17,6 +17,7 @@ import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.algorithm.fit.FitReflCutRestrConcs_v3;
+import org.esa.beam.case2.processor.Case2ProcessorConstants;
 import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
 import org.esa.beam.case2.util.RasterBlockMap;
@@ -121,13 +122,15 @@ public class BorealLakesProcessor extends Processor {
     };
     private Auxdata auxdata;
     private OutputBands outputBands;
+    private Case2ProcessorConstants constants;
 
     /**
      * Creates an instance of Meris Case-2 Regional processor
      */
     public BorealLakesProcessor() {
-        logger = Logger.getLogger(BorealLakesConstants.PROCESSOR_LOGGER_NAME);
-        setDefaultHelpId(BorealLakesConstants.PROCESSOR_HELP_ID);
+        constants = new BorealLakesConstants();
+        logger = Logger.getLogger(constants.getProcessorLoggerName());
+        setDefaultHelpId(constants.getProcessorHelpId());
     }
 
     /**
@@ -138,16 +141,16 @@ public class BorealLakesProcessor extends Processor {
                                   ProcessorException {
 
         final IOParameterPage ioPage = new IOParameterPage();
-        ioPage.setDefaultOutputProductFileName(BorealLakesConstants.DEFAULT_OUPUT_FILE_NAME);
-        ioPage.setDefaultLogPrefix(BorealLakesConstants.DEFAULT_LOG_PREFIX);
-        ioPage.setDefaultLogToOutputParameter(BorealLakesConstants.DEFAULT_LOG_TO_OUTPUT);
+        ioPage.setDefaultOutputProductFileName(constants.getDefaultOutputFileName());
+        ioPage.setDefaultLogPrefix(constants.getDefaultLogPrefix());
+        ioPage.setDefaultLogToOutputParameter(constants.getDefaultLogToOutput());
 
-        final File parameterFile = new File(auxdataDir, BorealLakesConstants.DEFAULT_PARAMETER_FILE_NAME);
+        final File parameterFile = new File(auxdataDir, constants.getDefaultParameterFileName());
 
         final PropertyFileParameterPage propertyFilePage = new PropertyFileParameterPage(parameterFile);
 
-        final MultiPageProcessorUI processorUI = new MultiPageProcessorUI(BorealLakesConstants.PROCESSING_REQUEST_TYPE);
-        final URL url = getClass().getResource("/" + BorealLakesConstants.README_FILE_NAME);
+        final MultiPageProcessorUI processorUI = new MultiPageProcessorUI(constants.getProcessingRequestType());
+        final URL url = getClass().getResource("/" + constants.getReadmeFileName());
         processorUI.addPage(new ReadMePage(url));
         processorUI.addPage(ioPage);
         processorUI.addPage(propertyFilePage);
@@ -161,8 +164,8 @@ public class BorealLakesProcessor extends Processor {
     @Override
     public void initProcessor() throws ProcessorException {
         File defaultAuxdataInstallDir = getDefaultAuxdataInstallDir();
-        defaultAuxdataInstallDir = new File(defaultAuxdataInstallDir, BorealLakesConstants.PROCESSOR_VERSION);
-        setAuxdataInstallDir(BorealLakesConstants.AUXDATA_DIR_PROPERTY, defaultAuxdataInstallDir);
+        defaultAuxdataInstallDir = new File(defaultAuxdataInstallDir, constants.getProcessorVersion());
+        setAuxdataInstallDir(constants.getAuxdataDirProperty(), defaultAuxdataInstallDir);
         installAuxdata();
         auxdataDir = getAuxdataInstallDir();
     }
@@ -196,6 +199,7 @@ public class BorealLakesProcessor extends Processor {
                     new FileInputStream(parameter.atmCorrNnFilePath));
             final NNffbpAlphaTabFast polarizationNet = new NNffbpAlphaTabFast(
                     new FileInputStream(parameter.polCorrNnFilePath));
+
             final FitReflCutRestrConcs_v3 fitReflCutRestrConcs_v3 = new FitReflCutRestrConcs_v3(parameter.fitCut,
                                                                                                 parameter, 1.0);
             auxdata = new Auxdata(inverseWaterNet, forwardWaterNet,
@@ -236,10 +240,10 @@ public class BorealLakesProcessor extends Processor {
 
             final Request request = getRequest();
             // check the request type
-            Request.checkRequestType(request, BorealLakesConstants.PROCESSING_REQUEST_TYPE);
+            Request.checkRequestType(request, constants.getProcessingRequestType());
 
             //init algorithm
-            final String paramName = BorealLakesConstants.PROPERTY_FILE_PARAM_NAME;
+            final String paramName = constants.getPropertyFileParamName();
             final Object paramValue = request.getParameter(paramName).getValue();
             final File paramFile;
             if (paramValue instanceof File) {
@@ -305,7 +309,7 @@ public class BorealLakesProcessor extends Processor {
      */
     @Override
     public String getName() {
-        return BorealLakesConstants.PROCESSOR_NAME;
+        return constants.getProcessorName();
     }
 
     /**
@@ -313,7 +317,7 @@ public class BorealLakesProcessor extends Processor {
      */
     @Override
     public String getVersion() {
-        return BorealLakesConstants.PROCESSOR_VERSION;
+        return constants.getProcessorVersion();
     }
 
     /**
@@ -321,7 +325,7 @@ public class BorealLakesProcessor extends Processor {
      */
     @Override
     public String getCopyrightInformation() {
-        return BorealLakesConstants.PROCESSOR_COPYRIGHT_INFO;
+        return constants.getProcessorCopyrightInfo();
     }
 
     /*
@@ -404,7 +408,7 @@ public class BorealLakesProcessor extends Processor {
 
         // create the in memory represenation of the output product the product itself
         outputProduct = new Product(new File(outputRef.getFilePath()).getName(),
-                                    BorealLakesConstants.OUTPUT_PRODUCT_TYPE,
+                                    constants.getOutputProductType(),
                                     sceneWidth, sceneHeight);
 
         pm.beginTask("Initializing output product..", 100);
@@ -697,17 +701,16 @@ public class BorealLakesProcessor extends Processor {
         return (float) (Math.log10(value));
     }
 
-    private static MetadataElement getProcessorMetadata() {
+    private MetadataElement getProcessorMetadata() {
         final MetadataElement metadata = new MetadataElement("Processor");
         metadata.addAttribute(new MetadataAttribute("Name",
-                                                    ProductData.createInstance(BorealLakesConstants.PROCESSOR_NAME),
+                                                    ProductData.createInstance(constants.getProcessorName()),
                                                     true));
         metadata.addAttribute(new MetadataAttribute("Version",
-                                                    ProductData.createInstance(BorealLakesConstants.PROCESSOR_VERSION),
+                                                    ProductData.createInstance(constants.getProcessorVersion()),
                                                     true));
         metadata.addAttribute(new MetadataAttribute("Copyright",
-                                                    ProductData.createInstance(
-                                                            BorealLakesConstants.PROCESSOR_COPYRIGHT_INFO),
+                                                    ProductData.createInstance(constants.getProcessorCopyrightInfo()),
                                                     true));
         return metadata;
     }

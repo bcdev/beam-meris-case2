@@ -17,6 +17,7 @@ import org.esa.beam.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.algorithm.fit.FitReflCutRestrConcs_v3;
+import org.esa.beam.case2.processor.Case2ProcessorConstants;
 import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
 import org.esa.beam.case2.util.RasterBlockMap;
@@ -121,13 +122,15 @@ public class MerisC2RProcessor extends Processor {
     };
     private Auxdata auxdata;
     private OutputBands outputBands;
+    private Case2ProcessorConstants constants;
 
     /**
      * Creates an instance of Meris Case-2 Regional processor
      */
     public MerisC2RProcessor() {
-        logger = Logger.getLogger(MerisC2RConstants.PROCESSOR_LOGGER_NAME);
-        setDefaultHelpId(MerisC2RConstants.PROCESSOR_HELP_ID);
+        constants = new MerisC2RConstants();
+        logger = Logger.getLogger(constants.getProcessorLoggerName());
+        setDefaultHelpId(constants.getProcessorHelpId());
     }
 
     /**
@@ -138,16 +141,16 @@ public class MerisC2RProcessor extends Processor {
                                   ProcessorException {
 
         final IOParameterPage ioPage = new IOParameterPage();
-        ioPage.setDefaultOutputProductFileName(MerisC2RConstants.DEFAULT_OUPUT_FILE_NAME);
-        ioPage.setDefaultLogPrefix(MerisC2RConstants.DEFAULT_LOG_PREFIX);
-        ioPage.setDefaultLogToOutputParameter(MerisC2RConstants.DEFAULT_LOG_TO_OUTPUT);
+        ioPage.setDefaultOutputProductFileName(constants.getDefaultOutputFileName());
+        ioPage.setDefaultLogPrefix(constants.getDefaultLogPrefix());
+        ioPage.setDefaultLogToOutputParameter(constants.getDefaultLogToOutput());
 
-        final File parameterFile = new File(auxdataDir, MerisC2RConstants.DEFAULT_PARAMETER_FILE_NAME);
+        final File parameterFile = new File(auxdataDir, constants.getDefaultParameterFileName());
 
         final PropertyFileParameterPage propertyFilePage = new PropertyFileParameterPage(parameterFile);
 
-        final MultiPageProcessorUI processorUI = new MultiPageProcessorUI(MerisC2RConstants.PROCESSING_REQUEST_TYPE);
-        final URL url = getClass().getResource("/" + MerisC2RConstants.README_FILE_NAME);
+        final MultiPageProcessorUI processorUI = new MultiPageProcessorUI(constants.getProcessingRequestType());
+        final URL url = getClass().getResource("/" + constants.getReadmeFileName());
         processorUI.addPage(new ReadMePage(url));
         processorUI.addPage(ioPage);
         processorUI.addPage(propertyFilePage);
@@ -162,8 +165,8 @@ public class MerisC2RProcessor extends Processor {
     @Override
     public void initProcessor() throws ProcessorException {
         File defaultAuxdataInstallDir = getDefaultAuxdataInstallDir();
-        defaultAuxdataInstallDir = new File(defaultAuxdataInstallDir, MerisC2RConstants.PROCESSOR_VERSION);
-        setAuxdataInstallDir(MerisC2RConstants.AUXDATA_DIR_PROPERTY, defaultAuxdataInstallDir);
+        defaultAuxdataInstallDir = new File(defaultAuxdataInstallDir, constants.getProcessorVersion());
+        setAuxdataInstallDir(constants.getAuxdataDirProperty(), defaultAuxdataInstallDir);
         installAuxdata();
         auxdataDir = getAuxdataInstallDir();
     }
@@ -238,9 +241,10 @@ public class MerisC2RProcessor extends Processor {
 
             final Request request = getRequest();
             // check the request type
-            Request.checkRequestType(request, MerisC2RConstants.PROCESSING_REQUEST_TYPE);
+            Request.checkRequestType(request, constants.getProcessingRequestType());
+
             //init algorithm
-            final String paramName = MerisC2RConstants.PROPERTY_FILE_PARAM_NAME;
+            final String paramName = constants.getPropertyFileParamName();
             final Object paramValue = request.getParameter(paramName).getValue();
             final File paramFile;
             if (paramValue instanceof File) {
@@ -306,7 +310,7 @@ public class MerisC2RProcessor extends Processor {
      */
     @Override
     public String getName() {
-        return MerisC2RConstants.PROCESSOR_NAME;
+        return constants.getProcessorName();
     }
 
     /**
@@ -314,7 +318,7 @@ public class MerisC2RProcessor extends Processor {
      */
     @Override
     public String getVersion() {
-        return MerisC2RConstants.PROCESSOR_VERSION;
+        return constants.getProcessorVersion();
     }
 
     /**
@@ -322,7 +326,7 @@ public class MerisC2RProcessor extends Processor {
      */
     @Override
     public String getCopyrightInformation() {
-        return MerisC2RConstants.PROCESSOR_COPYRIGHT_INFO;
+        return constants.getProcessorCopyrightInfo();
     }
 
     /*
@@ -405,7 +409,7 @@ public class MerisC2RProcessor extends Processor {
 
         // create the in memory represenation of the output product the product itself
         outputProduct = new Product(new File(outputRef.getFilePath()).getName(),
-                                    MerisC2RConstants.OUTPUT_PRODUCT_TYPE,
+                                    constants.getOutputProductType(),
                                     sceneWidth, sceneHeight);
 
         pm.beginTask("Initializing output product..", 100);
@@ -698,17 +702,16 @@ public class MerisC2RProcessor extends Processor {
         return (float) (Math.log10(value));
     }
 
-    private static MetadataElement getProcessorMetadata() {
+    private MetadataElement getProcessorMetadata() {
         final MetadataElement metadata = new MetadataElement("Processor");
         metadata.addAttribute(new MetadataAttribute("Name",
-                                                    ProductData.createInstance(MerisC2RConstants.PROCESSOR_NAME),
+                                                    ProductData.createInstance(constants.getProcessorName()),
                                                     true));
         metadata.addAttribute(new MetadataAttribute("Version",
-                                                    ProductData.createInstance(MerisC2RConstants.PROCESSOR_VERSION),
+                                                    ProductData.createInstance(constants.getProcessorVersion()),
                                                     true));
         metadata.addAttribute(new MetadataAttribute("Copyright",
-                                                    ProductData.createInstance(
-                                                            MerisC2RConstants.PROCESSOR_COPYRIGHT_INFO),
+                                                    ProductData.createInstance(constants.getProcessorCopyrightInfo()),
                                                     true));
         return metadata;
     }

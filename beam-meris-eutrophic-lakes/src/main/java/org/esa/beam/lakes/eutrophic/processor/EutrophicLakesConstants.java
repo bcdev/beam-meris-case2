@@ -1,24 +1,57 @@
 package org.esa.beam.lakes.eutrophic.processor;
 
-import org.esa.beam.framework.processor.ProcessorConstants;
+import org.esa.beam.case2.processor.Case2ProcessorConstants;
 
-public interface EutrophicLakesConstants extends ProcessorConstants {
+public class EutrophicLakesConstants extends Case2ProcessorConstants {
 
-    String PROCESSOR_NAME = "MERIS Eutrophic Lakes Processor";
-    String PROCESSOR_VERSION = "1.4.3";
-    String PROCESSOR_COPYRIGHT_INFO = "BC, GKSS, HUT, SYKE, FMI, EOMAP, CEDEX, NIVA";
-    String PROCESSOR_HELP_ID = "eutrophicIntroduction";
-    String PROCESSOR_LOGGER_NAME = "beam.processor.lakes.eutrophic";
-    String PROCESSING_REQUEST_TYPE = "EUTROPHIC_LAKES";
-    String OUTPUT_PRODUCT_TYPE = "MER_2P_LAKES_EUT";
-    String DEFAULT_LOG_PREFIX = "lakes_eutrophic";
-    String AUXDATA_DIR_PROPERTY = "lakes.eutrophic.auxdata.dir";
-    String DEFAULT_PARAMETER_FILE_NAME = "default-parameters.txt";
-    /**
-     * Name of the parameter which holds the processing parameter file path
-     */
-    String PROPERTY_FILE_PARAM_NAME = "property_file";
-    String DEFAULT_OUPUT_FILE_NAME = "meris_lakes_eutrophic";
-    Boolean DEFAULT_LOG_TO_OUTPUT = Boolean.FALSE;
-    String README_FILE_NAME = "aboutEutrophic.html";
+
+    @Override
+    public String getProcessorName() {
+        return "MERIS Eutrophic Lakes Processor";
+    }
+
+    @Override
+    public String getProcessorCopyrightInfo() {
+        return "BC, GKSS, HUT, SYKE, FMI, EOMAP, CEDEX, NIVA";
+    }
+
+    @Override
+    public String getProcessorHelpId() {
+        return "eutrophicIntroduction";
+    }
+
+    @Override
+    public String getProcessorLoggerName() {
+        return "beam.processor.lakes.eutrophic";
+    }
+
+    @Override
+    public String getProcessingRequestType() {
+        return "EUTROPHIC_LAKES";
+    }
+
+    @Override
+    public String getOutputProductType() {
+        return "MER_2P_LAKES_EUT";
+    }
+
+    @Override
+    public String getDefaultLogPrefix() {
+        return "lakes_eutrophic";
+    }
+
+    @Override
+    public String getAuxdataDirProperty() {
+        return "lakes.eutrophic.auxdata.dir";
+    }
+
+    @Override
+    public String getDefaultOutputFileName() {
+        return "meris_lakes_eutrophic";
+    }
+
+    @Override
+    public String getReadmeFileName() {
+        return "aboutEutrophic.html";
+    }
 }

@@ -1,24 +1,56 @@
 package org.esa.beam.lakes.boreal.processor;
 
-import org.esa.beam.framework.processor.ProcessorConstants;
+import org.esa.beam.case2.processor.Case2ProcessorConstants;
 
-public interface BorealLakesConstants extends ProcessorConstants {
+public class BorealLakesConstants extends Case2ProcessorConstants {
 
-    String PROCESSOR_NAME = "MERIS Boreal Lakes Processor";
-    String PROCESSOR_VERSION = "1.4.3";
-    String PROCESSOR_COPYRIGHT_INFO = "BC, GKSS, HUT, SYKE, FMI, EOMAP, CEDEX, NIVA";
-    String PROCESSOR_LOGGER_NAME = "beam.processor.lakes.boreal";
-    String PROCESSOR_HELP_ID = "borealIntroduction";
-    String PROCESSING_REQUEST_TYPE = "BOREAL_LAKES";
-    String OUTPUT_PRODUCT_TYPE = "MER_2P_LAKES_BOR";
-    String DEFAULT_LOG_PREFIX = "lakes_boreal";
-    String AUXDATA_DIR_PROPERTY = "lakes.boreal.auxdata.dir";
-    String DEFAULT_PARAMETER_FILE_NAME = "default-parameters.txt";
-    /**
-     * Name of the parameter which holds the processing parameter file path
-     */
-    String PROPERTY_FILE_PARAM_NAME = "property_file";
-    String DEFAULT_OUPUT_FILE_NAME = "meris_lakes_boreal";
-    Boolean DEFAULT_LOG_TO_OUTPUT = Boolean.FALSE;
-    String README_FILE_NAME = "aboutBoreal.html";
+    @Override
+    public String getProcessorName() {
+        return "MERIS Boreal Lakes Processor";
+    }
+
+    @Override
+    public String getProcessorCopyrightInfo() {
+        return "BC, GKSS, HUT, SYKE, FMI, EOMAP, CEDEX, NIVA";
+    }
+
+    @Override
+    public String getProcessorHelpId() {
+        return "borealIntroduction";
+    }
+
+    @Override
+    public String getProcessorLoggerName() {
+        return "beam.processor.lakes.boreal";
+    }
+
+    @Override
+    public String getProcessingRequestType() {
+        return "BOREAL_LAKES";
+    }
+
+    @Override
+    public String getOutputProductType() {
+        return "MER_2P_LAKES_BOR";
+    }
+
+    @Override
+    public String getDefaultLogPrefix() {
+        return "lakes_boreal";
+    }
+
+    @Override
+    public String getAuxdataDirProperty() {
+        return "lakes.boreal.auxdata.dir";
+    }
+
+    @Override
+    public String getDefaultOutputFileName() {
+        return "meris_lakes_boreal";
+    }
+
+    @Override
+    public String getReadmeFileName() {
+        return "aboutBoreal.html";
+    }
 }
