@@ -26,14 +26,15 @@ import org.esa.beam.dataio.envisat.EnvisatConstants;
 import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.dataio.ProductWriter;
 import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.BitmaskDef;
 import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.GeoPos;
+import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.MetadataAttribute;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.PixelPos;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
+import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.processor.Processor;
 import org.esa.beam.framework.processor.ProcessorConstants;
@@ -97,29 +98,6 @@ public class MerisC2RProcessor extends Processor {
     private MerisC2RAlgo algo;
     private File auxdataDir;
     private AlgorithmParameter parameter;
-    private static final BitmaskDef[] bitmaskDefs = new BitmaskDef[]{
-            new BitmaskDef("l2_land", "land pixels", "l2_flags.LAND", Color.GREEN, 0.8f),
-            new BitmaskDef("cloud_ice", "cloud or ice pixels", "l2_flags.CLOUD_ICE", Color.YELLOW, 0.5f),
-            new BitmaskDef("ancil", "missing/OOR auxiliary data", "l2_flags.ANCIL", Color.GRAY, 0.5f),
-            new BitmaskDef("solzen", "large solar zenith angle", "l2_flags.SOLZEN", Color.LIGHT_GRAY, 0.5f),
-            new BitmaskDef("satzen", "large spacecraft zenith angle", "l2_flags.SATZEN", Color.LIGHT_GRAY, 0.5f),
-            new BitmaskDef("whitecaps", "Whitecaps pixels", "l2_flags.WHITECAPS", Color.PINK, 0.5f),
-            new BitmaskDef("rad_err", "TOAR out of valid range", "l2_flags.RAD_ERR", Color.MAGENTA, 0.5f),
-            new BitmaskDef("tosa_oor", "TOSA out of range", "l2_flags.TOSA_OOR", Color.BLUE, 0.5f),
-            new BitmaskDef("wlr_oor", "WLR out of scope", "l2_flags.WLR_OOR", Color.CYAN, 0.5f),
-            new BitmaskDef("ootr", "RLw out of training range", "l2_flags.OOTR", Color.ORANGE, 0.5f),
-            new BitmaskDef("l2_invalid", "invalid L2 product",
-                           "l2_flags.OOTR || l2_flags.WLR_OOR || l2_flags.TOSA_OOR || l2_flags.LAND || l2_flags.CLOUD_ICE || l2_flags.RAD_ERR || l2_flags.WHITECAPS",
-                           Color.RED, 0.0f),
-            new BitmaskDef("atc_oor", "atmos. correct. out of range", "l2_flags.ATC_OOR", Color.LIGHT_GRAY, 0.5f),
-            new BitmaskDef("conc_oor", "concentration out of training range", "l2_flags.CONC_OOR", Color.DARK_GRAY,
-                           0.5f),
-            // the following are not used
-            new BitmaskDef("sunglint", "sunglint risk", "l2_flags.SUNGLINT", Color.BLACK, 0.5f),
-            new BitmaskDef("fitFailed", "fit passed threshold", "l2_flags.FIT_FAILED", Color.ORANGE, 0.5f),
-            new BitmaskDef("spareflag06", "spare flag 06", "l2_flags.SPAREFLAG06", Color.BLACK, 0.5f),
-            new BitmaskDef("spareflag07", "spare flag 07", "l2_flags.SPAREFLAG07", Color.BLACK, 0.5f),
-    };
     private Auxdata auxdata;
     private OutputBands outputBands;
     private Case2ProcessorConstants constants;
@@ -432,7 +410,7 @@ public class MerisC2RProcessor extends Processor {
             pm.worked(10);                          // pm-sum 70
             setL2FlagsToOutput();
             pm.worked(5);                           // pm-sum 75
-            addBitmasksToOutput();
+            addMasksToOutput();
             pm.worked(5);                           // pm-sum 80
             addMetadataToProduct();
 
@@ -497,12 +475,34 @@ public class MerisC2RProcessor extends Processor {
         }
     }
 
-    private void addBitmasksToOutput() {
-        for (BitmaskDef bitmaskDef : bitmaskDefs) {
-            // need a copy, cause the BitmaskDefs are otherwise disposed
-            // if the outputProduct gets disposed after processing
-            outputProduct.addBitmaskDef(bitmaskDef.createCopy());
-        }
+    private void addMasksToOutput() {
+        addMaskToGroup("l2_land", "land pixels", "l2_flags.LAND", Color.GREEN, 0.8);
+        addMaskToGroup("cloud_ice", "cloud or ice pixels", "l2_flags.CLOUD_ICE", Color.YELLOW, 0.5);
+        addMaskToGroup("ancil", "missing/OOR auxiliary data", "l2_flags.ANCIL", Color.GRAY, 0.5);
+        addMaskToGroup("solzen", "large solar zenith angle", "l2_flags.SOLZEN", Color.LIGHT_GRAY, 0.5);
+        addMaskToGroup("satzen", "large spacecraft zenith angle", "l2_flags.SATZEN", Color.LIGHT_GRAY, 0.5);
+        addMaskToGroup("whitecaps", "Whitecaps pixels", "l2_flags.WHITECAPS", Color.PINK, 0.5);
+        addMaskToGroup("rad_err", "TOAR out of valid range", "l2_flags.RAD_ERR", Color.MAGENTA, 0.5);
+        addMaskToGroup("tosa_oor", "TOSA out of range", "l2_flags.TOSA_OOR", Color.BLUE, 0.5);
+        addMaskToGroup("wlr_oor", "WLR out of scope", "l2_flags.WLR_OOR", Color.CYAN, 0.5);
+        addMaskToGroup("ootr", "RLw out of training range", "l2_flags.OOTR", Color.ORANGE, 0.5);
+        addMaskToGroup("l2_invalid", "invalid L2 product",
+                       "l2_flags.OOTR || l2_flags.WLR_OOR || l2_flags.TOSA_OOR || l2_flags.LAND || l2_flags.CLOUD_ICE || l2_flags.RAD_ERR || l2_flags.WHITECAPS",
+                       Color.RED, 0.0);
+        addMaskToGroup("atc_oor", "atmos. correct. out of range", "l2_flags.ATC_OOR", Color.LIGHT_GRAY, 0.5);
+        addMaskToGroup("conc_oor", "concentration out of training range", "l2_flags.CONC_OOR", Color.DARK_GRAY, 0.5);
+        // the following are not used
+        addMaskToGroup("sunglint", "sunglint risk", "l2_flags.SUNGLINT", Color.BLACK, 0.5);
+        addMaskToGroup("fitFailed", "fit passed threshold", "l2_flags.FIT_FAILED", Color.ORANGE, 0.5);
+        addMaskToGroup("spareflag06", "spare flag 06", "l2_flags.SPAREFLAG06", Color.BLACK, 0.5);
+        addMaskToGroup("spareflag07", "spare flag 07", "l2_flags.SPAREFLAG07", Color.BLACK, 0.5);
+    }
+
+    private void addMaskToGroup(String name, String description, String expression, Color color, double transparency) {
+        final ProductNodeGroup<Mask> maskGroup = outputProduct.getMaskGroup();
+        final int width = outputProduct.getSceneRasterWidth();
+        final int height = outputProduct.getSceneRasterHeight();
+        maskGroup.add(Mask.BandMathsType.create(name, description, width, height, expression, color, transparency));
     }
 
     private void setL2FlagsToOutput() {
@@ -524,8 +524,8 @@ public class MerisC2RProcessor extends Processor {
         flagCoding.addFlag("SPAREFLAG06", Flags.SPAREFLAG06, "spare flag 06");                      // not used
         flagCoding.addFlag("SPAREFLAG07", Flags.SPAREFLAG07, "spare flag 07");                      // not used
         flagCoding.addFlag("INVALID", Flags.INVALID, "not valid");                                  // water / ac
-        outputProduct.addFlagCoding(flagCoding);
-        outputProduct.getBand("l2_flags").setFlagCoding(flagCoding);
+        outputProduct.getFlagCodingGroup().add(flagCoding);
+        outputProduct.getBand("l2_flags").setSampleCoding(flagCoding);
     }
 
     private void copyTiePointGridsToOutput() {
