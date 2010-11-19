@@ -74,7 +74,7 @@ public class EutrophicAlgorithmParameterTest extends TestCase {
         Assert.assertEquals("./water_net_eutrophic_20070710/60x20_586.8inv.net", parameter.waterNnInverseFilePath);
         Assert.assertEquals("./water_net_eutrophic_20070710/30x15_88.8forw.net", parameter.waterNnForwardFilePath);
         Assert.assertEquals(1.0, parameter.radiance1AdjustmentFactor, 1.0e-10);
-        Assert.assertEquals("./atmo_net_20091215/25x30x40_9164.3.net", parameter.atmCorrNnFilePath);
+        Assert.assertEquals("./atmo_net_20101104/20x25x45_55990.1.net", parameter.atmCorrNnFilePath);
 
     }
 

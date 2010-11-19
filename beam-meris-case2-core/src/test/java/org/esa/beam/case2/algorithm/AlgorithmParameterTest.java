@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 
 public class AlgorithmParameterTest extends TestCase {
+
     public void testRead() throws IOException {
         final AlgorithmParameter parameter = read("test-params.properties");
         assertTrue(parameter.performChiSquareFit);
@@ -35,50 +36,51 @@ public class AlgorithmParameterTest extends TestCase {
         assertTrue(parameter.outputTsmConc);
         assertFalse(parameter.outputOutOfScopeChiSquare);
 
-        testArray("outputPathRadianceRefl", new boolean[] {
-            true, // 1
-            true, // 2
-            false, // 3
-            false, // 4
-            false, // 5
-            false, // 6
-            false, // 7
-            false, // 8
-            false, // 9
+        testArray("outputPathRadianceRefl", new boolean[]{
+                true, // 1
+                true, // 2
+                false, // 3
+                false, // 4
+                false, // 5
+                false, // 6
+                false, // 7
+                false, // 8
+                false, // 9
         }, parameter.outputPathRadianceRefl);
 
-        testArray("outputWaterLeavingRefl", new boolean[] {
-            false, // 1
-            false, // 2
-            true, // 3
-            false, // 4
-            false, // 5
-            false, // 6
-            true, // 7
-            false, // 8
-            false, // 9
-       }, parameter.outputWaterLeavingRefl);
+        testArray("outputWaterLeavingRefl", new boolean[]{
+                false, // 1
+                false, // 2
+                true, // 3
+                false, // 4
+                false, // 5
+                false, // 6
+                true, // 7
+                false, // 8
+                false, // 9
+        }, parameter.outputWaterLeavingRefl);
 
-        testArray("outputTransmittance", new boolean[] {
-            true, // 1
-            false, // 2
-            false, // 3
-            true, // 4
-            false, // 5
-            false, // 6
-            false, // 7
-            true, // 8
-            false, // 9
+        testArray("outputTransmittance", new boolean[]{
+                true, // 1
+                false, // 2
+                false, // 3
+                true, // 4
+                false, // 5
+                false, // 6
+                false, // 7
+                true, // 8
+                false, // 9
         }, parameter.outputTransmittance);
 
     }
 
     public void testParamsIfNotInParamsFile() throws IOException {
         final AlgorithmParameter parameter = read("test-params_nothing.properties");
-        assertEquals("./atmo_net_20091215/25x30x40_9164.3.net",parameter.atmCorrNnFilePath);
-        assertEquals("toa_reflec_10 > toa_reflec_6 AND toa_reflec_13 > 0.0475", parameter.landWaterSeparationExpression);
+        assertEquals("./atmo_net_20101104/20x25x45_55990.1.net", parameter.atmCorrNnFilePath);
+        assertEquals("toa_reflec_10 > toa_reflec_6 AND toa_reflec_13 > 0.0475",
+                     parameter.landWaterSeparationExpression);
         assertEquals("toa_reflec_14 > 0.2", parameter.cloudIceDetectionExpression);
-        
+
     }
 
     private void testArray(final String name, boolean[] expected, final boolean[] actual) {

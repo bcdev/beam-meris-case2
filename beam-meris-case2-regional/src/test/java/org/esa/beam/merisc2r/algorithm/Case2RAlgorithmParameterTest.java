@@ -74,7 +74,7 @@ public class Case2RAlgorithmParameterTest extends TestCase {
                      parameter.waterNnInverseFilePath);
         assertEquals("./water_net_20040320/meris_fn_20040319_15x15x15_1750.4.net", parameter.waterNnForwardFilePath);
         assertEquals(1, parameter.radiance1AdjustmentFactor, 1.0e-10);
-        assertEquals("./atmo_net_20091215/25x30x40_9164.3.net", parameter.atmCorrNnFilePath);
+        assertEquals("./atmo_net_20101104/20x25x45_55990.1.net", parameter.atmCorrNnFilePath);
     }
 
     private void testArray(final String name, boolean[] expected, final boolean[] actual) {
