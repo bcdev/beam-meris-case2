@@ -19,6 +19,7 @@ import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.algorithm.PixelData;
 import org.esa.beam.case2.algorithm.fit.FitReflCutRestrConcs_v3;
 import org.esa.beam.case2.algorithm.fit.MerisC2R_GLM;
+import org.esa.beam.case2.algorithm.water.WaterAlgorithm;
 import org.esa.beam.case2.processor.Case2ProcessorConstants;
 import org.esa.beam.case2.processor.ReadMePage;
 import org.esa.beam.case2.util.ObjectIO;
@@ -103,6 +104,9 @@ public class EutrophicLakesProcessor extends Processor {
     private Auxdata auxdata;
     private OutputBands outputBands;
     private Case2ProcessorConstants constants;
+    private WaterAlgorithm waterAlgorithm;
+    private MerisC2R_GLM merisC2R_glm;
+    private Class<? extends AlgorithmParameter> algorithmParameterType;
 
     /**
      * Creates an instance of Meris Case-2 Regional processor
@@ -111,6 +115,10 @@ public class EutrophicLakesProcessor extends Processor {
         constants = new EutrophicLakesConstants();
         logger = Logger.getLogger(constants.getProcessorLoggerName());
         setDefaultHelpId(constants.getProcessorHelpId());
+
+        waterAlgorithm = new EutrophicWater();
+        merisC2R_glm = new MerisC2R_GLM(11, 8);
+        algorithmParameterType = EutrophicAlgorithmParameter.class;
     }
 
     /**
@@ -204,7 +212,7 @@ public class EutrophicLakesProcessor extends Processor {
     private void loadParameter(File parameterFile) throws ProcessorException {
         final String parameterFilePath = parameterFile.getPath();
         try {
-            parameter = ObjectIO.readObject(EutrophicAlgorithmParameter.class, parameterFilePath);
+            parameter = ObjectIO.readObject(algorithmParameterType, parameterFilePath);
         } catch (IOException e) {
             throw new ProcessorException("Failed to load parameter file " + parameterFilePath +
                                          "\n\n" + e.getMessage(), e);
@@ -248,7 +256,7 @@ public class EutrophicLakesProcessor extends Processor {
                 pm.worked(1);
 
                 algo = new Case2Algorithm();
-                outputBands = algo.init(inputProduct, inputBandNames, new EutrophicWater(), new MerisC2R_GLM(11, 8),
+                outputBands = algo.init(inputProduct, inputBandNames, waterAlgorithm, merisC2R_glm,
                                         parameter, auxdata
                 );
                 if (pm.isCanceled()) {
@@ -647,7 +655,7 @@ public class EutrophicLakesProcessor extends Processor {
                                 }
                             }
 
-                            // symbols are updated by reference and evaluated in EutrophicLakesAlgo.test_usable_waterpixel()
+                            // symbols are updated by reference and evaluated in ***Algo.test_usable_waterpixel()
                             for (int i = 0; i < landWaterSymbols.length; i++) {
                                 ToaReflecSymbol landWaterSymbol = landWaterSymbols[i];
                                 landWaterSymbol.setValue(pixel.toa_reflectance[i]);
