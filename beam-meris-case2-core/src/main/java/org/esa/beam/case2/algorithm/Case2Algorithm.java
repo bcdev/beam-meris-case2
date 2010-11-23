@@ -4,7 +4,7 @@ import org.esa.beam.case2.algorithm.atmosphere.AtmosphereCorrection;
 import org.esa.beam.case2.algorithm.atmosphere.Tosa;
 import org.esa.beam.case2.algorithm.fit.ChiSquareFit;
 import org.esa.beam.case2.algorithm.fit.ChiSquareFitGLM;
-import org.esa.beam.case2.algorithm.fit.MerisC2R_GLM;
+import org.esa.beam.case2.algorithm.fit.MerisGLM;
 import org.esa.beam.case2.algorithm.water.WaterAlgorithm;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.Product;
@@ -27,7 +27,7 @@ public class Case2Algorithm {
     private ChiSquareFit chiSquareFit;
 
     public OutputBands init(Product inputProduct, String[] inputBandNames,
-                            WaterAlgorithm waterAlgorithm, MerisC2R_GLM merisC2R_glm,
+                            WaterAlgorithm waterAlgorithm, MerisGLM meris_glm,
                             AlgorithmParameter parameter, Auxdata auxdata) {
         this.parameter = parameter;
         experimental = new Experimental(false);
@@ -38,7 +38,7 @@ public class Case2Algorithm {
         case2Water = waterAlgorithm;
         case2Water.init(auxdata.getWaterNet(), auxdata.getForwardWaterNet(), parameter);
         chiSquareFit = new ChiSquareFitGLM();
-        chiSquareFit.init(parameter, auxdata, merisC2R_glm);
+        chiSquareFit.init(parameter, auxdata, meris_glm);
 
         OutputBands outputBands = new OutputBands();
         outputBands.addDescriptor(createToaReflectanceDesrciptors(inputProduct, inputBandNames));

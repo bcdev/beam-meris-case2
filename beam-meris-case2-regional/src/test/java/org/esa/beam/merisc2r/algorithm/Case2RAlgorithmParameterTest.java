@@ -10,7 +10,7 @@ import java.text.MessageFormat;
 public class Case2RAlgorithmParameterTest extends TestCase {
 
     public void testRead() throws IOException {
-        final Case2RAlgorithmParameter parameter = read("test-params.properties");
+        final RegionalAlgorithmParameter parameter = read("test-params.properties");
         assertTrue(parameter.performChiSquareFit);
         assertEquals("C:\\auxdata\\water-inv.net", parameter.waterNnInverseFilePath);
         assertEquals("C:\\auxdata\\water-forw.net", parameter.waterNnForwardFilePath);
@@ -69,7 +69,7 @@ public class Case2RAlgorithmParameterTest extends TestCase {
     }
 
     public void testParamsIfNotInParamsFile() throws IOException {
-        final Case2RAlgorithmParameter parameter = read("test-params_nothing.properties");
+        final RegionalAlgorithmParameter parameter = read("test-params_nothing.properties");
         assertEquals("./water_net_20040320/meris_bn_20040322_45x16x12x8x5_5177.9.net",
                      parameter.waterNnInverseFilePath);
         assertEquals("./water_net_20040320/meris_fn_20040319_15x15x15_1750.4.net", parameter.waterNnForwardFilePath);
@@ -83,10 +83,10 @@ public class Case2RAlgorithmParameterTest extends TestCase {
         }
     }
 
-    private Case2RAlgorithmParameter read(final String propertyFileName) throws IOException {
+    private RegionalAlgorithmParameter read(final String propertyFileName) throws IOException {
         final InputStream stream = Case2RAlgorithmParameterTest.class.getResourceAsStream(propertyFileName);
         try {
-            return ObjectIO.readObject(Case2RAlgorithmParameter.class, stream);
+            return ObjectIO.readObject(RegionalAlgorithmParameter.class, stream);
         } finally {
             stream.close();
         }

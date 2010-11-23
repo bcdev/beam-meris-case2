@@ -9,7 +9,7 @@ import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
  *         <p/>
  *         Created on 12.09.2006
  */
-public class MerisC2R_GLM implements ModelInterf4LM {
+public class MerisGLM implements ModelInterf4LM {
 
     private static final int npars = 3;
 
@@ -20,7 +20,7 @@ public class MerisC2R_GLM implements ModelInterf4LM {
     private NNffbpAlphaTabFast forwNN;
     private double wlVariance;
 
-    public MerisC2R_GLM(int numNnIn, int numNMeas) {
+    public MerisGLM(int numNnIn, int numNMeas) {
         nnIn = new double[numNnIn];
         nmeas = numNMeas;
     }

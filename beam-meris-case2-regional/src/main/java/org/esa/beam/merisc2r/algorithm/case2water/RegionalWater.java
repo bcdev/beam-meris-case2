@@ -7,7 +7,7 @@ import org.esa.beam.case2.algorithm.water.WaterAlgorithm;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 
 
-public class Case2Water extends WaterAlgorithm {
+public class RegionalWater extends WaterAlgorithm {
 
     private double tsmExponent;
     private double tsmFactor;

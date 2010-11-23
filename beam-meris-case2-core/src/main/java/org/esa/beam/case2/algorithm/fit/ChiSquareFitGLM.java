@@ -12,14 +12,14 @@ public class ChiSquareFitGLM implements ChiSquareFit {
     private double tsmFactor;
     private double chlExponent;
     private double chlFactor;
-    private MerisC2R_GLM myFitLvMq;
+    private MerisGLM myFitLvMq;
     private Data4SingleFitInitialization initSingleFit;
     private NNffbpAlphaTabFast forwardWaterNet;
     private AlgorithmParameter parameter;
 
 
     @Override
-    public void init(AlgorithmParameter parameter, Auxdata auxdata, MerisC2R_GLM glm) {
+    public void init(AlgorithmParameter parameter, Auxdata auxdata, MerisGLM glm) {
         this.parameter = parameter;
         tsmExponent = parameter.tsmConversionExponent;
         tsmFactor = parameter.tsmConversionFactor;
