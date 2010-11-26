@@ -31,10 +31,7 @@ import java.io.File;
 
 import static org.esa.beam.dataio.envisat.EnvisatConstants.*;
 
-/**
- * An operator that computes case 2 IOPs from MERISL L1b products.
- * This includes radiometric corrections, atmospheric correction and the actual IOP retrieval.
- */
+
 @OperatorMetadata(alias = "Meris.Case2RegionalIOP",
                   description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",

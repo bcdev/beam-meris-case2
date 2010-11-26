@@ -29,7 +29,7 @@ import org.esa.beam.meris.radiometry.equalization.ReprocessingVersion;
 import static org.esa.beam.dataio.envisat.EnvisatConstants.*;
 
 /**
- * An operator that computes case 2 IOPs from MERISL L1b products.
+ * An operator that computes case 2 IOPs from MERIS L1b products.
  * This includes radiometric corrections, atmospheric correction and the actual IOP retrieval.
  */
 @OperatorMetadata(alias = "Meris.Case2IOP",
