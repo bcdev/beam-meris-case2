@@ -14,11 +14,6 @@
     <name>MERIS Case2-Water</name>
 
     <dependencies>
-        <dependency>  <!-- for launching in IDE -->
-            <groupId>com.bc.ceres</groupId>
-            <artifactId>ceres-launcher</artifactId>
-            <version>0.12-SNAPSHOT</version>
-        </dependency>
         <dependency>
             <groupId>org.esa.beam</groupId>
             <artifactId>beam-gpf</artifactId>
@@ -26,8 +21,12 @@
         </dependency>
         <dependency>
             <groupId>org.esa.beam</groupId>
+            <artifactId>beam-visat</artifactId>
+            <version>4.9-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.beam</groupId>
             <artifactId>beam-envisat-reader</artifactId>
-            <version>1.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.esa.beam</groupId>

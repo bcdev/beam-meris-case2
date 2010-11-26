@@ -38,7 +38,10 @@ public class Case2Algorithm {
         case2Water = waterAlgorithm;
         case2Water.init(auxdata.getWaterNet(), auxdata.getForwardWaterNet(), parameter);
         chiSquareFit = new ChiSquareFitGLM();
-        chiSquareFit.init(parameter, auxdata, meris_glm);
+        chiSquareFit.init(parameter.tsmConversionExponent, parameter.tsmConversionFactor,
+                          parameter.chlConversionExponent, parameter.chlConversionFactor, auxdata.getForwardWaterNet(),
+                          meris_glm
+        );
 
         OutputBands outputBands = new OutputBands();
         outputBands.addDescriptor(createToaReflectanceDesrciptors(inputProduct, inputBandNames));
@@ -284,18 +287,18 @@ public class Case2Algorithm {
     private BandDescriptor[] createWaterDesrciptors() {
         List<BandDescriptor> descriptorList = new ArrayList<BandDescriptor>(15);
 
-        descriptorList.add(createCommonDescriptor("a_gelbstoff", "m^-1", "Gelbstoff absorbtion (A_Y) at 442 nm",
+        descriptorList.add(createCommonDescriptor("a_gelbstoff", "m^-1", "Gelbstoff absorption (A_Y) at 442 nm",
                                                   ProductData.TYPE_FLOAT32, true, parameter.outputAGelb));
-        descriptorList.add(createCommonDescriptor("a_btsm", "m^-1", "btsm absorbtion (A_btsm) at 442 nm",
+        descriptorList.add(createCommonDescriptor("a_btsm", "m^-1", "btsm absorption (A_btsm) at 442 nm",
                                                   ProductData.TYPE_FLOAT32, true, parameter.outputABtsm));
         descriptorList.add(createCommonDescriptor("a_pig", "m^-1", "Pigment absorption at band 2 (A_PIG)",
                                                   ProductData.TYPE_FLOAT32, true, parameter.outputAPig));
         descriptorList.add(createCommonDescriptor("a_total", "m^-1", "Absorption at 443 nm of all water constituents",
                                                   ProductData.TYPE_FLOAT32, false, parameter.outputATotal));
-        descriptorList.add(createCommonDescriptor("b_tsm", "m^-1", "Total supended matter scattering (B_TSM)",
+        descriptorList.add(createCommonDescriptor("b_tsm", "m^-1", "Total suspended matter scattering (B_TSM)",
                                                   ProductData.TYPE_FLOAT32, true, parameter.outputBTsm));
         descriptorList.add(
-                createCommonDescriptor("tsm", "g m^-3", "Total supended matter dry weight concentration (TSM)",
+                createCommonDescriptor("tsm", "g m^-3", "Total suspended matter dry weight concentration (TSM)",
                                        ProductData.TYPE_FLOAT32, true, parameter.outputTsmConc));
         descriptorList.add(createCommonDescriptor("chl_conc", "mg m^-3", "Chlorophyll concentration (CHL)",
                                                   ProductData.TYPE_FLOAT32, true, parameter.outputChlConc));
@@ -303,7 +306,7 @@ public class Case2Algorithm {
                                                   ProductData.TYPE_FLOAT32, true,
                                                   parameter.outputOutOfScopeChiSquare));
         descriptorList.add(
-                createCommonDescriptor("K_min", "m^-1", "Minimum downwelling irreadiance atenuation coefficient",
+                createCommonDescriptor("K_min", "m^-1", "Minimum downwelling irradiance attenuation coefficient",
                                        ProductData.TYPE_FLOAT32, false, parameter.outputKmin));
         descriptorList.add(createCommonDescriptor("Z90_max", "m", "Maximum signal depth",
                                                   ProductData.TYPE_FLOAT32, false, parameter.outputZ90max));

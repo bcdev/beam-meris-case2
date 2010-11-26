@@ -1,7 +1,5 @@
 package org.esa.beam.case2.algorithm.fit;
 
-import org.esa.beam.case2.algorithm.AlgorithmParameter;
-import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.Flags;
 import org.esa.beam.case2.algorithm.OutputBands;
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
@@ -15,19 +13,20 @@ public class ChiSquareFitGLM implements ChiSquareFit {
     private MerisGLM myFitLvMq;
     private Data4SingleFitInitialization initSingleFit;
     private NNffbpAlphaTabFast forwardWaterNet;
-    private AlgorithmParameter parameter;
-
+    private double fitFailedThreshold;
 
     @Override
-    public void init(AlgorithmParameter parameter, Auxdata auxdata, MerisGLM glm) {
-        this.parameter = parameter;
-        tsmExponent = parameter.tsmConversionExponent;
-        tsmFactor = parameter.tsmConversionFactor;
-        chlExponent = parameter.chlConversionExponent;
-        chlFactor = parameter.chlConversionFactor;
-        forwardWaterNet = auxdata.getForwardWaterNet();
+    public void init(double tsmConversionExponent, double tsmConversionFactor, double chlConversionExponent,
+                     double chlConversionFactor, NNffbpAlphaTabFast forwardWaterNet, MerisGLM glm) {
+        tsmExponent = tsmConversionExponent;
+        tsmFactor = tsmConversionFactor;
+        chlExponent = chlConversionExponent;
+        chlFactor = chlConversionFactor;
+        this.forwardWaterNet = forwardWaterNet;
         myFitLvMq = glm;
-        myFitLvMq.initSetOfFits(forwardWaterNet, parameter.waterReflLogVariance);
+        fitFailedThreshold = 14.0;
+        final double waterReflLogVariance = 1.5;
+        myFitLvMq.initSetOfFits(this.forwardWaterNet, waterReflLogVariance);
         initSingleFit = new Data4SingleFitInitialization();
         // it's suffiecient to initialize these constant values only once
         initSingleFit.ln_a_Chlor = -2.5;
@@ -81,7 +80,7 @@ public class ChiSquareFitGLM implements ChiSquareFit {
 
 
         outputBands.setValue("chiSquareFit", fitRes.ChiSq);
-        if (fitRes.ChiSq > parameter.fitFailedThreshold) {
+        if (fitRes.ChiSq > fitFailedThreshold) {
             outputBands.setValue("l2_flags", outputBands.getIntValue("l2_flags") | Flags.FIT_FAILED);
         }
 

@@ -46,24 +46,70 @@
 
     <extension point="beam-ui:actions">
         <action>
-            <id>merisCase2Water</id>
+            <id>merisRegionalCase2Water</id>
             <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
-            <text>Case2Water (MERIS)...</text>
+            <text>Regional Case-2-Water (MERIS)...</text>
             <shortDescr>Performs IOP retrieval on MERIS</shortDescr>
             <longDescr>Performs IOP retrieval on MERIS data products</longDescr>
             <parent>tools</parent>
             <helpID>merisCase2Water</helpID>
             <placeAfter>flhMciScientificTool</placeAfter>
-            <operatorName>Meris.Case2Water</operatorName>
-            <targetProductNameSuffix>_c2w</targetProductNameSuffix>
+            <operatorName>Meris.RegionalWater</operatorName>
+            <dialogTitle>Regional Case-2-Water</dialogTitle>
+            <targetProductNameSuffix>_c2r</targetProductNameSuffix>
+        </action>
+    </extension>
+    <extension point="beam-ui:actions">
+        <action>
+            <id>merisRegionalCase2Water</id>
+            <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
+            <text>Regional IOP Case-2-Water (MERIS)...</text>
+            <shortDescr>Performs IOP retrieval on MERIS</shortDescr>
+            <longDescr>Performs IOP retrieval on MERIS data products</longDescr>
+            <parent>tools</parent>
+            <helpID>merisCase2Water</helpID>
+            <placeAfter>flhMciScientificTool</placeAfter>
+            <operatorName>Meris.Case2RegionalIOP</operatorName>
+            <dialogTitle>Regional Case-2-Water</dialogTitle>
+            <targetProductNameSuffix>_c2r</targetProductNameSuffix>
+        </action>
+    </extension>
+    <extension point="beam-ui:actions">
+        <action>
+            <id>merisBorealCase2Water</id>
+            <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
+            <text>Boreal Case-2-Water (MERIS)...</text>
+            <shortDescr>Performs IOP retrieval for boreal water on MERIS</shortDescr>
+            <longDescr>Performs IOP retrieval for boreal water on MERIS data products</longDescr>
+            <parent>tools</parent>
+            <helpID>merisCase2Water</helpID>
+            <placeAfter>flhMciScientificTool</placeAfter>
+            <operatorName>Meris.BorealWater</operatorName>
+            <dialogTitle>Boreal Case-2-Water</dialogTitle>
+            <targetProductNameSuffix>_c2b</targetProductNameSuffix>
+        </action>
+    </extension>
+    <extension point="beam-ui:actions">
+        <action>
+            <id>merisEutrophicCase2Water</id>
+            <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
+            <text>Eutrophic Case-2-Water (MERIS)...</text>
+            <shortDescr>Performs IOP retrieval for eutrophic water on MERIS</shortDescr>
+            <longDescr>Performs IOP retrieval for eutrophic water on MERIS data products</longDescr>
+            <parent>tools</parent>
+            <helpID>merisCase2Water</helpID>
+            <placeAfter>flhMciScientificTool</placeAfter>
+            <operatorName>Meris.EutrophicWater</operatorName>
+            <dialogTitle>Eutrophic Case-2-Water</dialogTitle>
+            <targetProductNameSuffix>_c2e</targetProductNameSuffix>
         </action>
     </extension>
 
     <!--<extension point="beam-ui:helpSets">-->
-        <!--<helpSet>-->
-            <!--<parent>beam-help</parent>-->
-            <!--<path>doc/help/meris-case2-water.hs</path>-->
-        <!--</helpSet>-->
+    <!--<helpSet>-->
+    <!--<parent>beam-help</parent>-->
+    <!--<path>doc/help/meris-case2-water.hs</path>-->
+    <!--</helpSet>-->
     <!--</extension>-->
     <!---->
 

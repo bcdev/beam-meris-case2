@@ -72,7 +72,7 @@ public class MerisCase2IOPOperator extends Operator {
         Operator atmoCorOp = new GlintCorrectionOperator();
         atmoCorOp.setSourceProduct("merisProduct", radCorOp.getTargetProduct());
 
-        Operator case2Op = new MerisCase2WaterOp();
+        Operator case2Op = new RegionalWaterOp();
         case2Op.setSourceProduct("acProduct", atmoCorOp.getTargetProduct());
 
         setTargetProduct(case2Op.getTargetProduct());

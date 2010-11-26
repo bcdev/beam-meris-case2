@@ -9,11 +9,10 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.gpf.OperatorException;
-import org.esa.beam.framework.gpf.OperatorSpi;
-import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
 import org.esa.beam.framework.gpf.experimental.PixelOperator;
+import org.esa.beam.meris.case2.algorithm.WaterAlgorithm;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
@@ -26,62 +25,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import static org.esa.beam.dataio.envisat.EnvisatConstants.*;
+import static org.esa.beam.meris.case2.algorithm.WaterAlgorithm.*;
 
-@OperatorMetadata(alias = "Meris.Case2Water",
-                  description = "Performs IOP retrieval on atmospherically corrected MERIS products.",
-                  authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
-                  copyright = "(c) 2010 by Brockmann Consult",
-                  version = "1.0")
-public class MerisCase2WaterOp extends PixelOperator {
+@SuppressWarnings({"UnusedDeclaration"})
+public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
-    public static final int SOURCE_REFLEC_1_INDEX = 0;
-    public static final int SOURCE_REFLEC_2_INDEX = 1;
-    public static final int SOURCE_REFLEC_3_INDEX = 2;
-    public static final int SOURCE_REFLEC_4_INDEX = 3;
-    public static final int SOURCE_REFLEC_5_INDEX = 4;
-    public static final int SOURCE_REFLEC_6_INDEX = 5;
-    public static final int SOURCE_REFLEC_7_INDEX = 6;
-    public static final int SOURCE_REFLEC_9_INDEX = 7;
-    public static final int SOURCE_SOLAZI_INDEX = 8;
-    public static final int SOURCE_SOLZEN_INDEX = 9;
-    public static final int SOURCE_SATAZI_INDEX = 10;
-    public static final int SOURCE_SATZEN_INDEX = 11;
-    public static final int SOURCE_ZONAL_WIND_INDEX = 12;
-    public static final int SOURCE_MERID_WIND_INDEX = 13;
-    public static final int SOURCE_AGC_INVALID_INDEX = 14;
-
-    public static final int TARGET_A_GELBSTOFF_INDEX = 0;
-    public static final int TARGET_A_PIGMENT_INDEX = 1;
-    public static final int TARGET_A_TOTAL_INDEX = 2;
-    public static final int TARGET_B_TSM_INDEX = 3;
-    public static final int TARGET_TSM_INDEX = 4;
-    public static final int TARGET_CHL_CONC_INDEX = 5;
-    public static final int TARGET_CHI_SQUARE_INDEX = 6;
-    public static final int TARGET_K_MIN_INDEX = 7;
-    public static final int TARGET_Z90_MAX_INDEX = 8;
-    public static final int TARGET_FLAG_INDEX = 9;
-
-    public static final int WLR_OOR_BIT_INDEX = 0;
-    public static final int CONC_OOR_BIT_INDEX = 1;
-    public static final int OOTR_BIT_INDEX = 2;
-    public static final int WHITECAPS_BIT_INDEX = 3;
-    public static final int INVALID_BIT_INDEX = 7;
-
-
-    private static final String DEFAULT_INVERSE_WATER_NET_NAME = "meris_bn_20040322_45x16x12x8x5_5177.9.net";
-    private static final String DEFAULT_FORWARD_WATER_NET_NAME = "meris_fn_20040319_15x15x15_1750.4.net";
-
-    // todo - missing in EnvisatConstants
     private static final String MERIS_ZONAL_WIND_DS_NAME = "zonal_wind";
     private static final String MERIS_MERID_WIND_DS_NAME = "merid_wind";
-
     @SuppressWarnings({"PointlessBitwiseExpression"})
     private static final int WLR_OOR = 0x0001 << WLR_OOR_BIT_INDEX;         // WLR out of scope
     private static final int CONC_OOR = 0x01 << CONC_OOR_BIT_INDEX;         // concentration out of range
     private static final int OOTR = 0x01 << OOTR_BIT_INDEX;                 // out of training range == chi2 of measured and fwNN spectrum above threshold
     private static final int WHITECAPS = 0x01 << WHITECAPS_BIT_INDEX;       // risk for white caps
     private static final int INVALID = 0x01 << INVALID_BIT_INDEX;           // not a usable water pixel
-
     private static final String BAND_NAME_A_GELBSTOFF = "a_gelbstoff";
     private static final String BAND_NAME_A_PIGMENT = "a_pig";
     private static final String BAND_NAME_A_TOTAL = "a_total";
@@ -92,21 +48,11 @@ public class MerisCase2WaterOp extends PixelOperator {
     private static final String BAND_NAME_K_MIN = "K_min";
     private static final String BAND_NAME_Z90_MAX = "Z90_max";
     private static final String BAND_NAME_CASE2_FLAGS = "case2_flags";
-
     private static final double WINDSPEED_THRESHOLD = 12.0;
 
-
-    // todo - add required bands
     @SourceProduct(alias = "acProduct", label = "Atmospherically corrected product")
     private Product source;
-    @Parameter(defaultValue = "1.0", description = "Exponent for conversion from TSM to B_TSM")
-    private double tsmConversionExponent;
-    @Parameter(defaultValue = "1.73", description = "Factor for conversion from TSM to B_TSM")
-    private double tsmConversionFactor;
-    @Parameter(defaultValue = "1.04", description = "Exponent for conversion from A_PIG to CHL_CONC")
-    private double chlConversionExponent;
-    @Parameter(defaultValue = "21.0", description = "Factor for conversion from A_PIG to CHL_CONC")
-    private double chlConversionFactor;
+
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope")
     private double spectrumOutOfScopeThreshold;
 
@@ -117,37 +63,24 @@ public class MerisCase2WaterOp extends PixelOperator {
     @Parameter(label = "Inverse water neural net (optional)",
                description = "The file of the inverse water neural net to be used instead of the default.")
     private File inverseWaterNnFile;
+
     @Parameter(label = "Forward water neural net (optional)",
                description = "The file of the forward water neural net to be used instead of the default.")
     private File forwardWaterNnFile;
 
-
     private int centerPixel;
     private boolean isFullResolution;
-    private Case2Water case2Water;
+    private org.esa.beam.meris.case2.algorithm.WaterAlgorithm waterAlgorithm;
     private String inverseWaterNnString;
     private String forwardWaterNnString;
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseWaterNet;
-    private ThreadLocal<NNffbpAlphaTabFast> threadLocalforwardWaterNet;
-
+    private ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardWaterNet;
 
     @Override
     protected void configureTargetProduct(Product targetProduct) {
         final Product sourceProduct = getSourceProduct();
 
-        addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF, "m^-1",
-                      "Gelbstoff (yellow substance) absorption  at 442 nm", true);
-        addTargetBand(targetProduct, BAND_NAME_A_PIGMENT, "m^-1", "Pigment absorption at band 2 ", true);
-        addTargetBand(targetProduct, BAND_NAME_A_TOTAL, "m^-1", "Absorption at 443 nm of all water constituents",
-                      false);
-        addTargetBand(targetProduct, BAND_NAME_B_TSM, "m^-1", "Total suspended matter scattering (B_TSM)", true);
-        addTargetBand(targetProduct, BAND_NAME_TSM, "g m^-3", "Total suspended matter dry weight concentration (TSM)",
-                      true);
-        addTargetBand(targetProduct, BAND_NAME_CHL_CONC, "mg m^-3", "Chlorophyll concentration (CHL)", true);
-        addTargetBand(targetProduct, BAND_NAME_CHI_SQUARE, null, "Chi Square Out of Scope", true);
-        addTargetBand(targetProduct, BAND_NAME_K_MIN, "m^-1", "Minimum downwelling irreadiance attenuation coefficient",
-                      false);
-        addTargetBand(targetProduct, BAND_NAME_Z90_MAX, "m", "Maximum signal depth", false);
+        addTargetBands(targetProduct);
 
 
         // copy bands of FRS products
@@ -163,10 +96,28 @@ public class MerisCase2WaterOp extends PixelOperator {
                 targetBand.setSourceImage(sourceBand.getSourceImage());
             }
         }
-
         addFlagsAndMasks(targetProduct);
+    }
 
-
+    protected void addTargetBands(Product targetProduct) {
+        addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF, "m^-1",
+                      "Gelbstoff (yellow substance) absorption  at 442 nm", true);
+        addTargetBand(targetProduct, BAND_NAME_A_PIGMENT, "m^-1",
+                      "Pigment absorption at band 2 ", true);
+        addTargetBand(targetProduct, BAND_NAME_A_TOTAL, "m^-1",
+                      "Absorption at 443 nm of all water constituents", false);
+        addTargetBand(targetProduct, BAND_NAME_B_TSM, "m^-1",
+                      "Total suspended matter scattering", true);
+        addTargetBand(targetProduct, BAND_NAME_TSM, "g m^-3",
+                      "Total suspended matter dry weight concentration", true);
+        addTargetBand(targetProduct, BAND_NAME_CHL_CONC, "mg m^-3",
+                      "Chlorophyll concentration", true);
+        addTargetBand(targetProduct, BAND_NAME_CHI_SQUARE, null,
+                      "Chi Square Out of Scope", true);
+        addTargetBand(targetProduct, BAND_NAME_K_MIN, "m^-1",
+                      "Minimum downwelling irradiance attenuation coefficient", false);
+        addTargetBand(targetProduct, BAND_NAME_Z90_MAX, "m",
+                      "Maximum signal depth", false);
     }
 
     @Override
@@ -194,6 +145,9 @@ public class MerisCase2WaterOp extends PixelOperator {
         configurator.defineSample(SOURCE_REFLEC_6_INDEX, MERIS_L2_REFLEC_6_BAND_NAME);
         configurator.defineSample(SOURCE_REFLEC_7_INDEX, MERIS_L2_REFLEC_7_BAND_NAME);
         configurator.defineSample(SOURCE_REFLEC_9_INDEX, MERIS_L2_REFLEC_9_BAND_NAME);
+        configurator.defineSample(SOURCE_REFLEC_10_INDEX, MERIS_L2_REFLEC_10_BAND_NAME);
+        configurator.defineSample(SOURCE_REFLEC_12_INDEX, MERIS_L2_REFLEC_12_BAND_NAME);
+        configurator.defineSample(SOURCE_REFLEC_13_INDEX, MERIS_L2_REFLEC_13_BAND_NAME);
         configurator.defineSample(SOURCE_SOLAZI_INDEX, MERIS_SUN_AZIMUTH_DS_NAME);
         configurator.defineSample(SOURCE_SOLZEN_INDEX, MERIS_SUN_ZENITH_DS_NAME);
         configurator.defineSample(SOURCE_SATAZI_INDEX, MERIS_VIEW_AZIMUTH_DS_NAME);
@@ -205,10 +159,9 @@ public class MerisCase2WaterOp extends PixelOperator {
         centerPixel = new MerisFlightDirection(sourceProduct).getNadirColumnIndex();
 
         isFullResolution = !sourceProduct.getProductType().contains("RR");
-        case2Water = new Case2Water(tsmConversionExponent, tsmConversionFactor,
-                                    chlConversionExponent, chlConversionFactor, spectrumOutOfScopeThreshold);
-        inverseWaterNnString = readNeuralNetString(DEFAULT_INVERSE_WATER_NET_NAME, inverseWaterNnFile);
-        forwardWaterNnString = readNeuralNetString(DEFAULT_FORWARD_WATER_NET_NAME, forwardWaterNnFile);
+        waterAlgorithm = createAlgorithm();
+        inverseWaterNnString = readNeuralNetString(getDefaultInverseWaterNetResourcePath(), inverseWaterNnFile);
+        forwardWaterNnString = readNeuralNetString(getDefaultForwardWaterNetResourcePath(), forwardWaterNnFile);
         threadLocalInverseWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
             @Override
             protected NNffbpAlphaTabFast initialValue() {
@@ -219,7 +172,7 @@ public class MerisCase2WaterOp extends PixelOperator {
                 }
             }
         };
-        threadLocalforwardWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+        threadLocalForwardWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
             @Override
             protected NNffbpAlphaTabFast initialValue() {
                 try {
@@ -252,14 +205,17 @@ public class MerisCase2WaterOp extends PixelOperator {
         }
 
         NNffbpAlphaTabFast inverseWaterNet = threadLocalInverseWaterNet.get();
-        NNffbpAlphaTabFast forwardWaterNet = threadLocalforwardWaterNet.get();
-        case2Water.perform(inverseWaterNet, forwardWaterNet,
-                           solzen, satzen, azi_diff_deg, sourceSamples, targetSamples);
+        NNffbpAlphaTabFast forwardWaterNet = threadLocalForwardWaterNet.get();
+        waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
+                               solzen, satzen, azi_diff_deg, sourceSamples, targetSamples);
 
     }
 
-    // todo - originally this method was invoked with the center column index of the scene? Now it is invoked with the
-    // index of the nadir line. Is it correct?
+    protected abstract String getDefaultForwardWaterNetResourcePath();
+
+    protected abstract String getDefaultInverseWaterNetResourcePath();
+
+    protected abstract WaterAlgorithm createAlgorithm();
 
     private double correctViewAngle(double satelliteZenith, int pixelX, int centerPixel, boolean isFullResolution) {
         final double ang_coef_1 = -0.004793;
@@ -285,7 +241,6 @@ public class MerisCase2WaterOp extends PixelOperator {
         azi_diff_deg = 180.0 - azi_diff_deg; /* different definitions in MERIS data and MC /HL simulation */
         return azi_diff_deg;
     }
-
 
     private void addFlagsAndMasks(Product targetProduct) {
         final FlagCoding case2FlagCoding = new FlagCoding(BAND_NAME_CASE2_FLAGS);
@@ -315,8 +270,8 @@ public class MerisCase2WaterOp extends PixelOperator {
                                                 expression, color, transparency));
     }
 
-    private void addTargetBand(Product targetProduct, String bandName, String unit, String description,
-                               boolean log10Scaled) {
+    protected final void addTargetBand(Product targetProduct, String bandName, String unit, String description,
+                                       boolean log10Scaled) {
         final Band band = targetProduct.addBand(bandName, ProductData.TYPE_FLOAT32);
         band.setDescription(description);
         band.setUnit(unit);
@@ -357,12 +312,7 @@ public class MerisCase2WaterOp extends PixelOperator {
         }
     }
 
-    public static class Spi extends OperatorSpi {
-
-        public Spi() {
-            super(MerisCase2WaterOp.class);
-        }
+    protected double getSpectrumOutOfScopeThreshold() {
+        return spectrumOutOfScopeThreshold;
     }
-
-
 }

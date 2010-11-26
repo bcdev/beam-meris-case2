@@ -1,8 +1,7 @@
 package org.esa.beam.case2.algorithm.fit;
 
-import org.esa.beam.case2.algorithm.AlgorithmParameter;
-import org.esa.beam.case2.algorithm.Auxdata;
 import org.esa.beam.case2.algorithm.OutputBands;
+import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 
 /**
  * Created by Marco Peters.
@@ -12,7 +11,9 @@ import org.esa.beam.case2.algorithm.OutputBands;
  */
 public interface ChiSquareFit {
 
-    void init(AlgorithmParameter parameter, Auxdata auxdata, MerisGLM glm);
+    void init(double tsmConversionExponent, double tsmConversionFactor, double chlConversionExponent,
+              double chlConversionFactor, NNffbpAlphaTabFast forwardWaterNet, MerisGLM glm
+    );
 
     void perform(double teta_sun_deg, double teta_view_deg, double azi_diff_deg, double[] RLw_cut,
                  OutputBands outputBands);
