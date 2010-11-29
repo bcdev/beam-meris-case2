@@ -29,8 +29,6 @@ import org.esa.beam.meris.radiometry.equalization.ReprocessingVersion;
 
 import java.io.File;
 
-import static org.esa.beam.dataio.envisat.EnvisatConstants.*;
-
 
 @OperatorMetadata(alias = "Meris.Case2RegionalIOP",
                   description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
@@ -40,25 +38,7 @@ import static org.esa.beam.dataio.envisat.EnvisatConstants.*;
                   internal = true)
 public class Case2RegionalIOPOperator extends Operator {
 
-    @SourceProduct(alias = "source", label = "Name", description = "The source product.",
-                   bands = {
-                           MERIS_L1B_FLAGS_DS_NAME, MERIS_DETECTOR_INDEX_DS_NAME,
-                           MERIS_L1B_RADIANCE_1_BAND_NAME,
-                           MERIS_L1B_RADIANCE_2_BAND_NAME,
-                           MERIS_L1B_RADIANCE_3_BAND_NAME,
-                           MERIS_L1B_RADIANCE_4_BAND_NAME,
-                           MERIS_L1B_RADIANCE_5_BAND_NAME,
-                           MERIS_L1B_RADIANCE_6_BAND_NAME,
-                           MERIS_L1B_RADIANCE_7_BAND_NAME,
-                           MERIS_L1B_RADIANCE_8_BAND_NAME,
-                           MERIS_L1B_RADIANCE_9_BAND_NAME,
-                           MERIS_L1B_RADIANCE_10_BAND_NAME,
-                           MERIS_L1B_RADIANCE_11_BAND_NAME,
-                           MERIS_L1B_RADIANCE_12_BAND_NAME,
-                           MERIS_L1B_RADIANCE_13_BAND_NAME,
-                           MERIS_L1B_RADIANCE_14_BAND_NAME,
-                           MERIS_L1B_RADIANCE_15_BAND_NAME
-                   })
+    @SourceProduct(alias = "source", label = "Name", description = "The source product.")
     private Product sourceProduct;
 
     ///////////  MerisRadiometryCorrectionOp  ///////////////////////////
@@ -70,13 +50,13 @@ public class Case2RegionalIOPOperator extends Operator {
 
     ///////////  GlintCorrectionOperator  ///////////////////////////
     ///////////
+    @Parameter(defaultValue = "true", label = "Perform atmospheric correction",
+               description = "Whether or not to perform atmospheric correction.")
+    private boolean doAtmosphericCorrection;
+
     @Parameter(defaultValue = "true", label = "Output TOSA reflectance",
                description = "Toggles the output of TOSA reflectance.")
     private boolean outputTosa;
-
-    @Parameter(defaultValue = "true", label = "Output path reflectance",
-               description = "Toggles the output of water leaving path reflectance.")
-    private boolean outputPath;
 
     @Parameter(defaultValue = "true", label = "Output transmittance",
                description = "Toggles the output of downwelling irrediance transmittance.")
@@ -125,21 +105,28 @@ public class Case2RegionalIOPOperator extends Operator {
 
     @Override
     public void initialize() throws OperatorException {
-        Operator radCorOp = new MerisRadiometryCorrectionOp();
-        radCorOp.setParameter("doSmile", doSmile);
-        radCorOp.setParameter("doEqualization", false);
-        radCorOp.setParameter("reproVersion", ReprocessingVersion.AUTO_DETECT);
-        radCorOp.setParameter("doCalibration", false);
-        radCorOp.setParameter("doRadToRefl", false);
-        radCorOp.setSourceProduct("sourceProduct", sourceProduct);
+        Product inputProduct = sourceProduct;
+        if (doSmile) {
+            Operator radCorOp = new MerisRadiometryCorrectionOp();
+            radCorOp.setParameter("doSmile", doSmile);
+            radCorOp.setParameter("doEqualization", false);
+            radCorOp.setParameter("reproVersion", ReprocessingVersion.AUTO_DETECT);
+            radCorOp.setParameter("doCalibration", false);
+            radCorOp.setParameter("doRadToRefl", false);
+            radCorOp.setSourceProduct("sourceProduct", sourceProduct);
+            inputProduct = radCorOp.getTargetProduct();
+        }
 
-        Operator atmoCorOp = new GlintCorrectionOperator();
-        atmoCorOp.setParameter("outputTosa", outputTosa);
-        atmoCorOp.setParameter("outputPath", outputPath);
-        atmoCorOp.setParameter("outputTransmittance", outputTransmittance);
-        atmoCorOp.setParameter("landExpression", landExpression);
-        atmoCorOp.setParameter("cloudIceExpression", cloudIceExpression);
-        atmoCorOp.setSourceProduct("merisProduct", radCorOp.getTargetProduct());
+        if (doAtmosphericCorrection) {
+            Operator atmoCorOp = new GlintCorrectionOperator();
+            atmoCorOp.setParameter("outputTosa", outputTosa);
+            atmoCorOp.setParameter("outputPath", true);
+            atmoCorOp.setParameter("outputTransmittance", outputTransmittance);
+            atmoCorOp.setParameter("landExpression", landExpression);
+            atmoCorOp.setParameter("cloudIceExpression", cloudIceExpression);
+            atmoCorOp.setSourceProduct("merisProduct", inputProduct);
+            inputProduct = atmoCorOp.getTargetProduct();
+        }
 
         Operator case2Op = new RegionalWaterOp();
         case2Op.setParameter("tsmConversionExponent", tsmConversionExponent);
@@ -150,7 +137,7 @@ public class Case2RegionalIOPOperator extends Operator {
         case2Op.setParameter("invalidPixelExpression", invalidPixelExpression);
         case2Op.setParameter("inverseWaterNnFile", inverseWaterNnFile);
         case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
-        case2Op.setSourceProduct("acProduct", atmoCorOp.getTargetProduct());
+        case2Op.setSourceProduct("acProduct", inputProduct);
 
         setTargetProduct(case2Op.getTargetProduct());
     }
