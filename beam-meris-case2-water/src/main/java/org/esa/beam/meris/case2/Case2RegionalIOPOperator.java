@@ -24,8 +24,6 @@ import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
-import org.esa.beam.meris.radiometry.MerisRadiometryCorrectionOp;
-import org.esa.beam.meris.radiometry.equalization.ReprocessingVersion;
 
 import java.io.File;
 
@@ -41,15 +39,13 @@ public class Case2RegionalIOPOperator extends Operator {
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
     private Product sourceProduct;
 
-    ///////////  MerisRadiometryCorrectionOp  ///////////////////////////
+    ///////////  GlintCorrectionOperator  ///////////////////////////
     ///////////
     @Parameter(defaultValue = "true",
                label = "Perform SMILE correction",
                description = "Whether to perform SMILE correction.")
-    private boolean doSmile;
+    private boolean doSmileCorrection;
 
-    ///////////  GlintCorrectionOperator  ///////////////////////////
-    ///////////
     @Parameter(defaultValue = "true", label = "Perform atmospheric correction",
                description = "Whether or not to perform atmospheric correction.")
     private boolean doAtmosphericCorrection;
@@ -110,19 +106,10 @@ public class Case2RegionalIOPOperator extends Operator {
     @Override
     public void initialize() throws OperatorException {
         Product inputProduct = sourceProduct;
-        if (doSmile) {
-            Operator radCorOp = new MerisRadiometryCorrectionOp();
-            radCorOp.setParameter("doSmile", doSmile);
-            radCorOp.setParameter("doEqualization", false);
-            radCorOp.setParameter("reproVersion", ReprocessingVersion.AUTO_DETECT);
-            radCorOp.setParameter("doCalibration", false);
-            radCorOp.setParameter("doRadToRefl", false);
-            radCorOp.setSourceProduct("sourceProduct", sourceProduct);
-            inputProduct = radCorOp.getTargetProduct();
-        }
 
         if (doAtmosphericCorrection) {
             Operator atmoCorOp = new GlintCorrectionOperator();
+            atmoCorOp.setParameter("doSmileCorrection", doSmileCorrection);
             atmoCorOp.setParameter("outputReflec", true);
             atmoCorOp.setParameter("outputTosa", outputTosa);
             atmoCorOp.setParameter("outputPath", outputPath);
