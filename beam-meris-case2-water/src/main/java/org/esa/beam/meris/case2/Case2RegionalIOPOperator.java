@@ -58,6 +58,10 @@ public class Case2RegionalIOPOperator extends Operator {
                description = "Toggles the output of TOSA reflectance.")
     private boolean outputTosa;
 
+    @Parameter(defaultValue = "true", label = "Output path reflectance",
+               description = "Toggles the output of water leaving path reflectance.")
+    private boolean outputPath;
+
     @Parameter(defaultValue = "true", label = "Output transmittance",
                description = "Toggles the output of downwelling irrediance transmittance.")
     private boolean outputTransmittance;
@@ -119,8 +123,9 @@ public class Case2RegionalIOPOperator extends Operator {
 
         if (doAtmosphericCorrection) {
             Operator atmoCorOp = new GlintCorrectionOperator();
+            atmoCorOp.setParameter("outputReflec", true);
             atmoCorOp.setParameter("outputTosa", outputTosa);
-            atmoCorOp.setParameter("outputPath", true);
+            atmoCorOp.setParameter("outputPath", outputPath);
             atmoCorOp.setParameter("outputTransmittance", outputTransmittance);
             atmoCorOp.setParameter("landExpression", landExpression);
             atmoCorOp.setParameter("cloudIceExpression", cloudIceExpression);
