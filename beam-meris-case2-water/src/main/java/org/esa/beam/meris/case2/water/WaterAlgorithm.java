@@ -22,7 +22,6 @@ public abstract class WaterAlgorithm {
     public static final int SOURCE_SATZEN_INDEX = 14;
     public static final int SOURCE_ZONAL_WIND_INDEX = 15;
     public static final int SOURCE_MERID_WIND_INDEX = 16;
-    public static final int SOURCE_AGC_INVALID_INDEX = 17;
 
     public static final int TARGET_A_GELBSTOFF_INDEX = 0;
     public static final int TARGET_A_PIGMENT_INDEX = 1;

@@ -12,11 +12,14 @@ import org.esa.beam.framework.gpf.OperatorException;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
 import org.esa.beam.framework.gpf.experimental.PixelOperator;
+import org.esa.beam.jai.ResolutionLevel;
+import org.esa.beam.jai.VirtualBandOpImage;
 import org.esa.beam.meris.case2.fit.ChiSquareFitting;
 import org.esa.beam.meris.case2.water.WaterAlgorithm;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -96,6 +99,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private String forwardWaterNnString;
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseWaterNet;
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardWaterNet;
+    private VirtualBandOpImage invalidOpImage;
 
     @Override
     protected void configureTargetProduct(Product targetProduct) {
@@ -214,7 +218,10 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         configurator.defineSample(SOURCE_SATZEN_INDEX, MERIS_VIEW_ZENITH_DS_NAME);
         configurator.defineSample(SOURCE_ZONAL_WIND_INDEX, MERIS_ZONAL_WIND_DS_NAME);
         configurator.defineSample(SOURCE_MERID_WIND_INDEX, MERIS_MERID_WIND_DS_NAME);
-        configurator.defineSample(SOURCE_AGC_INVALID_INDEX, "agc_invalid");
+
+        invalidOpImage = VirtualBandOpImage.createMask(invalidPixelExpression,
+                                                       getSourceProduct(),
+                                                       ResolutionLevel.MAXRES);
 
         centerPixel = new MerisFlightDirection(sourceProduct).getNadirColumnIndex();
 
@@ -255,7 +262,8 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         double zonalWind = sourceSamples[SOURCE_ZONAL_WIND_INDEX].getDouble();
         double meridWind = sourceSamples[SOURCE_MERID_WIND_INDEX].getDouble();
         double windspeed = Math.sqrt(zonalWind * zonalWind + meridWind * meridWind);
-        if (sourceSamples[SOURCE_AGC_INVALID_INDEX].getBoolean()) {
+
+        if (invalidOpImage.getData(new Rectangle(x, y, 1, 1)).getSample(x, y, 0) != 0) {
             targetSamples[TARGET_FLAG_INDEX].set(INVALID_BIT_INDEX, true);
             return;
         }
@@ -322,13 +330,13 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         case2Flags.setSampleCoding(case2FlagCoding);
 
         final ProductNodeGroup<Mask> maskGroup = targetProduct.getMaskGroup();
-        addMask(maskGroup, "c2w_wlr_oor", "WLR out of scope", "case2_flags.WLR_OOR", Color.CYAN, 0.5f);
-        addMask(maskGroup, "c2w_conc_oor", "Concentration out of training range", "case2_flags.CONC_OOR",
+        addMask(maskGroup, "case2_wlr_oor", "WLR out of scope", "case2_flags.WLR_OOR", Color.CYAN, 0.5f);
+        addMask(maskGroup, "case2_conc_oor", "Concentration out of training range", "case2_flags.CONC_OOR",
                 Color.DARK_GRAY, 0.5f);
-        addMask(maskGroup, "c2w_ootr", "RLw out of training range", "case2_flags.OOTR", Color.ORANGE, 0.5f);
-        addMask(maskGroup, "c2w_whitecaps", "Whitecaps pixels", "case2_flags.WHITECAPS", Color.PINK, 0.5f);
-        addMask(maskGroup, "c2w_fit_failed", "Fit failed", "case2_flags.FIT_FAILED", Color.MAGENTA, 0.5f);
-        addMask(maskGroup, "c2w_invalid", "invalid case2 pixel", "case2_flags.INVALID", Color.RED, 0.0f);
+        addMask(maskGroup, "case2_ootr", "RLw out of training range", "case2_flags.OOTR", Color.ORANGE, 0.5f);
+        addMask(maskGroup, "case2_whitecaps", "Whitecaps pixels", "case2_flags.WHITECAPS", Color.PINK, 0.5f);
+        addMask(maskGroup, "case2_fit_failed", "Fit failed", "case2_flags.FIT_FAILED", Color.MAGENTA, 0.5f);
+        addMask(maskGroup, "case2_invalid", "invalid case2 pixel", "case2_flags.INVALID", Color.RED, 0.0f);
     }
 
     private static void addMask(ProductNodeGroup<Mask> maskGroup, String name, String description,
