@@ -1,4 +1,4 @@
-package org.esa.beam.meris.case2.algorithm;
+package org.esa.beam.meris.case2.water;
 
 import org.esa.beam.case2.algorithm.KMin;
 import org.esa.beam.framework.gpf.experimental.PointOperator;

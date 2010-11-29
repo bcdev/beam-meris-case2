@@ -41,14 +41,15 @@ public class Case2RegionalIOPOperator extends Operator {
 
     ///////////  GlintCorrectionOperator  ///////////////////////////
     ///////////
-    @Parameter(defaultValue = "true",
-               label = "Perform SMILE correction",
-               description = "Whether to perform SMILE correction.")
-    private boolean doSmileCorrection;
 
     @Parameter(defaultValue = "true", label = "Perform atmospheric correction",
                description = "Whether or not to perform atmospheric correction.")
     private boolean doAtmosphericCorrection;
+
+    @Parameter(defaultValue = "true",
+               label = "Perform SMILE correction",
+               description = "Whether to perform SMILE correction.")
+    private boolean doSmileCorrection;
 
     @Parameter(defaultValue = "true", label = "Output TOSA reflectance",
                description = "Toggles the output of TOSA reflectance.")
@@ -103,6 +104,11 @@ public class Case2RegionalIOPOperator extends Operator {
                description = "The file of the forward water neural net to be used instead of the default.")
     private File forwardWaterNnFile;
 
+    @Parameter(label = "Perform Chi-Square fitting", defaultValue = "false",
+               description = "Whether or not to perform the Chi-Square fitting.")
+    private boolean performChiSquareFit;
+
+
     @Override
     public void initialize() throws OperatorException {
         Product inputProduct = sourceProduct;
@@ -129,6 +135,7 @@ public class Case2RegionalIOPOperator extends Operator {
         case2Op.setParameter("invalidPixelExpression", invalidPixelExpression);
         case2Op.setParameter("inverseWaterNnFile", inverseWaterNnFile);
         case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
+        case2Op.setParameter("performChiSquareFit", performChiSquareFit);
         case2Op.setSourceProduct("acProduct", inputProduct);
 
         setTargetProduct(case2Op.getTargetProduct());

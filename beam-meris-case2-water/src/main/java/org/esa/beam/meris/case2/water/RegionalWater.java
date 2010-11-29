@@ -1,13 +1,23 @@
-package org.esa.beam.meris.case2.algorithm;
+package org.esa.beam.meris.case2.water;
 
 import org.esa.beam.case2.algorithm.KMin;
 import org.esa.beam.framework.gpf.experimental.PointOperator;
 
 
-public class BorealWater extends WaterAlgorithm {
+public class RegionalWater extends WaterAlgorithm {
 
-    public BorealWater(double spectrumOutOfScopeThreshold) {
+    private final double tsmExponent;
+    private final double tsmFactor;
+    private final double chlExponent;
+    private final double chlFactor;
+
+    public RegionalWater(double spectrumOutOfScopeThreshold, double tsmExponent,
+                         double tsmFactor, double chlExponent, double chlFactor) {
         super(spectrumOutOfScopeThreshold);
+        this.tsmExponent = tsmExponent;
+        this.tsmFactor = tsmFactor;
+        this.chlExponent = chlExponent;
+        this.chlFactor = chlFactor;
     }
 
     @Override
@@ -28,7 +38,7 @@ public class BorealWater extends WaterAlgorithm {
                Math.pow(forwardWaterOutnet[4] - Math.log(RLw_cut[4]), 2) +
                Math.pow(forwardWaterOutnet[5] - Math.log(RLw_cut[5]), 2) +
                Math.pow(forwardWaterOutnet[6] - Math.log(RLw_cut[6]), 2) +
-               Math.pow(forwardWaterOutnet[8] - Math.log(RLw_cut[8]), 2);
+               Math.pow(forwardWaterOutnet[7] - Math.log(RLw_cut[8]), 2); // in outnet 7 corresponds to RLw 8
     }
 
     @Override
@@ -38,9 +48,9 @@ public class BorealWater extends WaterAlgorithm {
         forwardWaterInnet[0] = solzen;
         forwardWaterInnet[1] = satzen;
         forwardWaterInnet[2] = azi_diff_deg;
-        forwardWaterInnet[3] = waterOutnet[0]; // log bTsm
-        forwardWaterInnet[4] = waterOutnet[1]; // log aPig
-        forwardWaterInnet[5] = waterOutnet[2]; // log aGelbstoff
+        forwardWaterInnet[3] = waterOutnet[0]; // log gelbstoff
+        forwardWaterInnet[4] = waterOutnet[1]; // log pigment
+        forwardWaterInnet[5] = waterOutnet[2]; // log tsm
         return forwardWaterInnet;
 
     }
@@ -49,16 +59,16 @@ public class BorealWater extends WaterAlgorithm {
     protected void fillOutput(double[] waterOutnet, PointOperator.WritableSample[] targetSamples) {
         double bTsm = Math.exp(waterOutnet[0]);
         targetSamples[TARGET_B_TSM_INDEX].set(bTsm);
-        targetSamples[TARGET_TSM_INDEX].set(bTsm / 0.95);
+        targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + waterOutnet[0] * tsmExponent));
 
         double aPig = Math.exp(waterOutnet[1]);
         targetSamples[TARGET_A_PIGMENT_INDEX].set(aPig);
-        targetSamples[TARGET_CHL_CONC_INDEX].set(62.6 * Math.pow(aPig, 1.29));
+        targetSamples[TARGET_CHL_CONC_INDEX].set(Math.exp(Math.log(chlFactor) + waterOutnet[1] * chlExponent));
 
         double aGelbstoff = Math.exp(waterOutnet[2]);
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
-        targetSamples[TARGET_A_TOTAL_INDEX].set(
-                aPig + aGelbstoff + bTsm / 0.95 * 0.089); // all water constituents absorption
+        targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff);
+
     }
 
     @Override

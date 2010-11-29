@@ -1,4 +1,4 @@
-package org.esa.beam.meris.case2.algorithm;
+package org.esa.beam.meris.case2.water;
 
 import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 import org.esa.beam.framework.gpf.experimental.PointOperator;
@@ -23,6 +23,7 @@ public abstract class WaterAlgorithm {
     public static final int SOURCE_ZONAL_WIND_INDEX = 15;
     public static final int SOURCE_MERID_WIND_INDEX = 16;
     public static final int SOURCE_AGC_INVALID_INDEX = 17;
+
     public static final int TARGET_A_GELBSTOFF_INDEX = 0;
     public static final int TARGET_A_PIGMENT_INDEX = 1;
     public static final int TARGET_A_TOTAL_INDEX = 2;
@@ -33,10 +34,26 @@ public abstract class WaterAlgorithm {
     public static final int TARGET_K_MIN_INDEX = 7;
     public static final int TARGET_Z90_MAX_INDEX = 8;
     public static final int TARGET_FLAG_INDEX = 9;
+    public static final int TARGET_A_GELBSTOFF_FIT_INDEX = 10;
+    public static final int TARGET_A_GELBSTOFF_FIT_MAX_INDEX = 11;
+    public static final int TARGET_A_GELBSTOFF_FIT_MIN_INDEX = 12;
+    public static final int TARGET_A_PIG_FIT_INDEX = 13;
+    public static final int TARGET_A_PIG_FIT_MAX_INDEX = 14;
+    public static final int TARGET_A_PIG_FIT_MIN_INDEX = 15;
+    public static final int TARGET_B_TSM_FIT_INDEX = 16;
+    public static final int TARGET_B_TSM_FIT_MAX_INDEX = 17;
+    public static final int TARGET_B_TSM_FIT_MIN_INDEX = 18;
+    public static final int TARGET_TSM_FIT_INDEX = 19;
+    public static final int TARGET_CHL_CONC_FIT_INDEX = 20;
+    public static final int TARGET_CHI_SQUARE_FIT_INDEX = 21;
+    public static final int TARGET_N_ITER_FIT_INDEX = 22;
+    public static final int TARGET_PARAM_CHANGE_FIT_INDEX = 23;
+
     public static final int WLR_OOR_BIT_INDEX = 0;
     public static final int CONC_OOR_BIT_INDEX = 1;
     public static final int OOTR_BIT_INDEX = 2;
     public static final int WHITECAPS_BIT_INDEX = 3;
+    public static final int FIT_FAILED_INDEX = 4;
     public static final int INVALID_BIT_INDEX = 7;
 
     private double spectrumOutOfScopeThreshold;

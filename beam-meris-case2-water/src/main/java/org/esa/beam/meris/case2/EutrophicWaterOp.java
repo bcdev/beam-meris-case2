@@ -1,12 +1,15 @@
 package org.esa.beam.meris.case2;
 
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
-import org.esa.beam.meris.case2.algorithm.EutrophicWater;
-import org.esa.beam.meris.case2.algorithm.WaterAlgorithm;
+import org.esa.beam.meris.case2.fit.ChiSquareFitting;
+import org.esa.beam.meris.case2.fit.MerisGLM;
+import org.esa.beam.meris.case2.water.EutrophicWater;
+import org.esa.beam.meris.case2.water.WaterAlgorithm;
 
 @OperatorMetadata(alias = "Meris.EutrophicWater",
                   description = "Performs IOP retrieval on atmospherically corrected MERIS products.",
@@ -33,7 +36,8 @@ public class EutrophicWaterOp extends MerisCase2BasisWaterOp {
     @Override
     protected void addTargetBands(Product targetProduct) {
         super.addTargetBands(targetProduct);
-        addTargetBand(targetProduct, BAND_NAME_A_BTSM, "m^-1", "btsm absorption at 442 nm", true);
+        addTargetBand(targetProduct, BAND_NAME_A_BTSM, "m^-1", "btsm absorption at 442 nm", true,
+                      ProductData.TYPE_FLOAT32);
     }
 
     @Override
@@ -57,6 +61,13 @@ public class EutrophicWaterOp extends MerisCase2BasisWaterOp {
         return new EutrophicWater(getSpectrumOutOfScopeThreshold(),
                                   tsmConversionExponent, tsmConversionFactor,
                                   chlConversionExponent, chlConversionFactor);
+    }
+
+    @Override
+    protected ChiSquareFitting createChiSquareFitting() {
+        return new ChiSquareFitting(tsmConversionExponent, tsmConversionFactor,
+                                    chlConversionExponent, chlConversionFactor, new MerisGLM(11, 8));
+
     }
 
 

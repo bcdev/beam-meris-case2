@@ -4,8 +4,10 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
-import org.esa.beam.meris.case2.algorithm.BorealWater;
-import org.esa.beam.meris.case2.algorithm.WaterAlgorithm;
+import org.esa.beam.meris.case2.fit.ChiSquareFitting;
+import org.esa.beam.meris.case2.fit.MerisGLM;
+import org.esa.beam.meris.case2.water.BorealWater;
+import org.esa.beam.meris.case2.water.WaterAlgorithm;
 
 @OperatorMetadata(alias = "Meris.BorealWater",
                   description = "Performs IOP retrieval on atmospherically corrected MERIS products.",
@@ -30,6 +32,12 @@ public class BorealWaterOp extends MerisCase2BasisWaterOp {
     @Override
     protected WaterAlgorithm createAlgorithm() {
         return new BorealWater(getSpectrumOutOfScopeThreshold());
+    }
+
+    @Override
+    protected ChiSquareFitting createChiSquareFitting() {
+        return new ChiSquareFitting(1.0, 0.0, 1.0, 0.0, new MerisGLM(10, 7));
+
     }
 
 

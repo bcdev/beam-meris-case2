@@ -12,7 +12,8 @@ import org.esa.beam.framework.gpf.OperatorException;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
 import org.esa.beam.framework.gpf.experimental.PixelOperator;
-import org.esa.beam.meris.case2.algorithm.WaterAlgorithm;
+import org.esa.beam.meris.case2.fit.ChiSquareFitting;
+import org.esa.beam.meris.case2.water.WaterAlgorithm;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
@@ -25,7 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import static org.esa.beam.dataio.envisat.EnvisatConstants.*;
-import static org.esa.beam.meris.case2.algorithm.WaterAlgorithm.*;
+import static org.esa.beam.meris.case2.water.WaterAlgorithm.*;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public abstract class MerisCase2BasisWaterOp extends PixelOperator {
@@ -37,6 +38,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final int CONC_OOR = 0x01 << CONC_OOR_BIT_INDEX;         // concentration out of range
     private static final int OOTR = 0x01 << OOTR_BIT_INDEX;                 // out of training range == chi2 of measured and fwNN spectrum above threshold
     private static final int WHITECAPS = 0x01 << WHITECAPS_BIT_INDEX;       // risk for white caps
+    private static final int FIT_FAILED = 0x01 << FIT_FAILED_INDEX;          // fit failed
     private static final int INVALID = 0x01 << INVALID_BIT_INDEX;           // not a usable water pixel
     private static final String BAND_NAME_A_GELBSTOFF = "a_gelbstoff";
     private static final String BAND_NAME_A_PIGMENT = "a_pig";
@@ -48,6 +50,21 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final String BAND_NAME_K_MIN = "K_min";
     private static final String BAND_NAME_Z90_MAX = "Z90_max";
     private static final String BAND_NAME_CASE2_FLAGS = "case2_flags";
+    private static final String BAND_NAME_A_GELBSTOFF_FIT = "a_gelbstoffFit";
+    private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = "a_gelbstoffFit_max";
+    private static final String BAND_NAME_A_GELBSTOFF_FIT_MIN = "a_gelbstoffFit_min";
+    private static final String BAND_NAME_A_PIG_FIT = "a_pigFit";
+    private static final String BAND_NAME_A_PIG_FIT_MAX = "a_pigFit_max";
+    private static final String BAND_NAME_A_PIG_FIT_MIN = "a_pigFit_min";
+    private static final String BAND_NAME_B_TSM_FIT = "b_tsmFit";
+    private static final String BAND_NAME_B_TSM_FIT_MAX = "b_tsmFit_max";
+    private static final String BAND_NAME_B_TSM_FIT_MIN = "b_tsmFit_min";
+    private static final String BAND_NAME_TSM_FIT = "tsmFit";
+    private static final String BAND_NAME_CHL_CONC_FIT = "chl_concFit";
+    private static final String BAND_NAME_CHI_SQUARE_FIT = "chiSquareFit";
+    private static final String BAND_NAME_N_ITER = "nIter";
+    private static final String BAND_NAME_PARAM_CHANGE = "paramChange";
+
     private static final double WINDSPEED_THRESHOLD = 12.0;
 
     @SourceProduct(alias = "acProduct", label = "Atmospherically corrected product")
@@ -68,13 +85,18 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                description = "The file of the forward water neural net to be used instead of the default.")
     private File forwardWaterNnFile;
 
+    @Parameter(label = "Perform Chi-Square fitting", defaultValue = "false",
+               description = "Whether or not to perform the Chi-Square fitting.")
+    private boolean performChiSquareFit;
+
     private int centerPixel;
     private boolean isFullResolution;
-    private org.esa.beam.meris.case2.algorithm.WaterAlgorithm waterAlgorithm;
+    private org.esa.beam.meris.case2.water.WaterAlgorithm waterAlgorithm;
     private String inverseWaterNnString;
     private String forwardWaterNnString;
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseWaterNet;
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardWaterNet;
+    private ChiSquareFitting chiSquareFitting;
 
     @Override
     protected void configureTargetProduct(Product targetProduct) {
@@ -101,23 +123,43 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
     protected void addTargetBands(Product targetProduct) {
         addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF, "m^-1",
-                      "Gelbstoff (yellow substance) absorption  at 442 nm", true);
+                      "Gelbstoff (yellow substance) absorption  at 442 nm", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_A_PIGMENT, "m^-1",
-                      "Pigment absorption at band 2 ", true);
+                      "Pigment absorption at band 2 ", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_A_TOTAL, "m^-1",
-                      "Absorption at 443 nm of all water constituents", false);
+                      "Absorption at 443 nm of all water constituents", false, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_B_TSM, "m^-1",
-                      "Total suspended matter scattering", true);
+                      "Total suspended matter scattering", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_TSM, "g m^-3",
-                      "Total suspended matter dry weight concentration", true);
+                      "Total suspended matter dry weight concentration", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_CHL_CONC, "mg m^-3",
-                      "Chlorophyll concentration", true);
+                      "Chlorophyll concentration", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_CHI_SQUARE, null,
-                      "Chi Square Out of Scope", true);
+                      "Chi Square Out of Scope", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_K_MIN, "m^-1",
-                      "Minimum downwelling irradiance attenuation coefficient", false);
+                      "Minimum downwelling irradiance attenuation coefficient", false, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_Z90_MAX, "m",
-                      "Maximum signal depth", false);
+                      "Maximum signal depth", false, ProductData.TYPE_FLOAT32);
+        if (performChiSquareFit) {
+            addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF_FIT, null, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF_FIT_MAX, null, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF_FIT_MIN, null, null, true, ProductData.TYPE_FLOAT32);
+
+            addTargetBand(targetProduct, BAND_NAME_A_PIG_FIT, null, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(targetProduct, BAND_NAME_A_PIG_FIT_MAX, null, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(targetProduct, BAND_NAME_A_PIG_FIT_MIN, null, null, true, ProductData.TYPE_FLOAT32);
+
+            addTargetBand(targetProduct, BAND_NAME_B_TSM_FIT, null, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(targetProduct, BAND_NAME_B_TSM_FIT_MAX, null, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(targetProduct, BAND_NAME_B_TSM_FIT_MIN, null, null, true, ProductData.TYPE_FLOAT32);
+
+            addTargetBand(targetProduct, BAND_NAME_TSM_FIT, null, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(targetProduct, BAND_NAME_CHL_CONC_FIT, null, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(targetProduct, BAND_NAME_CHI_SQUARE_FIT, null, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(targetProduct, BAND_NAME_N_ITER, null, null, false, ProductData.TYPE_INT32);
+            addTargetBand(targetProduct, BAND_NAME_PARAM_CHANGE, "1", "Parameter change in last fit step", false,
+                          ProductData.TYPE_FLOAT32);
+        }
     }
 
     @Override
@@ -132,6 +174,25 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         configurator.defineSample(TARGET_K_MIN_INDEX, BAND_NAME_K_MIN);
         configurator.defineSample(TARGET_Z90_MAX_INDEX, BAND_NAME_Z90_MAX);
         configurator.defineSample(TARGET_FLAG_INDEX, BAND_NAME_CASE2_FLAGS);
+        if (performChiSquareFit) {
+            configurator.defineSample(TARGET_A_GELBSTOFF_FIT_INDEX, BAND_NAME_A_GELBSTOFF_FIT);
+            configurator.defineSample(TARGET_A_GELBSTOFF_FIT_MAX_INDEX, BAND_NAME_A_GELBSTOFF_FIT_MAX);
+            configurator.defineSample(TARGET_A_GELBSTOFF_FIT_MIN_INDEX, BAND_NAME_A_GELBSTOFF_FIT_MIN);
+
+            configurator.defineSample(TARGET_A_PIG_FIT_INDEX, BAND_NAME_A_PIG_FIT);
+            configurator.defineSample(TARGET_A_PIG_FIT_MAX_INDEX, BAND_NAME_A_PIG_FIT_MAX);
+            configurator.defineSample(TARGET_A_PIG_FIT_MIN_INDEX, BAND_NAME_A_PIG_FIT_MIN);
+
+            configurator.defineSample(TARGET_B_TSM_FIT_INDEX, BAND_NAME_B_TSM_FIT);
+            configurator.defineSample(TARGET_B_TSM_FIT_MAX_INDEX, BAND_NAME_B_TSM_FIT_MAX);
+            configurator.defineSample(TARGET_B_TSM_FIT_MIN_INDEX, BAND_NAME_B_TSM_FIT_MIN);
+
+            configurator.defineSample(TARGET_TSM_FIT_INDEX, BAND_NAME_TSM_FIT);
+            configurator.defineSample(TARGET_CHL_CONC_FIT_INDEX, BAND_NAME_CHL_CONC_FIT);
+            configurator.defineSample(TARGET_CHI_SQUARE_FIT_INDEX, BAND_NAME_CHI_SQUARE_FIT);
+            configurator.defineSample(TARGET_N_ITER_FIT_INDEX, BAND_NAME_N_ITER);
+            configurator.defineSample(TARGET_PARAM_CHANGE_FIT_INDEX, BAND_NAME_PARAM_CHANGE);
+        }
     }
 
     @Override
@@ -162,6 +223,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         waterAlgorithm = createAlgorithm();
         inverseWaterNnString = readNeuralNetString(getDefaultInverseWaterNetResourcePath(), inverseWaterNnFile);
         forwardWaterNnString = readNeuralNetString(getDefaultForwardWaterNetResourcePath(), forwardWaterNnFile);
+        chiSquareFitting = createChiSquareFitting();
         threadLocalInverseWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
             @Override
             protected NNffbpAlphaTabFast initialValue() {
@@ -206,8 +268,13 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
         NNffbpAlphaTabFast inverseWaterNet = threadLocalInverseWaterNet.get();
         NNffbpAlphaTabFast forwardWaterNet = threadLocalForwardWaterNet.get();
-        waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
-                               solzen, satzen, azi_diff_deg, sourceSamples, targetSamples);
+        double[] RLw_cut = waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
+                                                  solzen, satzen, azi_diff_deg, sourceSamples, targetSamples);
+        if (performChiSquareFit) {
+            final ChiSquareFitting fitting = createChiSquareFitting();
+            fitting.perform(forwardWaterNet, RLw_cut, solzen, satzen, azi_diff_deg, targetSamples);
+        }
+
 
     }
 
@@ -216,6 +283,8 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     protected abstract String getDefaultInverseWaterNetResourcePath();
 
     protected abstract WaterAlgorithm createAlgorithm();
+
+    protected abstract ChiSquareFitting createChiSquareFitting();
 
     private double correctViewAngle(double satelliteZenith, int pixelX, int centerPixel, boolean isFullResolution) {
         final double ang_coef_1 = -0.004793;
@@ -245,9 +314,10 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private void addFlagsAndMasks(Product targetProduct) {
         final FlagCoding case2FlagCoding = new FlagCoding(BAND_NAME_CASE2_FLAGS);
         case2FlagCoding.addFlag("WLR_OOR", WLR_OOR, "WLR out of scope");
-        case2FlagCoding.addFlag("CONC_OOR", CONC_OOR, "concentration out of training range");
+        case2FlagCoding.addFlag("CONC_OOR", CONC_OOR, "Concentration out of training range");
         case2FlagCoding.addFlag("OOTR", OOTR, "RLw out of training range");
         case2FlagCoding.addFlag("WHITECAPS", WHITECAPS, "Whitecaps pixels");
+        case2FlagCoding.addFlag("FIT_FAILED", FIT_FAILED, "Fit failed");
         case2FlagCoding.addFlag("INVALID", INVALID, "not valid");
         targetProduct.getFlagCodingGroup().add(case2FlagCoding);
         final Band case2Flags = targetProduct.addBand(BAND_NAME_CASE2_FLAGS, ProductData.TYPE_UINT8);
@@ -255,10 +325,11 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
         final ProductNodeGroup<Mask> maskGroup = targetProduct.getMaskGroup();
         addMask(maskGroup, "c2w_wlr_oor", "WLR out of scope", "case2_flags.WLR_OOR", Color.CYAN, 0.5f);
-        addMask(maskGroup, "c2w_conc_oor", "concentration out of training range", "case2_flags.CONC_OOR",
+        addMask(maskGroup, "c2w_conc_oor", "Concentration out of training range", "case2_flags.CONC_OOR",
                 Color.DARK_GRAY, 0.5f);
         addMask(maskGroup, "c2w_ootr", "RLw out of training range", "case2_flags.OOTR", Color.ORANGE, 0.5f);
         addMask(maskGroup, "c2w_whitecaps", "Whitecaps pixels", "case2_flags.WHITECAPS", Color.PINK, 0.5f);
+        addMask(maskGroup, "c2w_fit_failed", "Fit failed", "case2_flags.FIT_FAILED", Color.MAGENTA, 0.5f);
         addMask(maskGroup, "c2w_invalid", "invalid case2 pixel", "case2_flags.INVALID", Color.RED, 0.0f);
     }
 
@@ -271,8 +342,8 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     }
 
     protected final void addTargetBand(Product targetProduct, String bandName, String unit, String description,
-                                       boolean log10Scaled) {
-        final Band band = targetProduct.addBand(bandName, ProductData.TYPE_FLOAT32);
+                                       boolean log10Scaled, int dataType) {
+        final Band band = targetProduct.addBand(bandName, dataType);
         band.setDescription(description);
         band.setUnit(unit);
         band.setLog10Scaled(log10Scaled);

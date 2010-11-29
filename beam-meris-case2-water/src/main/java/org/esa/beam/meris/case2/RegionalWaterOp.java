@@ -5,8 +5,10 @@ import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
-import org.esa.beam.meris.case2.algorithm.RegionalWater;
-import org.esa.beam.meris.case2.algorithm.WaterAlgorithm;
+import org.esa.beam.meris.case2.fit.ChiSquareFitting;
+import org.esa.beam.meris.case2.fit.MerisGLM;
+import org.esa.beam.meris.case2.water.RegionalWater;
+import org.esa.beam.meris.case2.water.WaterAlgorithm;
 
 @OperatorMetadata(alias = "Meris.RegionalWater",
                   description = "Performs IOP retrieval on atmospherically corrected MERIS products.",
@@ -43,6 +45,12 @@ public class RegionalWaterOp extends MerisCase2BasisWaterOp {
         return new RegionalWater(getSpectrumOutOfScopeThreshold(),
                                  tsmConversionExponent, tsmConversionFactor,
                                  chlConversionExponent, chlConversionFactor);
+    }
+
+    @Override
+    protected ChiSquareFitting createChiSquareFitting() {
+        return new ChiSquareFitting(tsmConversionExponent, tsmConversionFactor,
+                                    chlConversionExponent, chlConversionFactor, new MerisGLM(11, 8));
     }
 
 
