@@ -96,7 +96,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private String forwardWaterNnString;
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseWaterNet;
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardWaterNet;
-    private ChiSquareFitting chiSquareFitting;
 
     @Override
     protected void configureTargetProduct(Product targetProduct) {
@@ -223,7 +222,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         waterAlgorithm = createAlgorithm();
         inverseWaterNnString = readNeuralNetString(getDefaultInverseWaterNetResourcePath(), inverseWaterNnFile);
         forwardWaterNnString = readNeuralNetString(getDefaultForwardWaterNetResourcePath(), forwardWaterNnFile);
-        chiSquareFitting = createChiSquareFitting();
         threadLocalInverseWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
             @Override
             protected NNffbpAlphaTabFast initialValue() {
