@@ -24,8 +24,11 @@ import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
+import org.esa.beam.gpf.operators.standard.MergeOp;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @OperatorMetadata(alias = "Meris.Case2RegionalIOP",
@@ -113,6 +116,8 @@ public class Case2RegionalIOPOperator extends Operator {
     public void initialize() throws OperatorException {
         Product inputProduct = sourceProduct;
 
+        final MergeOp mergeOp = new MergeOp();
+        List<MergeOp.BandDesc> bandDescList = new ArrayList<MergeOp.BandDesc>();
         if (doAtmosphericCorrection) {
             Operator atmoCorOp = new GlintCorrectionOperator();
             atmoCorOp.setParameter("doSmileCorrection", doSmileCorrection);
@@ -124,6 +129,16 @@ public class Case2RegionalIOPOperator extends Operator {
             atmoCorOp.setParameter("cloudIceExpression", cloudIceExpression);
             atmoCorOp.setSourceProduct("merisProduct", inputProduct);
             inputProduct = atmoCorOp.getTargetProduct();
+            final String[] names = inputProduct.getBandNames();
+            for (String name : names) {
+                if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
+                    continue;
+                }
+                final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
+                bandDesc.setProduct("inputProduct");
+                bandDesc.setNamePattern(name);
+                bandDescList.add(bandDesc);
+            }
         }
 
         Operator case2Op = new RegionalWaterOp();
@@ -138,7 +153,19 @@ public class Case2RegionalIOPOperator extends Operator {
         case2Op.setParameter("performChiSquareFit", performChiSquareFit);
         case2Op.setSourceProduct("acProduct", inputProduct);
 
-        setTargetProduct(case2Op.getTargetProduct());
+        final MergeOp.BandDesc case2Desc = new MergeOp.BandDesc();
+        case2Desc.setProduct("case2Product");
+        case2Desc.setNamePattern(".*");
+        bandDescList.add(case2Desc);
+
+        final Product case2Product = case2Op.getTargetProduct();
+        mergeOp.setSourceProduct("inputProduct", inputProduct);
+        mergeOp.setSourceProduct("case2Product", case2Product);
+        mergeOp.setParameter("productName", case2Product.getName());
+        mergeOp.setParameter("productType", case2Product.getProductType());
+        mergeOp.setParameter("copyGeoCodingFrom", "case2Product");
+        mergeOp.setParameter("bands", bandDescList.toArray(new MergeOp.BandDesc[bandDescList.size()]));
+        setTargetProduct(mergeOp.getTargetProduct());
     }
 
     public static class Spi extends OperatorSpi {
