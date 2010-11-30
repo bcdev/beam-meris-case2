@@ -10,7 +10,6 @@ import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.gpf.OperatorException;
 import org.esa.beam.framework.gpf.annotations.Parameter;
-import org.esa.beam.framework.gpf.annotations.SourceProduct;
 import org.esa.beam.framework.gpf.experimental.PixelOperator;
 import org.esa.beam.jai.ResolutionLevel;
 import org.esa.beam.jai.VirtualBandOpImage;
@@ -69,9 +68,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final String BAND_NAME_PARAM_CHANGE = "paramChange";
 
     private static final double WINDSPEED_THRESHOLD = 12.0;
-
-    @SourceProduct(alias = "acProduct", label = "Atmospherically corrected product")
-    private Product source;
 
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope")
     private double spectrumOutOfScopeThreshold;
