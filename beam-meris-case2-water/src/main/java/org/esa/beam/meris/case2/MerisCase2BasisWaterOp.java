@@ -33,8 +33,10 @@ import static org.esa.beam.meris.case2.water.WaterAlgorithm.*;
 @SuppressWarnings({"UnusedDeclaration"})
 public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
+    // todo move to EnivsatConstants
     private static final String MERIS_ZONAL_WIND_DS_NAME = "zonal_wind";
     private static final String MERIS_MERID_WIND_DS_NAME = "merid_wind";
+
     @SuppressWarnings({"PointlessBitwiseExpression"})
     private static final int WLR_OOR = 0x0001 << WLR_OOR_BIT_INDEX;         // WLR out of scope
     private static final int CONC_OOR = 0x01 << CONC_OOR_BIT_INDEX;         // concentration out of range
@@ -42,6 +44,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final int WHITECAPS = 0x01 << WHITECAPS_BIT_INDEX;       // risk for white caps
     private static final int FIT_FAILED = 0x01 << FIT_FAILED_INDEX;          // fit failed
     private static final int INVALID = 0x01 << INVALID_BIT_INDEX;           // not a usable water pixel
+
     private static final String BAND_NAME_A_GELBSTOFF = "a_gelbstoff";
     private static final String BAND_NAME_A_PIGMENT = "a_pig";
     private static final String BAND_NAME_A_TOTAL = "a_total";
