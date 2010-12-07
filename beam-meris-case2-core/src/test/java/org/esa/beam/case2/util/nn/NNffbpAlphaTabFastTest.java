@@ -18,16 +18,8 @@ package org.esa.beam.case2.util.nn;
  */
 
 import junit.framework.TestCase;
-import org.esa.beam.framework.gpf.OperatorException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 public class NNffbpAlphaTabFastTest extends TestCase {
 
@@ -56,6 +48,48 @@ public class NNffbpAlphaTabFastTest extends TestCase {
             }
         }
 
+    }
+
+    public void testCalcJacobiPerformance() {
+        final NNffbpAlphaTabFast tab = loadTestNet();
+
+        final double[] nnInput = new double[]{1.0, 3.4, 6.988, 4.4, 7.0, 16.21};
+
+        final long t1 = System.nanoTime();
+        final int N = 100000;
+        for (int i = 0; i < N; i++) {
+            final double[] doubles = nnInput.clone();
+            for (int j = 0; j < doubles.length; j++) {
+                doubles[j] += 1.0e-5 * Math.random();
+            }
+            final NNCalc nnCalc = tab.calcJacobi(nnInput);
+            assertTrue(nnCalc.getNnOutput()[0] != 0.0);
+        }
+        final long t2 = System.nanoTime();
+        final double seconds = (t2 - t1) / 1.0e9;
+        System.out.println("testCalcJacobiPerformance: " + seconds + " seconds");
+        assertTrue(seconds < 1.0);
+    }
+
+    public void testCalcPerformance() {
+        final NNffbpAlphaTabFast tab = loadTestNet();
+
+        final double[] nnInput = new double[]{1.0, 3.4, 6.988, 4.4, 7.0, 16.21};
+
+        final long t1 = System.nanoTime();
+        final int N = 100000;
+        for (int i = 0; i < N; i++) {
+            final double[] doubles = nnInput.clone();
+            for (int j = 0; j < doubles.length; j++) {
+                doubles[j] += 1e-5 * Math.random();
+            }
+            final double[] nnCalc = tab.calc(nnInput);
+            assertTrue(nnCalc[0] != 0.0);
+        }
+        final long t2 = System.nanoTime();
+        final double seconds = (t2 - t1) / 1e9;
+        System.out.println("testCalcPerformance: " + seconds + " seconds");
+        assertTrue(seconds < 1.0);
     }
 
     private static NNffbpAlphaTabFast loadTestNet() {
