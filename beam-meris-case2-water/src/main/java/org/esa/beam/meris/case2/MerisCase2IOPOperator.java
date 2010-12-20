@@ -28,6 +28,9 @@ import org.esa.beam.meris.radiometry.equalization.ReprocessingVersion;
 
 import static org.esa.beam.dataio.envisat.EnvisatConstants.*;
 
+
+// TODO (mp 10.12.2010) - should be moved to Calvalus or deleted
+
 /**
  * An operator that computes case 2 IOPs from MERIS L1b products.
  * This includes radiometric corrections, atmospheric correction and the actual IOP retrieval.
