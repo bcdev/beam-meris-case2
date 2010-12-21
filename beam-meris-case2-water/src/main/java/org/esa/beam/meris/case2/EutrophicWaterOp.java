@@ -19,6 +19,7 @@ import org.esa.beam.meris.case2.water.WaterAlgorithm;
 public class EutrophicWaterOp extends MerisCase2BasisWaterOp {
 
     private static final String BAND_NAME_A_BTSM = "a_btsm";
+    private static final String PRODUCT_TYPE_SUFFIX = "EUT";
 
     @SourceProduct(alias = "acProduct", label = "Atmospherically corrected product")
     private Product source;
@@ -67,7 +68,11 @@ public class EutrophicWaterOp extends MerisCase2BasisWaterOp {
     protected ChiSquareFitting createChiSquareFitting() {
         return new ChiSquareFitting(tsmConversionExponent, tsmConversionFactor,
                                     chlConversionExponent, chlConversionFactor, new MerisGLM(11, 8));
+    }
 
+    @Override
+    protected String getProductTypeSuffix() {
+        return PRODUCT_TYPE_SUFFIX;
     }
 
 

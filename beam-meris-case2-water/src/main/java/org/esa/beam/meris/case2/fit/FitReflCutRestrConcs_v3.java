@@ -1,9 +1,9 @@
 package org.esa.beam.meris.case2.fit;
 
-import org.esa.beam.case2.algorithm.AlgorithmParameter;
-import org.esa.beam.case2.util.nn.ForwNNReflCut;
-import org.esa.beam.case2.util.nn.InvNNReflCut;
-import org.esa.beam.case2.util.nn.NNCalc;
+import org.esa.beam.meris.case2.algorithm.AlgorithmParameter;
+import org.esa.beam.meris.case2.util.nn.ForwNNReflCut;
+import org.esa.beam.meris.case2.util.nn.InvNNReflCut;
+import org.esa.beam.meris.case2.util.nn.NNCalc;
 
 import java.io.FileInputStream;
 import java.io.IOException;

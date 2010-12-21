@@ -4,14 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.esa.beam</groupId>
     <artifactId>beam-meris-case2</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>beam-meris-case2-core</module>
-        <module>beam-meris-case2-regional</module>
-        <module>beam-meris-boreal-lakes</module>
-        <module>beam-meris-eutrophic-lakes</module>
         <module>beam-meris-case2-water</module>
     </modules>
 
@@ -19,23 +15,23 @@
         <dependencies>
             <dependency>
                 <groupId>org.esa.beam</groupId>
-                <artifactId>beam-processing</artifactId>
+                <artifactId>beam-gpf</artifactId>
+                <version>4.9-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.esa.beam</groupId>
+                <artifactId>beam-visat</artifactId>
                 <version>4.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.esa.beam</groupId>
                 <artifactId>beam-envisat-reader</artifactId>
-                <version>1.3.200</version>
+                <version>1.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.esa.beam</groupId>
-                <artifactId>beam-meris-radiometry</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.esa.beam</groupId>
-                <artifactId>beam-meris-case2-core</artifactId>
-                <version>${pom.version}</version>
+                <artifactId>beam-meris-glint</artifactId>
+                <version>1.2-SNAPSHOT</version>
             </dependency>
 
             <dependency>

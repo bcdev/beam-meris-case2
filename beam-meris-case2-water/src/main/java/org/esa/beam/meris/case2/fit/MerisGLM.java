@@ -1,7 +1,7 @@
 package org.esa.beam.meris.case2.fit;
 
-import org.esa.beam.case2.util.nn.NNCalc;
-import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
+import org.esa.beam.meris.case2.util.nn.NNCalc;
+import org.esa.beam.meris.case2.util.nn.NNffbpAlphaTabFast;
 
 
 /**

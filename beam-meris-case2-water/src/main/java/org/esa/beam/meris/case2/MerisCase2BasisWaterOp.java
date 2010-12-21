@@ -1,7 +1,5 @@
 package org.esa.beam.meris.case2;
 
-import org.esa.beam.case2.algorithm.MerisFlightDirection;
-import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.Mask;
@@ -13,7 +11,9 @@ import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.experimental.PixelOperator;
 import org.esa.beam.jai.ResolutionLevel;
 import org.esa.beam.jai.VirtualBandOpImage;
+import org.esa.beam.meris.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.meris.case2.fit.ChiSquareFitting;
+import org.esa.beam.meris.case2.util.nn.NNffbpAlphaTabFast;
 import org.esa.beam.meris.case2.water.WaterAlgorithm;
 import org.esa.beam.util.ProductUtils;
 
@@ -120,6 +120,8 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                 targetBand.setSourceImage(sourceBand.getSourceImage());
             }
         }
+        ProductUtils.copyMetadata(sourceProduct, targetProduct);
+        targetProduct.setProductType(getProductType());
         addFlagsAndMasks(targetProduct);
     }
 
@@ -290,6 +292,13 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     protected abstract WaterAlgorithm createAlgorithm();
 
     protected abstract ChiSquareFitting createChiSquareFitting();
+
+    protected abstract String getProductTypeSuffix();
+
+    private String getProductType() {
+        final String type = getSourceProduct().getProductType().substring(0, 7);
+        return type + getProductTypeSuffix();
+    }
 
     private double correctViewAngle(double satelliteZenith, int pixelX, int centerPixel, boolean isFullResolution) {
         final double ang_coef_1 = -0.004793;

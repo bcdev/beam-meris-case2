@@ -1,15 +1,14 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-case2-water</symbolicName>
-    <version>1.0</version>
+    <version>1.5</version>
     <name>MERIS Case-2-Water Processor</name>
 
     <description>
-        <!-- todo - update description-->
         This processor derives Level 2 water quality parameters of
         coastal waters from atmospherically corrected MERIS products.
 
-        The processor includes an algorithm to derive properties of the water such as the
+        The processor includes an algorithms to derive properties of the water such as the
         inherent optical properties (IOP's) absorption and scattering and the concentrations
         of total suspended matter (TSM) and chlorophyll from the water leaving radiance reflectance spectra
         (i.e. after atmospheric correction).
@@ -17,8 +16,10 @@
 
     <changelog>
         <![CDATA[
-        Version 1.0:<br/>
-          This processor equals to the water part of the MERIS Case2 Regional processor v. 1.4.3<br/>
+        Changes in version 1.5:<br/>
+          [CIIR-30] Migrate Case2 Processors to GPF<br/>
+          [CIIR-29] Update neural net for atmospheric correction<br/>
+          [CIIR-28] Update for module reorganization in BEAM<br/>
         ]]>
     </changelog>
 
@@ -46,6 +47,23 @@
 
     <extension point="beam-ui:actions">
         <action>
+            <id>merisCase2IOP</id>
+            <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
+            <text>Case-2-Water IOPs (MERIS)...</text>
+            <shortDescr>Performs IOP retrieval on MERIS</shortDescr>
+            <longDescr>Performs IOP retrieval on MERIS data products</longDescr>
+            <parent>tools</parent>
+            <helpID>merisCase2IOP</helpID>
+            <placeAfter>flhMciScientificTool</placeAfter>
+            <operatorName>Meris.Case2IOP</operatorName>
+            <dialogTitle>Case-2-Water IOP Processor</dialogTitle>
+            <targetProductNameSuffix>_c2IOP</targetProductNameSuffix>
+        </action>
+    </extension>
+
+    <!--  Water specific actions- not added to the Tools menu
+    <extension point="beam-ui:actions">
+        <action>
             <id>merisRegionalCase2Water</id>
             <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
             <text>Regional Case-2-Water (MERIS)...</text>
@@ -55,21 +73,6 @@
             <helpID>merisCase2Water</helpID>
             <placeAfter>flhMciScientificTool</placeAfter>
             <operatorName>Meris.RegionalWater</operatorName>
-            <dialogTitle>Regional Case-2-Water</dialogTitle>
-            <targetProductNameSuffix>_c2r</targetProductNameSuffix>
-        </action>
-    </extension>
-    <extension point="beam-ui:actions">
-        <action>
-            <id>merisRegionalCase2Water</id>
-            <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
-            <text>Regional IOP Case-2-Water (MERIS)...</text>
-            <shortDescr>Performs IOP retrieval on MERIS</shortDescr>
-            <longDescr>Performs IOP retrieval on MERIS data products</longDescr>
-            <parent>tools</parent>
-            <helpID>merisCase2Water</helpID>
-            <placeAfter>flhMciScientificTool</placeAfter>
-            <operatorName>Meris.Case2RegionalIOP</operatorName>
             <dialogTitle>Regional Case-2-Water</dialogTitle>
             <targetProductNameSuffix>_c2r</targetProductNameSuffix>
         </action>
@@ -103,14 +106,14 @@
             <dialogTitle>Eutrophic Case-2-Water</dialogTitle>
             <targetProductNameSuffix>_c2e</targetProductNameSuffix>
         </action>
+    </extension>-->
+
+    <extension point="beam-ui:helpSets">
+        <helpSet>
+            <parent>beam-help</parent>
+            <path>doc/help/regional/merisc2r.hs</path>
+        </helpSet>
     </extension>
 
-    <!--<extension point="beam-ui:helpSets">-->
-    <!--<helpSet>-->
-    <!--<parent>beam-help</parent>-->
-    <!--<path>doc/help/meris-case2-water.hs</path>-->
-    <!--</helpSet>-->
-    <!--</extension>-->
-    <!---->
 
 </module>

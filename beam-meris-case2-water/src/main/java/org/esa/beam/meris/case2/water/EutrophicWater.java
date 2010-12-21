@@ -1,7 +1,7 @@
 package org.esa.beam.meris.case2.water;
 
-import org.esa.beam.case2.algorithm.KMin;
 import org.esa.beam.framework.gpf.experimental.PointOperator;
+import org.esa.beam.meris.case2.algorithm.KMin;
 
 
 public class EutrophicWater extends WaterAlgorithm {
@@ -103,12 +103,13 @@ public class EutrophicWater extends WaterAlgorithm {
     @Override
     protected double getCutThreshold(double[] inmin) {
         double cut_thresh = 1000.0;
-        for (int i = 3; i < 11; i++) {
+        for (int i = 0; i < 7; i++) {
             double inmini = Math.exp(inmin[i]);
             if (inmini < cut_thresh) {
                 cut_thresh = inmini;
             }
         }
         return cut_thresh;
+
     }
 }

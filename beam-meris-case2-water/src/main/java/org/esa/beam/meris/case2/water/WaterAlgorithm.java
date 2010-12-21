@@ -1,7 +1,7 @@
 package org.esa.beam.meris.case2.water;
 
-import org.esa.beam.case2.util.nn.NNffbpAlphaTabFast;
 import org.esa.beam.framework.gpf.experimental.PointOperator;
+import org.esa.beam.meris.case2.util.nn.NNffbpAlphaTabFast;
 
 public abstract class WaterAlgorithm {
 

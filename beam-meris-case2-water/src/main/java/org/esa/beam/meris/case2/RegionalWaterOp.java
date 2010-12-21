@@ -17,6 +17,8 @@ import org.esa.beam.meris.case2.water.WaterAlgorithm;
                   version = "1.0")
 public class RegionalWaterOp extends MerisCase2BasisWaterOp {
 
+    private static final String PRODUCT_TYPE_SUFFIX = "REG";
+
     @SourceProduct(alias = "acProduct", label = "Atmospherically corrected product")
     private Product source;
 
@@ -51,6 +53,11 @@ public class RegionalWaterOp extends MerisCase2BasisWaterOp {
     protected ChiSquareFitting createChiSquareFitting() {
         return new ChiSquareFitting(tsmConversionExponent, tsmConversionFactor,
                                     chlConversionExponent, chlConversionFactor, new MerisGLM(11, 8));
+    }
+
+    @Override
+    protected String getProductTypeSuffix() {
+        return PRODUCT_TYPE_SUFFIX;
     }
 
 

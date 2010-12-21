@@ -16,6 +16,8 @@ import org.esa.beam.meris.case2.water.WaterAlgorithm;
                   version = "1.0")
 public class BorealWaterOp extends MerisCase2BasisWaterOp {
 
+    private static final String PRODUCT_TYPE_SUFFIX = "BOR";
+
     @SourceProduct(alias = "acProduct", label = "Atmospherically corrected product")
     private Product source;
 
@@ -38,6 +40,11 @@ public class BorealWaterOp extends MerisCase2BasisWaterOp {
     protected ChiSquareFitting createChiSquareFitting() {
         return new ChiSquareFitting(1.0, 0.0, 1.0, 0.0, new MerisGLM(10, 7));
 
+    }
+
+    @Override
+    protected String getProductTypeSuffix() {
+        return PRODUCT_TYPE_SUFFIX;
     }
 
 
