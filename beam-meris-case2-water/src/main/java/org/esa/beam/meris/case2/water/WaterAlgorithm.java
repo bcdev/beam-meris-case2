@@ -34,21 +34,22 @@ public abstract class WaterAlgorithm {
     public static final int TARGET_K_MIN_INDEX = 7;
     public static final int TARGET_Z90_MAX_INDEX = 8;
     public static final int TARGET_KD_490_INDEX = 9;
-    public static final int TARGET_FLAG_INDEX = 10;
-    public static final int TARGET_A_GELBSTOFF_FIT_INDEX = 11;
-    public static final int TARGET_A_GELBSTOFF_FIT_MAX_INDEX = 12;
-    public static final int TARGET_A_GELBSTOFF_FIT_MIN_INDEX = 13;
-    public static final int TARGET_A_PIG_FIT_INDEX = 14;
-    public static final int TARGET_A_PIG_FIT_MAX_INDEX = 15;
-    public static final int TARGET_A_PIG_FIT_MIN_INDEX = 16;
-    public static final int TARGET_B_TSM_FIT_INDEX = 17;
-    public static final int TARGET_B_TSM_FIT_MAX_INDEX = 18;
-    public static final int TARGET_B_TSM_FIT_MIN_INDEX = 19;
-    public static final int TARGET_TSM_FIT_INDEX = 20;
-    public static final int TARGET_CHL_CONC_FIT_INDEX = 21;
-    public static final int TARGET_CHI_SQUARE_FIT_INDEX = 22;
-    public static final int TARGET_N_ITER_FIT_INDEX = 23;
-    public static final int TARGET_PARAM_CHANGE_FIT_INDEX = 24;
+    public static final int TARGET_TURBIDITY_INDEX_INDEX = 10;
+    public static final int TARGET_FLAG_INDEX = 11;
+    public static final int TARGET_A_GELBSTOFF_FIT_INDEX = 12;
+    public static final int TARGET_A_GELBSTOFF_FIT_MAX_INDEX = 13;
+    public static final int TARGET_A_GELBSTOFF_FIT_MIN_INDEX = 14;
+    public static final int TARGET_A_PIG_FIT_INDEX = 15;
+    public static final int TARGET_A_PIG_FIT_MAX_INDEX = 16;
+    public static final int TARGET_A_PIG_FIT_MIN_INDEX = 17;
+    public static final int TARGET_B_TSM_FIT_INDEX = 18;
+    public static final int TARGET_B_TSM_FIT_MAX_INDEX = 19;
+    public static final int TARGET_B_TSM_FIT_MIN_INDEX = 20;
+    public static final int TARGET_TSM_FIT_INDEX = 21;
+    public static final int TARGET_CHL_CONC_FIT_INDEX = 22;
+    public static final int TARGET_CHI_SQUARE_FIT_INDEX = 23;
+    public static final int TARGET_N_ITER_FIT_INDEX = 24;
+    public static final int TARGET_PARAM_CHANGE_FIT_INDEX = 25;
 
     public static final int WLR_OOR_BIT_INDEX = 0;
     public static final int CONC_OOR_BIT_INDEX = 1;
@@ -56,6 +57,11 @@ public abstract class WaterAlgorithm {
     public static final int WHITECAPS_BIT_INDEX = 3;
     public static final int FIT_FAILED_INDEX = 4;
     public static final int INVALID_BIT_INDEX = 7;
+
+    private static final double RLW620_MAX = 0.03823;
+    private static final double TURBIDITY_AT = 174.41;
+    private static final double TURBIDITY_BT = 0.39;
+    private static final double TURBIDITY_C = 0.1533;
 
     private double spectrumOutOfScopeThreshold;
 
@@ -133,8 +139,19 @@ public abstract class WaterAlgorithm {
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
 
         targetSamples[TARGET_KD_490_INDEX].set(kMin.computeKd490());
+
+        final double turbidity = computeTurbidityIndex(RLw[5]);// parameter Rlw at 620 'reflec_6'
+        targetSamples[TARGET_TURBIDITY_INDEX_INDEX].set(turbidity);
         return RLw_cut;
 
+    }
+
+    private double computeTurbidityIndex(double rlw620) {
+        if (rlw620 > RLW620_MAX) {  // maximum value for computing the turbidity Index
+            rlw620 = RLW620_MAX;
+        }
+        double rho = rlw620 * Math.PI;
+        return TURBIDITY_AT * rho / (1 - rho / TURBIDITY_C) + TURBIDITY_BT;
     }
 
 
