@@ -17,6 +17,7 @@
     <changelog>
         <![CDATA[
         Changes in version 1.5:<br/>
+          [CIIR-31] Add Kd_490 to output bands<br/>
           [CIIR-30] Migrate Case2 Processors to GPF<br/>
           [CIIR-29] Update neural net for atmospheric correction<br/>
           [CIIR-28] Update for module reorganization in BEAM<br/>

@@ -26,7 +26,21 @@ public class KMin {
             1.2682018, 0.9976029, 0.6827681, 0.5822822,
             0.4049466, 0.3906278, 0.2419075, 0.1689082
     };
+    private double bTsm;
+    private double aPig;
+    private double aGelbstoff;
+    private double aBtsm;
 
+    public KMin(double bTsm, double aPig, double aGelbstoff) {
+        this(bTsm, aPig, aGelbstoff, 0);
+    }
+
+    public KMin(double bTsm, double aPig, double aGelbstoff, double aBtsm) {
+        this.bTsm = bTsm;
+        this.aPig = aPig;
+        this.aGelbstoff = aGelbstoff;
+        this.aBtsm = aBtsm;
+    }
 
     public double[] getA_wat_mer8() {
         return a_wat_mer8;
@@ -76,11 +90,7 @@ public class KMin {
         this.a_btsm_mer8 = a_btsm_mer8.clone();
     }
 
-    public double perform(double bTsm, double aPig, double aGelbstoff) {
-        return perform(bTsm, aPig, aGelbstoff, 0);
-    }
-
-    public double perform(double bTsm, double aPig, double aGelbstoff, double aBtsm) {
+    public double computeKMinValue() {
         double k_min = 1000.0;
         double[] k_mina3 = new double[3];
         k_mina3[0] = 1000.0;
@@ -108,6 +118,14 @@ public class KMin {
 
         k_mean = (k_mina3[0] + k_mina3[1] + k_mina3[2]) / 3.0;
         return k_mean;
+    }
+
+    public double computeKd490() {
+        // Kd_490 is the third (2) wavelength
+        double a_tot_mer8 = computeA_tot_mer8(2, aPig, aGelbstoff, aBtsm);
+        double bb_tot_mer8 = computeBb_tot_mer8(2, bTsm);
+        return Math.sqrt(a_tot_mer8 * (a_tot_mer8 + 2.0 * bb_tot_mer8)); //from Joseph 2flow equation
+
     }
 
     protected double computeBb_tot_mer8(int index, double bTsm) {

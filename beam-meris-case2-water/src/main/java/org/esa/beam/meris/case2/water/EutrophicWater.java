@@ -23,18 +23,18 @@ public class EutrophicWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double computeKMin(PointOperator.WritableSample[] targetSamples) {
+    protected KMin createKMin(PointOperator.WritableSample[] targetSamples) {
         final double bTsm = targetSamples[TARGET_B_TSM_INDEX].getDouble();
         final double aPig = targetSamples[TARGET_A_PIGMENT_INDEX].getDouble();
         final double aGelbstoff = targetSamples[TARGET_A_GELBSTOFF_INDEX].getDouble();
         final double aBtsm = targetSamples[TARGET_A_BTSM_INDEX].getDouble();
 
-        final KMin kMin = new KMin();
+        final KMin kMin = new KMin(bTsm, aPig, aGelbstoff, aBtsm);
         kMin.setA_gelb_mer8(new double[]{
                 1.9220648, 0.9934217, 0.3501478, 0.2260046,
                 0.0832423, 0.0753961, 0.0201853, 0.0075169
         });
-        return kMin.perform(bTsm, aPig, aGelbstoff, aBtsm);
+        return kMin;
     }
 
     @Override

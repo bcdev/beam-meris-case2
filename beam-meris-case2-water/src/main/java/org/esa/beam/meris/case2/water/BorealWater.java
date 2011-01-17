@@ -11,12 +11,11 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double computeKMin(PointOperator.WritableSample[] targetSamples) {
+    protected KMin createKMin(PointOperator.WritableSample[] targetSamples) {
         final double bTsm = targetSamples[TARGET_B_TSM_INDEX].getDouble();
         final double aPig = targetSamples[TARGET_A_PIGMENT_INDEX].getDouble();
         final double aGelbstoff = targetSamples[TARGET_A_GELBSTOFF_INDEX].getDouble();
-        final KMin kMin = new KMin();
-        return kMin.perform(bTsm, aPig, aGelbstoff);
+        return new KMin(bTsm, aPig, aGelbstoff);
     }
 
     @Override

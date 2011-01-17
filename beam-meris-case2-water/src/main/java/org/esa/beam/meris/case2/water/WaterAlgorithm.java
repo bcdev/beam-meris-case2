@@ -1,6 +1,7 @@
 package org.esa.beam.meris.case2.water;
 
 import org.esa.beam.framework.gpf.experimental.PointOperator;
+import org.esa.beam.meris.case2.algorithm.KMin;
 import org.esa.beam.meris.case2.util.nn.NNffbpAlphaTabFast;
 
 public abstract class WaterAlgorithm {
@@ -32,21 +33,22 @@ public abstract class WaterAlgorithm {
     public static final int TARGET_CHI_SQUARE_INDEX = 6;
     public static final int TARGET_K_MIN_INDEX = 7;
     public static final int TARGET_Z90_MAX_INDEX = 8;
-    public static final int TARGET_FLAG_INDEX = 9;
-    public static final int TARGET_A_GELBSTOFF_FIT_INDEX = 10;
-    public static final int TARGET_A_GELBSTOFF_FIT_MAX_INDEX = 11;
-    public static final int TARGET_A_GELBSTOFF_FIT_MIN_INDEX = 12;
-    public static final int TARGET_A_PIG_FIT_INDEX = 13;
-    public static final int TARGET_A_PIG_FIT_MAX_INDEX = 14;
-    public static final int TARGET_A_PIG_FIT_MIN_INDEX = 15;
-    public static final int TARGET_B_TSM_FIT_INDEX = 16;
-    public static final int TARGET_B_TSM_FIT_MAX_INDEX = 17;
-    public static final int TARGET_B_TSM_FIT_MIN_INDEX = 18;
-    public static final int TARGET_TSM_FIT_INDEX = 19;
-    public static final int TARGET_CHL_CONC_FIT_INDEX = 20;
-    public static final int TARGET_CHI_SQUARE_FIT_INDEX = 21;
-    public static final int TARGET_N_ITER_FIT_INDEX = 22;
-    public static final int TARGET_PARAM_CHANGE_FIT_INDEX = 23;
+    public static final int TARGET_KD_490_INDEX = 9;
+    public static final int TARGET_FLAG_INDEX = 10;
+    public static final int TARGET_A_GELBSTOFF_FIT_INDEX = 11;
+    public static final int TARGET_A_GELBSTOFF_FIT_MAX_INDEX = 12;
+    public static final int TARGET_A_GELBSTOFF_FIT_MIN_INDEX = 13;
+    public static final int TARGET_A_PIG_FIT_INDEX = 14;
+    public static final int TARGET_A_PIG_FIT_MAX_INDEX = 15;
+    public static final int TARGET_A_PIG_FIT_MIN_INDEX = 16;
+    public static final int TARGET_B_TSM_FIT_INDEX = 17;
+    public static final int TARGET_B_TSM_FIT_MAX_INDEX = 18;
+    public static final int TARGET_B_TSM_FIT_MIN_INDEX = 19;
+    public static final int TARGET_TSM_FIT_INDEX = 20;
+    public static final int TARGET_CHL_CONC_FIT_INDEX = 21;
+    public static final int TARGET_CHI_SQUARE_FIT_INDEX = 22;
+    public static final int TARGET_N_ITER_FIT_INDEX = 23;
+    public static final int TARGET_PARAM_CHANGE_FIT_INDEX = 24;
 
     public static final int WLR_OOR_BIT_INDEX = 0;
     public static final int CONC_OOR_BIT_INDEX = 1;
@@ -125,15 +127,18 @@ public abstract class WaterAlgorithm {
             targetSamples[TARGET_FLAG_INDEX].set(OOTR_BIT_INDEX, true);
         }
         // compute k_min and z90_max RD 20060811
-        double k_min = computeKMin(targetSamples);
+        final KMin kMin = createKMin(targetSamples);
+        double k_min = kMin.computeKMinValue();
         targetSamples[TARGET_K_MIN_INDEX].set(k_min);
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
+
+        targetSamples[TARGET_KD_490_INDEX].set(kMin.computeKd490());
         return RLw_cut;
 
     }
 
 
-    protected abstract double computeKMin(PointOperator.WritableSample[] targetSamples);
+    protected abstract KMin createKMin(PointOperator.WritableSample[] targetSamples);
 
     protected abstract double computeChiSquare(double[] forwardWaterOutnet, double[] RLw_cut);
 

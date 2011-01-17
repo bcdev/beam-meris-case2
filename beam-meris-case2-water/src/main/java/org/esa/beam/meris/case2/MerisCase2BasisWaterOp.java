@@ -54,6 +54,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final String BAND_NAME_CHI_SQUARE = "chiSquare";
     private static final String BAND_NAME_K_MIN = "K_min";
     private static final String BAND_NAME_Z90_MAX = "Z90_max";
+    private static final String BAND_NAME_KD_490 = "Kd_490";
     private static final String BAND_NAME_CASE2_FLAGS = "case2_flags";
     private static final String BAND_NAME_A_GELBSTOFF_FIT = "a_gelbstoffFit";
     private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = "a_gelbstoffFit_max";
@@ -144,6 +145,9 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                       "Minimum downwelling irradiance attenuation coefficient", false, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_Z90_MAX, "m",
                       "Maximum signal depth", false, ProductData.TYPE_FLOAT32);
+        addTargetBand(targetProduct, BAND_NAME_KD_490, "m^-1",
+                      "Downwelling irradiance attenuation coefficient at wavelength 490", false,
+                      ProductData.TYPE_FLOAT32);
         if (performChiSquareFit) {
             addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF_FIT, null, null, true, ProductData.TYPE_FLOAT32);
             addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF_FIT_MAX, null, null, true, ProductData.TYPE_FLOAT32);
@@ -177,6 +181,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         configurator.defineSample(TARGET_CHI_SQUARE_INDEX, BAND_NAME_CHI_SQUARE);
         configurator.defineSample(TARGET_K_MIN_INDEX, BAND_NAME_K_MIN);
         configurator.defineSample(TARGET_Z90_MAX_INDEX, BAND_NAME_Z90_MAX);
+        configurator.defineSample(TARGET_KD_490_INDEX, BAND_NAME_KD_490);
         configurator.defineSample(TARGET_FLAG_INDEX, BAND_NAME_CASE2_FLAGS);
         if (performChiSquareFit) {
             configurator.defineSample(TARGET_A_GELBSTOFF_FIT_INDEX, BAND_NAME_A_GELBSTOFF_FIT);
