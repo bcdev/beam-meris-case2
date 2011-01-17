@@ -33,7 +33,7 @@
         <module>beam-gpf</module>
     </dependency>
     <dependency>
-        <module>beam-meris-case2-core</module>
+        <module>beam-meris-glint</module>
     </dependency>
     <dependency>
         <module>beam-envisat-reader</module>
