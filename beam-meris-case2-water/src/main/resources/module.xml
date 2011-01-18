@@ -59,7 +59,7 @@
             <placeAfter>flhMciScientificTool</placeAfter>
             <operatorName>Meris.Case2IOP</operatorName>
             <dialogTitle>Case-2-Water IOP Processor</dialogTitle>
-            <targetProductNameSuffix>_c2IOP</targetProductNameSuffix>
+            <targetProductNameSuffix>_C2IOP</targetProductNameSuffix>
         </action>
     </extension>
 
