@@ -97,9 +97,7 @@ public class KMin {
         double k_mean = 0.0;
         double[] k_tot_mer8 = new double[8];
         for (int i = 0; i < k_tot_mer8.length; i++) {
-            double a_tot_mer8 = computeA_tot_mer8(i, aPig, aGelbstoff, aBtsm);
-            double bb_tot_mer8 = computeBb_tot_mer8(i, bTsm);
-            k_tot_mer8[i] = Math.sqrt(a_tot_mer8 * (a_tot_mer8 + 2.0 * bb_tot_mer8)); //from Joseph 2flow equation
+            k_tot_mer8[i] = computeKdAtIndex(i);
             k_mean += k_tot_mer8[i];
             if (k_tot_mer8[i] < k_min) {
                 k_min = k_tot_mer8[i];
@@ -120,19 +118,23 @@ public class KMin {
         return k_mean;
     }
 
+
     public double computeKd490() {
         // Kd_490 is the third (2) wavelength
-        double a_tot_mer8 = computeA_tot_mer8(2, aPig, aGelbstoff, aBtsm);
-        double bb_tot_mer8 = computeBb_tot_mer8(2, bTsm);
-        return Math.sqrt(a_tot_mer8 * (a_tot_mer8 + 2.0 * bb_tot_mer8)); //from Joseph 2flow equation
-
+        return computeKdAtIndex(2);
     }
 
-    protected double computeBb_tot_mer8(int index, double bTsm) {
+    private double computeKdAtIndex(int i) {
+        double a_tot_mer8 = computeA_tot_mer8(i, aPig, aGelbstoff, aBtsm);
+        double bb_tot_mer8 = computeBb_tot_mer8(i, bTsm);
+        return Math.sqrt(a_tot_mer8 * (a_tot_mer8 + 2.0 * bb_tot_mer8));
+    }
+
+    private double computeBb_tot_mer8(int index, double bTsm) {
         return 0.5 * getB_wat_mer8()[index] + 0.05 * bTsm * getB_tsm_mer8()[index];
     }
 
-    protected double computeA_tot_mer8(int index, double aPig, double aGelbstoff, double aBtsm) {
+    private double computeA_tot_mer8(int index, double aPig, double aGelbstoff, double aBtsm) {
         return getA_wat_mer8()[index] + aPig * getA_pig_mer8()[index] + aGelbstoff * getA_gelb_mer8()[index] + aBtsm * getA_btsm_mer8()[index];
     }
 
