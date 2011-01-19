@@ -1,5 +1,6 @@
 package org.esa.beam.meris.case2;
 
+import org.esa.beam.atmosphere.operator.MerisFlightDirection;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.Mask;
@@ -11,7 +12,6 @@ import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.experimental.PixelOperator;
 import org.esa.beam.jai.ResolutionLevel;
 import org.esa.beam.jai.VirtualBandOpImage;
-import org.esa.beam.meris.case2.algorithm.MerisFlightDirection;
 import org.esa.beam.meris.case2.fit.ChiSquareFitting;
 import org.esa.beam.meris.case2.util.nn.NNffbpAlphaTabFast;
 import org.esa.beam.meris.case2.water.WaterAlgorithm;
@@ -233,7 +233,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                                                        getSourceProduct(),
                                                        ResolutionLevel.MAXRES);
 
-        centerPixel = new MerisFlightDirection(sourceProduct).getNadirColumnIndex();
+        centerPixel = MerisFlightDirection.findNadirColumnIndex(sourceProduct);
 
         isFullResolution = !sourceProduct.getProductType().contains("RR");
         waterAlgorithm = createAlgorithm();
@@ -290,8 +290,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
             final ChiSquareFitting fitting = createChiSquareFitting();
             fitting.perform(forwardWaterNet, RLw_cut, solzen, satzen, azi_diff_deg, targetSamples);
         }
-
-
     }
 
     protected abstract String getDefaultForwardWaterNetResourcePath();
@@ -309,10 +307,10 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         return type + getProductTypeSuffix();
     }
 
-    private double correctViewAngle(double satelliteZenith, int pixelX, int centerPixel, boolean isFullResolution) {
+    private double correctViewAngle(double satelliteZenith, int pixelX, int nadirPixelX, boolean isFullResolution) {
         final double ang_coef_1 = -0.004793;
         final double ang_coef_2 = isFullResolution ? 0.0093247 / 4 : 0.0093247;
-        satelliteZenith = satelliteZenith + Math.abs(pixelX - centerPixel) * ang_coef_2 + ang_coef_1;
+        satelliteZenith = satelliteZenith + Math.abs(pixelX - nadirPixelX) * ang_coef_2 + ang_coef_1;
         return satelliteZenith;
     }
 
