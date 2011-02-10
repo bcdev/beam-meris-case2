@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>BEAM Data Processors - Meris Boreal Lakes</title>
+    <title>BEAM Data Processors - Meris Eutrophic Lakes</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -9,9 +9,9 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            Meris Boreal Lakes Processor Description
+            Meris Eutrophic Lakes Processor Description
         </td>
-        <td class="header" align="right"><img src="../images/BorealHeader.gif" border=0></td>
+        <td class="header" align="right"><img src="../images/EutrophicHeader.gif" border=0></td>
     </tr>
 </table>
 
@@ -20,16 +20,16 @@
     the command-line interface and the common processing request file format.</p>
 
 <h4>Content</h4>
-<li><a href="#InOutTab">The In- and Output Parameters tab</a></li>
-<li><a href="#ProcParamTab">The Processing Parameters tab</a></li>
-<li><a href="#ProcReqFile">The Processing Request File</a></li>
-<li><a href="BorealAlgorithmParameter.html">Description of the Processing Parameters</a></li>
+<li><a href="EutrophicProcessorDescription.html#InOutTab">The In- and Output Parameters tab</a></li>
+<li><a href="EutrophicProcessorDescription.html#ProcParamTab">The Processing Parameters tab</a></li>
+<li><a href="EutrophicProcessorDescription.html#ProcReqFile">The Processing Request File</a></li>
+<li><a href="EutrophicAlgorithmParameter.html">Description of the Processing Parameters</a></li>
 
 <a name="InOutTab"></a>
 
 <h3>The In- and Output Parameters tab</h3>
 
-<p align="center"><img src="images/BorealIOParameters.png"></p>
+<p align="center"><img src="images/EutrophicIOParameters.png"></p>
 
 <ol>
     <li><b>Input product file</b>: Select the input product file by either typing
@@ -55,7 +55,7 @@
 
 <h3>The Processing Parameters tab</h3>
 
-<p align="center"><img src="images/BorealProcessingParameters.png"></p>
+<p align="center"><img src="images/EutrophicProcessingParameters.png"></p>
 
 <ol>
     <li><img src="../images/Save24.gif" alt="Save">&nbsp;
@@ -82,9 +82,9 @@
     interpreted.<br>
     If a given key is not known by the processor it will be ignored.
     When a parameter file does not contain a parameter of the processor, this
-    parameter will be set to its default value.<br>
+    parameter will be set to its default value. <br>
     For a description of the parameters,
-    please see the <a href="BorealAlgorithmParameter.html">Algorithm Parameters</a> page.
+    please see the <a href="EutrophicAlgorithmParameter.html">Algorithm Parameters</a> page.
 </p>
 
 
@@ -108,7 +108,7 @@
         <td>type</td>
         <td>Request type. Mandatory attribute of the <code>Request</code> element</td>
         <td>String</td>
-        <td>"BOREAL_LAKES"</td>
+        <td>"EUTROPHIC_LAKES"</td>
     </tr>
     <tr>
         <td>property_file</td>

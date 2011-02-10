@@ -63,7 +63,7 @@ public class Case2IOPOperator extends Operator {
     private boolean outputPath;
 
     @Parameter(defaultValue = "true", label = "Output transmittance",
-               description = "Toggles the output of downwelling irrediance transmittance.")
+               description = "Toggles the output of downwelling irradiance transmittance.")
     private boolean outputTransmittance;
 
     @Parameter(defaultValue = "toa_reflec_10 > toa_reflec_6 AND toa_reflec_13 > 0.0475",
@@ -124,7 +124,6 @@ public class Case2IOPOperator extends Operator {
                description = "Whether or not to perform the Chi-Square fitting.")
     private boolean performChiSquareFit;
 
-
     @Override
     public void initialize() throws OperatorException {
         Product inputProduct = sourceProduct;
@@ -141,16 +140,17 @@ public class Case2IOPOperator extends Operator {
             atmoCorOp.setParameter("cloudIceExpression", cloudIceExpression);
             atmoCorOp.setSourceProduct("merisProduct", inputProduct);
             inputProduct = atmoCorOp.getTargetProduct();
-            final String[] names = inputProduct.getBandNames();
-            for (String name : names) {
-                if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
-                    continue;
-                }
-                final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
-                bandDesc.setProduct("inputProduct");
-                bandDesc.setNamePattern(name);
-                bandDescList.add(bandDesc);
+        }
+
+        final String[] names = inputProduct.getBandNames();
+        for (String name : names) {
+            if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
+                continue;
             }
+            final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
+            bandDesc.setProduct("inputProduct");
+            bandDesc.setNamePattern(name);
+            bandDescList.add(bandDesc);
         }
 
         Operator case2Op = algorithm.createOperatorInstance();

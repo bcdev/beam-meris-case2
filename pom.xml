@@ -3,45 +3,40 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.esa.beam</groupId>
-    <artifactId>beam-meris-case2</artifactId>
+    <artifactId>beam-meris-case2-water</artifactId>
     <version>1.5-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
+    <name>BEAM MERIS Case-2 Water Processor</name>
 
-    <modules>
-        <module>beam-meris-case2-water</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.esa.beam</groupId>
+            <artifactId>beam-gpf</artifactId>
+            <version>4.9-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.beam</groupId>
+            <artifactId>beam-visat</artifactId>
+            <version>4.9-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.beam</groupId>
+            <artifactId>beam-envisat-reader</artifactId>
+            <version>1.4-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.beam</groupId>
+            <artifactId>beam-meris-glint</artifactId>
+            <version>1.2-SNAPSHOT</version>
+        </dependency>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.esa.beam</groupId>
-                <artifactId>beam-gpf</artifactId>
-                <version>4.9-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.esa.beam</groupId>
-                <artifactId>beam-visat</artifactId>
-                <version>4.9-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.esa.beam</groupId>
-                <artifactId>beam-envisat-reader</artifactId>
-                <version>1.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.esa.beam</groupId>
-                <artifactId>beam-meris-glint</artifactId>
-                <version>1.2-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.8.1</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <repositories>
         <repository>
@@ -100,7 +95,21 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- Source JARs are used in IDEs only, we don't need resources -->
+                    <excludeResources>true</excludeResources>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>

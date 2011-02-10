@@ -122,6 +122,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                 targetBand.setSourceImage(sourceBand.getSourceImage());
             }
         }
+
         ProductUtils.copyMetadata(sourceProduct, targetProduct);
         targetProduct.setProductType(getProductType());
         addFlagsAndMasks(targetProduct);
@@ -319,7 +320,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
      *
      * @param satelliteAzimuth the satellite azimuth angle in degree
      * @param solarAzimuth     the solar azimuth angle in degree
-     *
      * @return azimuth difference in degree
      */
     private static double getAzimuthDifference(double satelliteAzimuth, double solarAzimuth) {
