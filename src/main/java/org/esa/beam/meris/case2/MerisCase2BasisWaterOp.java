@@ -45,10 +45,18 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final int FIT_FAILED = 0x01 << FIT_FAILED_INDEX;          // fit failed
     private static final int INVALID = 0x01 << INVALID_BIT_INDEX;           // not a usable water pixel
 
-    private static final String BAND_NAME_A_GELBSTOFF = "a_gelbstoff";
-    private static final String BAND_NAME_A_PIGMENT = "a_pig";
-    private static final String BAND_NAME_A_TOTAL = "a_total";
-    private static final String BAND_NAME_B_TSM = "b_tsm";
+    // todo - validate names
+
+    private static final String BAND_NAME_A_GELBSTOFF = "a_ys_443";
+    private static final String BAND_NAME_A_PIGMENT = "a_pig_443";
+    private static final String BAND_NAME_A_TOTAL = "a_total_443";
+    private static final String BAND_NAME_B_TSM = "b_total_443";
+
+//    private static final String BAND_NAME_A_GELBSTOFF = "a_gelbstoff";
+//    private static final String BAND_NAME_A_PIGMENT = "a_pig";
+//    private static final String BAND_NAME_A_TOTAL = "a_total";
+//    private static final String BAND_NAME_B_TSM = "b_tsm";
+
     private static final String BAND_NAME_TSM = "tsm";
     private static final String BAND_NAME_CHL_CONC = "chl_conc";
     private static final String BAND_NAME_CHI_SQUARE = "chiSquare";
@@ -130,28 +138,28 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
     protected void addTargetBands(Product targetProduct) {
         addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF, "m^-1",
-                      "Gelbstoff (yellow substance) absorption  at 442 nm", true, ProductData.TYPE_FLOAT32);
+                      "Yellow substance absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_A_PIGMENT, "m^-1",
-                      "Pigment absorption at band 2 ", true, ProductData.TYPE_FLOAT32);
+                      "Pigment absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_A_TOTAL, "m^-1",
-                      "Absorption at 443 nm of all water constituents", false, ProductData.TYPE_FLOAT32);
+                      "Total absorption coefficient of all water constituents at 443 nm.", false, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_B_TSM, "m^-1",
-                      "Total suspended matter scattering", true, ProductData.TYPE_FLOAT32);
+                      "Total scattering or backscattering.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_TSM, "g m^-3",
-                      "Total suspended matter dry weight concentration", true, ProductData.TYPE_FLOAT32);
+                      "Total suspended matter dry weight concentration.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_CHL_CONC, "mg m^-3",
-                      "Chlorophyll concentration", true, ProductData.TYPE_FLOAT32);
+                      "Chlorophyll concentration.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_CHI_SQUARE, null,
-                      "Chi Square Out of Scope", true, ProductData.TYPE_FLOAT32);
+                      "Chi Square Out of Scope.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_K_MIN, "m^-1",
-                      "Minimum downwelling irradiance attenuation coefficient", false, ProductData.TYPE_FLOAT32);
+                      "Minimum downwelling irradiance attenuation coefficient.", false, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_Z90_MAX, "m",
-                      "Maximum signal depth", false, ProductData.TYPE_FLOAT32);
+                      "Maximum signal depth.", false, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_KD_490, "m^-1",
-                      "Downwelling irradiance attenuation coefficient at wavelength 490", false,
+                      "Downwelling irradiance attenuation coefficient at wavelength 490.", false,
                       ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_TURBIDITY_INDEX, "FNU",
-                      "Turbidity index in FNU (Formazine Nephelometric Unit) ", false, ProductData.TYPE_FLOAT32);
+                      "Turbidity index in FNU (Formazine Nephelometric Unit).", false, ProductData.TYPE_FLOAT32);
         if (performChiSquareFit) {
             addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF_FIT, null, null, true, ProductData.TYPE_FLOAT32);
             addTargetBand(targetProduct, BAND_NAME_A_GELBSTOFF_FIT_MAX, null, null, true, ProductData.TYPE_FLOAT32);
