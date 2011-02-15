@@ -17,6 +17,7 @@
 package org.esa.beam.meris.case2;
 
 import org.esa.beam.atmosphere.operator.GlintCorrectionOperator;
+import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.Operator;
 import org.esa.beam.framework.gpf.OperatorException;
@@ -25,6 +26,7 @@ import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
 import org.esa.beam.gpf.operators.standard.MergeOp;
+import org.esa.beam.util.ProductUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -182,7 +184,18 @@ public class Case2IOPOperator extends Operator {
         mergeOp.setParameter("productType", case2Product.getProductType());
         mergeOp.setParameter("copyGeoCodingFrom", "case2Product");
         mergeOp.setParameter("bands", bandDescList.toArray(new MergeOp.BandDesc[bandDescList.size()]));
-        setTargetProduct(mergeOp.getTargetProduct());
+        final Product targetProduct = mergeOp.getTargetProduct();
+        final MetadataElement metadataRoot = targetProduct.getMetadataRoot();
+        removeAllMetadata(metadataRoot);
+        ProductUtils.copyMetadata(case2Product, targetProduct);
+        setTargetProduct(targetProduct);
+    }
+
+    private void removeAllMetadata(MetadataElement metadataRoot) {
+        final MetadataElement[] elements = metadataRoot.getElements();
+        for (MetadataElement element : elements) {
+            metadataRoot.removeElement(element);
+        }
     }
 
     private void initConversionDefaults() {

@@ -74,7 +74,7 @@ public abstract class WaterAlgorithm {
         double cut_thresh = getCutThreshold(inverseWaterNet.getInmin());
 
         // test RLw against lowest or cut value in NN and set in lower
-        double[] RLw = new double[11];
+        double[] RLw = new double[9];
         RLw[0] = sourceSamples[SOURCE_REFLEC_1_INDEX].getDouble();
         RLw[1] = sourceSamples[SOURCE_REFLEC_2_INDEX].getDouble();
         RLw[2] = sourceSamples[SOURCE_REFLEC_3_INDEX].getDouble();
