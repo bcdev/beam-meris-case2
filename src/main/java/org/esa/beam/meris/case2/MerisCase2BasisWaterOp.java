@@ -4,6 +4,8 @@ import org.esa.beam.atmosphere.operator.MerisFlightDirection;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.Mask;
+import org.esa.beam.framework.datamodel.MetadataAttribute;
+import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
@@ -142,7 +144,8 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         addTargetBand(targetProduct, BAND_NAME_A_PIGMENT, "m^-1",
                       "Pigment absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_A_TOTAL, "m^-1",
-                      "Total absorption coefficient of all water constituents at 443 nm.", false, ProductData.TYPE_FLOAT32);
+                      "Total absorption coefficient of all water constituents at 443 nm.", false,
+                      ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_B_TSM, "m^-1",
                       "Total scattering or backscattering.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_TSM, "g m^-3",
@@ -242,8 +245,15 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
         centerPixel = MerisFlightDirection.findNadirColumnIndex(sourceProduct);
 
-        isFullResolution = !sourceProduct.getMetadataRoot().getElement("SPH").getAttribute(
-                "SPH_DESCRIPTOR").getData().getElemString().contains("RR");
+        final MetadataElement sph = sourceProduct.getMetadataRoot().getElement("SPH");
+        if (sph == null) {
+            throw new OperatorException("Source product does not contain metadata element 'SPH'.");
+        }
+        final MetadataAttribute sphDescriptor = sph.getAttribute("SPH_DESCRIPTOR");
+        if (sphDescriptor == null) {
+            throw new OperatorException("Metadata element 'SPH' does not contain attribute 'SPH_DESCRIPTOR'.");
+        }
+        isFullResolution = !sphDescriptor.getData().getElemString().contains("RR");
         waterAlgorithm = createAlgorithm();
         inverseWaterNnString = readNeuralNetString(getDefaultInverseWaterNetResourcePath(), inverseWaterNnFile);
         forwardWaterNnString = readNeuralNetString(getDefaultForwardWaterNetResourcePath(), forwardWaterNnFile);
