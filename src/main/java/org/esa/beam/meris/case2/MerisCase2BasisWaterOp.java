@@ -227,10 +227,8 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         configurator.defineSample(SOURCE_REFLEC_5_INDEX, MERIS_L2_REFLEC_5_BAND_NAME);
         configurator.defineSample(SOURCE_REFLEC_6_INDEX, MERIS_L2_REFLEC_6_BAND_NAME);
         configurator.defineSample(SOURCE_REFLEC_7_INDEX, MERIS_L2_REFLEC_7_BAND_NAME);
+        configurator.defineSample(SOURCE_REFLEC_8_INDEX, MERIS_L2_REFLEC_13_BAND_NAME);
         configurator.defineSample(SOURCE_REFLEC_9_INDEX, MERIS_L2_REFLEC_9_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_10_INDEX, MERIS_L2_REFLEC_10_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_12_INDEX, MERIS_L2_REFLEC_12_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_13_INDEX, MERIS_L2_REFLEC_13_BAND_NAME);
         configurator.defineSample(SOURCE_SOLAZI_INDEX, MERIS_SUN_AZIMUTH_DS_NAME);
         configurator.defineSample(SOURCE_SOLZEN_INDEX, MERIS_SUN_ZENITH_DS_NAME);
         configurator.defineSample(SOURCE_SATAZI_INDEX, MERIS_VIEW_AZIMUTH_DS_NAME);
@@ -244,7 +242,8 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
         centerPixel = MerisFlightDirection.findNadirColumnIndex(sourceProduct);
 
-        isFullResolution = !sourceProduct.getProductType().contains("RR");
+        isFullResolution = !sourceProduct.getMetadataRoot().getElement("SPH").getAttribute(
+                "SPH_DESCRIPTOR").getData().getElemString().contains("RR");
         waterAlgorithm = createAlgorithm();
         inverseWaterNnString = readNeuralNetString(getDefaultInverseWaterNetResourcePath(), inverseWaterNnFile);
         forwardWaterNnString = readNeuralNetString(getDefaultForwardWaterNetResourcePath(), forwardWaterNnFile);
@@ -328,6 +327,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
      *
      * @param satelliteAzimuth the satellite azimuth angle in degree
      * @param solarAzimuth     the solar azimuth angle in degree
+     *
      * @return azimuth difference in degree
      */
     private static double getAzimuthDifference(double satelliteAzimuth, double solarAzimuth) {

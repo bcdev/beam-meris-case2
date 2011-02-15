@@ -13,10 +13,8 @@ public abstract class WaterAlgorithm {
     public static final int SOURCE_REFLEC_5_INDEX = 4;
     public static final int SOURCE_REFLEC_6_INDEX = 5;
     public static final int SOURCE_REFLEC_7_INDEX = 6;
-    public static final int SOURCE_REFLEC_9_INDEX = 7;
-    public static final int SOURCE_REFLEC_10_INDEX = 8;
-    public static final int SOURCE_REFLEC_12_INDEX = 9;
-    public static final int SOURCE_REFLEC_13_INDEX = 10;
+    public static final int SOURCE_REFLEC_8_INDEX = 7;
+    public static final int SOURCE_REFLEC_9_INDEX = 8;
     public static final int SOURCE_SOLAZI_INDEX = 11;
     public static final int SOURCE_SOLZEN_INDEX = 12;
     public static final int SOURCE_SATAZI_INDEX = 13;
@@ -84,10 +82,8 @@ public abstract class WaterAlgorithm {
         RLw[4] = sourceSamples[SOURCE_REFLEC_5_INDEX].getDouble();
         RLw[5] = sourceSamples[SOURCE_REFLEC_6_INDEX].getDouble();
         RLw[6] = sourceSamples[SOURCE_REFLEC_7_INDEX].getDouble();
-        RLw[7] = sourceSamples[SOURCE_REFLEC_9_INDEX].getDouble();
-        RLw[8] = sourceSamples[SOURCE_REFLEC_10_INDEX].getDouble();
-        RLw[9] = sourceSamples[SOURCE_REFLEC_12_INDEX].getDouble();
-        RLw[10] = sourceSamples[SOURCE_REFLEC_13_INDEX].getDouble();
+        RLw[7] = sourceSamples[SOURCE_REFLEC_8_INDEX].getDouble();
+        RLw[8] = sourceSamples[SOURCE_REFLEC_9_INDEX].getDouble();
         double[] RLw_cut = new double[RLw.length];
         for (int i = 0; i < RLw.length; i++) {
             final double Rlw = RLw[i];
