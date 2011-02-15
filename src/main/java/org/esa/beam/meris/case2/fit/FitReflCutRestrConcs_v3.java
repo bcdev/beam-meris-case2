@@ -3,7 +3,7 @@ package org.esa.beam.meris.case2.fit;
 import org.esa.beam.meris.case2.algorithm.AlgorithmParameter;
 import org.esa.beam.meris.case2.util.nn.ForwNNReflCut;
 import org.esa.beam.meris.case2.util.nn.InvNNReflCut;
-import org.esa.beam.meris.case2.util.nn.NNCalc;
+import org.esa.beam.nn.NNCalc;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class FitReflCutRestrConcs_v3 implements ErrorFit3_v2 {
     private static double[] posFit = new double[3];
 
     public FitReflCutRestrConcs_v3(double ReflCut, AlgorithmParameter parameter, double errscale) throws
-                                                                                                  IOException {
+            IOException {
         this.ReflCut = ReflCut;
         this.parameter = parameter;
         invNN = new InvNNReflCut(new FileInputStream(parameter.waterNnInverseFilePath), this.ReflCut);

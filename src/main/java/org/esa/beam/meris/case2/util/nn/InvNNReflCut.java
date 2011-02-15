@@ -1,5 +1,7 @@
 package org.esa.beam.meris.case2.util.nn;
 
+import org.esa.beam.nn.NNffbpAlphaTabFast;
+
 import java.io.IOException;
 import java.io.InputStream;
 

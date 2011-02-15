@@ -15,8 +15,8 @@ import org.esa.beam.framework.gpf.experimental.PixelOperator;
 import org.esa.beam.jai.ResolutionLevel;
 import org.esa.beam.jai.VirtualBandOpImage;
 import org.esa.beam.meris.case2.fit.ChiSquareFitting;
-import org.esa.beam.meris.case2.util.nn.NNffbpAlphaTabFast;
 import org.esa.beam.meris.case2.water.WaterAlgorithm;
+import org.esa.beam.nn.NNffbpAlphaTabFast;
 import org.esa.beam.util.ProductUtils;
 
 import java.awt.Color;
@@ -337,7 +337,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
      *
      * @param satelliteAzimuth the satellite azimuth angle in degree
      * @param solarAzimuth     the solar azimuth angle in degree
-     *
      * @return azimuth difference in degree
      */
     private static double getAzimuthDifference(double satelliteAzimuth, double solarAzimuth) {
