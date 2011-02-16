@@ -53,11 +53,29 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final String BAND_NAME_A_PIGMENT = "a_pig_443";
     private static final String BAND_NAME_A_TOTAL = "a_total_443";
     private static final String BAND_NAME_B_TSM = "b_total_443";
+    private static final String BAND_NAME_A_GELBSTOFF_FIT = BAND_NAME_A_GELBSTOFF + "_Fit";
+    private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = BAND_NAME_A_GELBSTOFF + "_Fit_max";
+    private static final String BAND_NAME_A_GELBSTOFF_FIT_MIN = BAND_NAME_A_GELBSTOFF + "_Fit_min";
+    private static final String BAND_NAME_A_PIG_FIT = BAND_NAME_A_PIGMENT + "_Fit";
+    private static final String BAND_NAME_A_PIG_FIT_MAX = BAND_NAME_A_PIGMENT + "_Fit_max";
+    private static final String BAND_NAME_A_PIG_FIT_MIN = BAND_NAME_A_PIGMENT + "_Fit_min";
+    private static final String BAND_NAME_B_TSM_FIT = BAND_NAME_B_TSM + "_Fit";
+    private static final String BAND_NAME_B_TSM_FIT_MAX = BAND_NAME_B_TSM + "_Fit_max";
+    private static final String BAND_NAME_B_TSM_FIT_MIN = BAND_NAME_B_TSM + "_Fit_min";
 
 //    private static final String BAND_NAME_A_GELBSTOFF = "a_gelbstoff";
 //    private static final String BAND_NAME_A_PIGMENT = "a_pig";
 //    private static final String BAND_NAME_A_TOTAL = "a_total";
 //    private static final String BAND_NAME_B_TSM = "b_tsm";
+//    private static final String BAND_NAME_A_GELBSTOFF_FIT = "a_gelbstoffFit";
+//    private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = "a_gelbstoffFit_max";
+//    private static final String BAND_NAME_A_GELBSTOFF_FIT_MIN = "a_gelbstoffFit_min";
+//    private static final String BAND_NAME_A_PIG_FIT = "a_pigFit";
+//    private static final String BAND_NAME_A_PIG_FIT_MAX = "a_pigFit_max";
+//    private static final String BAND_NAME_A_PIG_FIT_MIN = "a_pigFit_min";
+//    private static final String BAND_NAME_B_TSM_FIT = "b_tsmFit";
+//    private static final String BAND_NAME_B_TSM_FIT_MAX = "b_tsmFit_max";
+//    private static final String BAND_NAME_B_TSM_FIT_MIN = "b_tsmFit_min";
 
     private static final String BAND_NAME_TSM = "tsm";
     private static final String BAND_NAME_CHL_CONC = "chl_conc";
@@ -67,15 +85,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final String BAND_NAME_KD_490 = "Kd_490";
     private static final String BAND_NAME_TURBIDITY_INDEX = "turbidity_index";
     private static final String BAND_NAME_CASE2_FLAGS = "case2_flags";
-    private static final String BAND_NAME_A_GELBSTOFF_FIT = "a_gelbstoffFit";
-    private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = "a_gelbstoffFit_max";
-    private static final String BAND_NAME_A_GELBSTOFF_FIT_MIN = "a_gelbstoffFit_min";
-    private static final String BAND_NAME_A_PIG_FIT = "a_pigFit";
-    private static final String BAND_NAME_A_PIG_FIT_MAX = "a_pigFit_max";
-    private static final String BAND_NAME_A_PIG_FIT_MIN = "a_pigFit_min";
-    private static final String BAND_NAME_B_TSM_FIT = "b_tsmFit";
-    private static final String BAND_NAME_B_TSM_FIT_MAX = "b_tsmFit_max";
-    private static final String BAND_NAME_B_TSM_FIT_MIN = "b_tsmFit_min";
     private static final String BAND_NAME_TSM_FIT = "tsmFit";
     private static final String BAND_NAME_CHL_CONC_FIT = "chl_concFit";
     private static final String BAND_NAME_CHI_SQUARE_FIT = "chiSquareFit";
@@ -337,6 +346,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
      *
      * @param satelliteAzimuth the satellite azimuth angle in degree
      * @param solarAzimuth     the solar azimuth angle in degree
+     *
      * @return azimuth difference in degree
      */
     private static double getAzimuthDifference(double satelliteAzimuth, double solarAzimuth) {
