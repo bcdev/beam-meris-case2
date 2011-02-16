@@ -120,6 +120,25 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseWaterNet;
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardWaterNet;
     private VirtualBandOpImage invalidOpImage;
+    private final String[] requiredReflecBandNames = new String[]{
+            MERIS_L2_REFLEC_1_BAND_NAME,
+            MERIS_L2_REFLEC_2_BAND_NAME,
+            MERIS_L2_REFLEC_3_BAND_NAME,
+            MERIS_L2_REFLEC_4_BAND_NAME,
+            MERIS_L2_REFLEC_5_BAND_NAME,
+            MERIS_L2_REFLEC_6_BAND_NAME,
+            MERIS_L2_REFLEC_7_BAND_NAME,
+            MERIS_L2_REFLEC_8_BAND_NAME,
+            MERIS_L2_REFLEC_9_BAND_NAME
+    };
+    private final String[] requiredTPGNames = new String[]{
+            MERIS_SUN_AZIMUTH_DS_NAME,
+            MERIS_SUN_ZENITH_DS_NAME,
+            MERIS_VIEW_AZIMUTH_DS_NAME,
+            MERIS_VIEW_ZENITH_DS_NAME,
+            MERIS_ZONAL_WIND_DS_NAME,
+            MERIS_MERID_WIND_DS_NAME
+    };
 
     @Override
     protected void configureTargetProduct(Product targetProduct) {
@@ -232,37 +251,23 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     @Override
     protected void configureSourceSamples(Configurator configurator) {
         final Product sourceProduct = getSourceProduct();
-        configurator.defineSample(SOURCE_REFLEC_1_INDEX, MERIS_L2_REFLEC_1_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_2_INDEX, MERIS_L2_REFLEC_2_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_3_INDEX, MERIS_L2_REFLEC_3_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_4_INDEX, MERIS_L2_REFLEC_4_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_5_INDEX, MERIS_L2_REFLEC_5_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_6_INDEX, MERIS_L2_REFLEC_6_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_7_INDEX, MERIS_L2_REFLEC_7_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_8_INDEX, MERIS_L2_REFLEC_13_BAND_NAME);
-        configurator.defineSample(SOURCE_REFLEC_9_INDEX, MERIS_L2_REFLEC_9_BAND_NAME);
-        configurator.defineSample(SOURCE_SOLAZI_INDEX, MERIS_SUN_AZIMUTH_DS_NAME);
-        configurator.defineSample(SOURCE_SOLZEN_INDEX, MERIS_SUN_ZENITH_DS_NAME);
-        configurator.defineSample(SOURCE_SATAZI_INDEX, MERIS_VIEW_AZIMUTH_DS_NAME);
-        configurator.defineSample(SOURCE_SATZEN_INDEX, MERIS_VIEW_ZENITH_DS_NAME);
-        configurator.defineSample(SOURCE_ZONAL_WIND_INDEX, MERIS_ZONAL_WIND_DS_NAME);
-        configurator.defineSample(SOURCE_MERID_WIND_INDEX, MERIS_MERID_WIND_DS_NAME);
+        validateSourceProduct(sourceProduct);
+        final MetadataElement sph = sourceProduct.getMetadataRoot().getElement("SPH");
+        final MetadataAttribute sphDescriptor = sph.getAttribute("SPH_DESCRIPTOR");
+        isFullResolution = !sphDescriptor.getData().getElemString().contains("RR");
 
+        for (int i = 0; i < requiredReflecBandNames.length; i++) {
+            configurator.defineSample(i, requiredReflecBandNames[i]);
+
+        }
+        for (int i = 0; i < requiredTPGNames.length; i++) {
+            configurator.defineSample(requiredReflecBandNames.length + i, requiredTPGNames[i]);
+        }
         invalidOpImage = VirtualBandOpImage.createMask(invalidPixelExpression,
-                                                       getSourceProduct(),
+                                                       sourceProduct,
                                                        ResolutionLevel.MAXRES);
 
         centerPixel = MerisFlightDirection.findNadirColumnIndex(sourceProduct);
-
-        final MetadataElement sph = sourceProduct.getMetadataRoot().getElement("SPH");
-        if (sph == null) {
-            throw new OperatorException("Source product does not contain metadata element 'SPH'.");
-        }
-        final MetadataAttribute sphDescriptor = sph.getAttribute("SPH_DESCRIPTOR");
-        if (sphDescriptor == null) {
-            throw new OperatorException("Metadata element 'SPH' does not contain attribute 'SPH_DESCRIPTOR'.");
-        }
-        isFullResolution = !sphDescriptor.getData().getElemString().contains("RR");
         waterAlgorithm = createAlgorithm();
         inverseWaterNnString = readNeuralNetString(getDefaultInverseWaterNetResourcePath(), inverseWaterNnFile);
         forwardWaterNnString = readNeuralNetString(getDefaultForwardWaterNetResourcePath(), forwardWaterNnFile);
@@ -286,6 +291,34 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                 }
             }
         };
+    }
+
+    private void validateSourceProduct(Product sourceProduct) {
+        for (String requiredReflecBandName : requiredReflecBandNames) {
+            if (!sourceProduct.containsRasterDataNode(requiredReflecBandName)) {
+                final String pattern = "Missing required band '%s'. Consider enabling atmospheric correction.";
+                final String msg = String.format(pattern, requiredReflecBandName);
+                throw new OperatorException(msg);
+            }
+        }
+        for (String requiredTPGName : requiredTPGNames) {
+            if (!sourceProduct.containsRasterDataNode(requiredTPGName)) {
+                final String msg = String.format("Missing required tie-point grid '%s'.", requiredTPGName);
+                throw new OperatorException(msg);
+            }
+        }
+        final MetadataElement sph = sourceProduct.getMetadataRoot().getElement("SPH");
+        if (sph == null) {
+            throw new OperatorException("Source product does not contain metadata element 'SPH'.");
+        }
+        final MetadataAttribute sphDescriptor = sph.getAttribute("SPH_DESCRIPTOR");
+        if (sphDescriptor == null) {
+            throw new OperatorException("Metadata element 'SPH' does not contain attribute 'SPH_DESCRIPTOR'.");
+        }
+        if (!sourceProduct.isCompatibleBandArithmeticExpression(invalidPixelExpression)) {
+            throw new OperatorException("Expression: '" + invalidPixelExpression + "' can not be evaluated.");
+        }
+
     }
 
     @Override

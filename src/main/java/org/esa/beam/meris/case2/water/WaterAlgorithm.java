@@ -15,12 +15,12 @@ public abstract class WaterAlgorithm {
     public static final int SOURCE_REFLEC_7_INDEX = 6;
     public static final int SOURCE_REFLEC_8_INDEX = 7;
     public static final int SOURCE_REFLEC_9_INDEX = 8;
-    public static final int SOURCE_SOLAZI_INDEX = 11;
-    public static final int SOURCE_SOLZEN_INDEX = 12;
-    public static final int SOURCE_SATAZI_INDEX = 13;
-    public static final int SOURCE_SATZEN_INDEX = 14;
-    public static final int SOURCE_ZONAL_WIND_INDEX = 15;
-    public static final int SOURCE_MERID_WIND_INDEX = 16;
+    public static final int SOURCE_SOLAZI_INDEX = 9;
+    public static final int SOURCE_SOLZEN_INDEX = 10;
+    public static final int SOURCE_SATAZI_INDEX = 11;
+    public static final int SOURCE_SATZEN_INDEX = 12;
+    public static final int SOURCE_ZONAL_WIND_INDEX = 13;
+    public static final int SOURCE_MERID_WIND_INDEX = 14;
 
     public static final int TARGET_A_GELBSTOFF_INDEX = 0;
     public static final int TARGET_A_PIGMENT_INDEX = 1;
