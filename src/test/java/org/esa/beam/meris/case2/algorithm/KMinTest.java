@@ -6,6 +6,10 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class KMinTest {
+    ///////////////////////////////////////////////////////////
+    // This test checks against known values
+    // The values are taken from a stable state
+    ///////////////////////////////////////////////////////////
 
     private static double bTsm;
     private static double aPig;
@@ -14,8 +18,6 @@ public class KMinTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        // This test checks against known values
-        // The values are taken from a stable state
         bTsm = 2.989373;
         aPig = 0.144818;
         aGelbstoff = 0.142277;
@@ -35,7 +37,5 @@ public class KMinTest {
         KMin kMin = new KMin(bTsm, aPig, aGelbstoff);
         assertEquals(0.255409, kMin.computeKMinValue(), 1.0e-6);
         assertEquals(0.283257, kMin.computeKd490(), 1.0e-6);
-
-
     }
 }
