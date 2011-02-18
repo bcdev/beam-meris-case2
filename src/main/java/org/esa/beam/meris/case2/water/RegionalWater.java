@@ -37,7 +37,7 @@ public class RegionalWater extends WaterAlgorithm {
                Math.pow(forwardWaterOutnet[4] - Math.log(RLw_cut[4]), 2) +
                Math.pow(forwardWaterOutnet[5] - Math.log(RLw_cut[5]), 2) +
                Math.pow(forwardWaterOutnet[6] - Math.log(RLw_cut[6]), 2) +
-               Math.pow(forwardWaterOutnet[7] - Math.log(RLw_cut[8]), 2); // in outnet 7 corresponds to RLw 8
+               Math.pow(forwardWaterOutnet[7] - Math.log(RLw_cut[8]), 2); // in outnet 7 corresponds to RLw 8 (reflec_9)
     }
 
     @Override
