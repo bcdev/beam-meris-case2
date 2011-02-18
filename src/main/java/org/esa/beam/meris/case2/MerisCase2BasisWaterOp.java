@@ -293,32 +293,22 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         };
     }
 
-    private void validateSourceProduct(Product sourceProduct) {
-        for (String requiredReflecBandName : requiredReflecBandNames) {
-            if (!sourceProduct.containsRasterDataNode(requiredReflecBandName)) {
-                final String pattern = "Missing required band '%s'. Consider enabling atmospheric correction.";
-                final String msg = String.format(pattern, requiredReflecBandName);
-                throw new OperatorException(msg);
-            }
+    /**
+     * Computes the difference of solar and satellite azimuth in degree.
+     *
+     * @param satelliteAzimuth the satellite azimuth angle in degree
+     * @param solarAzimuth     the solar azimuth angle in degree
+     *
+     * @return azimuth difference in degree
+     */
+    public static double getAzimuthDifference(double satelliteAzimuth, double solarAzimuth) {
+        double azi_diff_deg = Math.abs(satelliteAzimuth - solarAzimuth); /* azimuth difference */
+        /* reverse azi difference */
+        if (azi_diff_deg > 180.0) {
+            azi_diff_deg = 360.0 - azi_diff_deg;
         }
-        for (String requiredTPGName : requiredTPGNames) {
-            if (!sourceProduct.containsRasterDataNode(requiredTPGName)) {
-                final String msg = String.format("Missing required tie-point grid '%s'.", requiredTPGName);
-                throw new OperatorException(msg);
-            }
-        }
-        final MetadataElement sph = sourceProduct.getMetadataRoot().getElement("SPH");
-        if (sph == null) {
-            throw new OperatorException("Source product does not contain metadata element 'SPH'.");
-        }
-        final MetadataAttribute sphDescriptor = sph.getAttribute("SPH_DESCRIPTOR");
-        if (sphDescriptor == null) {
-            throw new OperatorException("Metadata element 'SPH' does not contain attribute 'SPH_DESCRIPTOR'.");
-        }
-        if (!sourceProduct.isCompatibleBandArithmeticExpression(invalidPixelExpression)) {
-            throw new OperatorException("Expression: '" + invalidPixelExpression + "' can not be evaluated.");
-        }
-
+        azi_diff_deg = 180.0 - azi_diff_deg; /* different definitions in MERIS data and MC /HL simulation */
+        return azi_diff_deg;
     }
 
     @Override
@@ -362,6 +352,38 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
     protected abstract String getProductTypeSuffix();
 
+    protected double getSpectrumOutOfScopeThreshold() {
+        return spectrumOutOfScopeThreshold;
+    }
+
+    private void validateSourceProduct(Product sourceProduct) {
+        for (String requiredReflecBandName : requiredReflecBandNames) {
+            if (!sourceProduct.containsRasterDataNode(requiredReflecBandName)) {
+                final String pattern = "Missing required band '%s'. Consider enabling atmospheric correction.";
+                final String msg = String.format(pattern, requiredReflecBandName);
+                throw new OperatorException(msg);
+            }
+        }
+        for (String requiredTPGName : requiredTPGNames) {
+            if (!sourceProduct.containsRasterDataNode(requiredTPGName)) {
+                final String msg = String.format("Missing required tie-point grid '%s'.", requiredTPGName);
+                throw new OperatorException(msg);
+            }
+        }
+        final MetadataElement sph = sourceProduct.getMetadataRoot().getElement("SPH");
+        if (sph == null) {
+            throw new OperatorException("Source product does not contain metadata element 'SPH'.");
+        }
+        final MetadataAttribute sphDescriptor = sph.getAttribute("SPH_DESCRIPTOR");
+        if (sphDescriptor == null) {
+            throw new OperatorException("Metadata element 'SPH' does not contain attribute 'SPH_DESCRIPTOR'.");
+        }
+        if (!sourceProduct.isCompatibleBandArithmeticExpression(invalidPixelExpression)) {
+            throw new OperatorException("Expression: '" + invalidPixelExpression + "' can not be evaluated.");
+        }
+
+    }
+
     private String getProductType() {
         final String type = getSourceProduct().getProductType().substring(0, 7);
         return type + getProductTypeSuffix();
@@ -372,24 +394,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         final double ang_coef_2 = isFullResolution ? 0.0093247 / 4 : 0.0093247;
         satelliteZenith = satelliteZenith + Math.abs(pixelX - nadirPixelX) * ang_coef_2 + ang_coef_1;
         return satelliteZenith;
-    }
-
-    /**
-     * Computes the difference of solar and satellite azimuth in degree.
-     *
-     * @param satelliteAzimuth the satellite azimuth angle in degree
-     * @param solarAzimuth     the solar azimuth angle in degree
-     *
-     * @return azimuth difference in degree
-     */
-    private static double getAzimuthDifference(double satelliteAzimuth, double solarAzimuth) {
-        double azi_diff_deg = Math.abs(satelliteAzimuth - solarAzimuth); /* azimuth difference */
-        /* reverse azi difference */
-        if (azi_diff_deg > 180.0) {
-            azi_diff_deg = 360.0 - azi_diff_deg;
-        }
-        azi_diff_deg = 180.0 - azi_diff_deg; /* different definitions in MERIS data and MC /HL simulation */
-        return azi_diff_deg;
     }
 
     private void addFlagsAndMasks(Product targetProduct) {
@@ -462,9 +466,5 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
             } catch (IOException ignore) {
             }
         }
-    }
-
-    protected double getSpectrumOutOfScopeThreshold() {
-        return spectrumOutOfScopeThreshold;
     }
 }
