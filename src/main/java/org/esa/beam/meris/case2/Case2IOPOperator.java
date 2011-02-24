@@ -87,6 +87,10 @@ public class Case2IOPOperator extends Operator {
                label = "Water algorithm", description = "The algorithm used for IOP computation.")
     private Case2AlgorithmEnum algorithm;
 
+    @Parameter(defaultValue = "true", label = "Output water leaving reflectance",
+               description = "Toggles the output of water leaving irradiance reflectance.")
+    private boolean outputReflec;
+
     @Parameter(label = "Tsm conversion factor (optional)",
                description = "Exponent for conversion from TSM to B_TSM (optional)." +
                              "Defaults: Regional=1.0, Boreal=not used, Eutrophic=1.0")
@@ -147,6 +151,9 @@ public class Case2IOPOperator extends Operator {
         final String[] names = inputProduct.getBandNames();
         for (String name : names) {
             if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
+                continue;
+            }
+            if (!outputReflec && name.startsWith("reflec")) {
                 continue;
             }
             final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();

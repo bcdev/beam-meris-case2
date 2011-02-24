@@ -91,6 +91,31 @@ public class Case2IOPOperatorTest {
                 "case2_flags"
         };
         Assert.assertArrayEquals(expectedTargetBands, bandNames);
+    }
+
+    @Test
+    public void testOuputReflectances() throws Exception {
+        final HashMap<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("doAtmosphericCorrection", false);
+        parameters.put("outputReflec", false);
+        final Product c2rProduct = GPF.createProduct("Meris.Case2IOP", parameters, getAtmoCorrectedProduct());
+        final String[] bandNames = c2rProduct.getBandNames();
+        final String[] expectedTargetBands = {
+                "a_ys_443",
+                "a_pig_443",
+                "a_total_443",
+                "b_total_443",
+                "tsm",
+                "chl_conc",
+                "chiSquare",
+                "K_min",
+                "Z90_max",
+                "Kd_490",
+                "turbidity_index",
+                "agc_flags",
+                "case2_flags"
+        };
+        Assert.assertArrayEquals(expectedTargetBands, bandNames);
 
     }
 
