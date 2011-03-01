@@ -161,7 +161,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                       "Total absorption coefficient of all water constituents at 443 nm.", false,
                       ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_BB_SPM, "m^-1",
-                      "Total scattering or backscattering.", true, ProductData.TYPE_FLOAT32);
+                      "Backscattering of suspended particulate matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_TSM, "g m^-3",
                       "Total suspended matter dry weight concentration.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_CHL_CONC, "mg m^-3",
