@@ -25,7 +25,7 @@ public abstract class WaterAlgorithm {
     public static final int TARGET_A_GELBSTOFF_INDEX = 0;
     public static final int TARGET_A_PIGMENT_INDEX = 1;
     public static final int TARGET_A_TOTAL_INDEX = 2;
-    public static final int TARGET_B_TSM_INDEX = 3;
+    public static final int TARGET_BB_SPM_INDEX = 3;
     public static final int TARGET_TSM_INDEX = 4;
     public static final int TARGET_CHL_CONC_INDEX = 5;
     public static final int TARGET_CHI_SQUARE_INDEX = 6;
@@ -60,6 +60,8 @@ public abstract class WaterAlgorithm {
     private static final double TURBIDITY_AT = 174.41;
     private static final double TURBIDITY_BT = 0.39;
     private static final double TURBIDITY_C = 0.1533;
+
+    public static final double BTSM_TO_SPM_FACTOR = 0.02;
 
     private double spectrumOutOfScopeThreshold;
 
@@ -109,10 +111,10 @@ public abstract class WaterAlgorithm {
         fillOutput(waterOutnet, targetSamples);
 
         /* test if concentrations are within training range */
-        final double bTsm = targetSamples[TARGET_B_TSM_INDEX].getDouble();
+        final double bbSpm = targetSamples[TARGET_BB_SPM_INDEX].getDouble();
         final double aPig = targetSamples[TARGET_A_PIGMENT_INDEX].getDouble();
         final double aGelbstoff = targetSamples[TARGET_A_GELBSTOFF_INDEX].getDouble();
-        if (!test_watconc(bTsm, aPig, aGelbstoff, inverseWaterNet)) {
+        if (!test_watconc(bbSpm / BTSM_TO_SPM_FACTOR, aPig, aGelbstoff, inverseWaterNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(CONC_OOR_BIT_INDEX, true);
         }
 

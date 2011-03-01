@@ -24,7 +24,7 @@ public class EutrophicWater extends WaterAlgorithm {
 
     @Override
     protected KMin createKMin(PointOperator.WritableSample[] targetSamples) {
-        final double bTsm = targetSamples[TARGET_B_TSM_INDEX].getDouble();
+        final double bTsm = targetSamples[TARGET_BB_SPM_INDEX].getDouble() / BTSM_TO_SPM_FACTOR;
         final double aPig = targetSamples[TARGET_A_PIGMENT_INDEX].getDouble();
         final double aGelbstoff = targetSamples[TARGET_A_GELBSTOFF_INDEX].getDouble();
         final double aBtsm = targetSamples[TARGET_A_BTSM_INDEX].getDouble();
@@ -67,7 +67,7 @@ public class EutrophicWater extends WaterAlgorithm {
     @Override
     protected void fillOutput(double[] waterOutnet, PointOperator.WritableSample[] targetSamples) {
         double bTsm = Math.exp(waterOutnet[3]);
-        targetSamples[TARGET_B_TSM_INDEX].set(bTsm);
+        targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
         targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + waterOutnet[3] * tsmExponent));
 
         double aPig = Math.exp(waterOutnet[2]) * chlFactor;

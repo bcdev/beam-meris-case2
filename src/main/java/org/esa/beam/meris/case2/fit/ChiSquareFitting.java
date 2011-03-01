@@ -48,7 +48,7 @@ public class ChiSquareFitting {
         initSingleFit.azi_diff_grad = azi_diff_deg;
         initSingleFit.ln_a_Chlor = targetSamples[TARGET_A_PIGMENT_INDEX].getDouble();
         initSingleFit.ln_a_Yellow_a_SPM = targetSamples[TARGET_A_GELBSTOFF_INDEX].getDouble();
-        initSingleFit.ln_b_SPM_b_White = targetSamples[TARGET_B_TSM_INDEX].getDouble();
+        initSingleFit.ln_b_SPM_b_White = targetSamples[TARGET_BB_SPM_INDEX].getDouble();
 
         for (int k = 0; k < 7; k++) {
             initSingleFit.wlRefl[k] = Math.log(RLw_cut[k]);

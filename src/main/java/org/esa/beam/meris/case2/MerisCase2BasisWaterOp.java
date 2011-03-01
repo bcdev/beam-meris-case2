@@ -52,30 +52,16 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final String BAND_NAME_A_GELBSTOFF = "a_ys_443";
     private static final String BAND_NAME_A_PIGMENT = "a_pig_443";
     private static final String BAND_NAME_A_TOTAL = "a_total_443";
-    private static final String BAND_NAME_B_TSM = "b_total_443";
+    private static final String BAND_NAME_BB_SPM = "bb_spm_443";
     private static final String BAND_NAME_A_GELBSTOFF_FIT = BAND_NAME_A_GELBSTOFF + "_Fit";
     private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = BAND_NAME_A_GELBSTOFF + "_Fit_max";
     private static final String BAND_NAME_A_GELBSTOFF_FIT_MIN = BAND_NAME_A_GELBSTOFF + "_Fit_min";
     private static final String BAND_NAME_A_PIG_FIT = BAND_NAME_A_PIGMENT + "_Fit";
     private static final String BAND_NAME_A_PIG_FIT_MAX = BAND_NAME_A_PIGMENT + "_Fit_max";
     private static final String BAND_NAME_A_PIG_FIT_MIN = BAND_NAME_A_PIGMENT + "_Fit_min";
-    private static final String BAND_NAME_B_TSM_FIT = BAND_NAME_B_TSM + "_Fit";
-    private static final String BAND_NAME_B_TSM_FIT_MAX = BAND_NAME_B_TSM + "_Fit_max";
-    private static final String BAND_NAME_B_TSM_FIT_MIN = BAND_NAME_B_TSM + "_Fit_min";
-
-//    private static final String BAND_NAME_A_GELBSTOFF = "a_gelbstoff";
-//    private static final String BAND_NAME_A_PIGMENT = "a_pig";
-//    private static final String BAND_NAME_A_TOTAL = "a_total";
-//    private static final String BAND_NAME_B_TSM = "b_tsm";
-//    private static final String BAND_NAME_A_GELBSTOFF_FIT = "a_gelbstoffFit";
-//    private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = "a_gelbstoffFit_max";
-//    private static final String BAND_NAME_A_GELBSTOFF_FIT_MIN = "a_gelbstoffFit_min";
-//    private static final String BAND_NAME_A_PIG_FIT = "a_pigFit";
-//    private static final String BAND_NAME_A_PIG_FIT_MAX = "a_pigFit_max";
-//    private static final String BAND_NAME_A_PIG_FIT_MIN = "a_pigFit_min";
-//    private static final String BAND_NAME_B_TSM_FIT = "b_tsmFit";
-//    private static final String BAND_NAME_B_TSM_FIT_MAX = "b_tsmFit_max";
-//    private static final String BAND_NAME_B_TSM_FIT_MIN = "b_tsmFit_min";
+    private static final String BAND_NAME_B_TSM_FIT = BAND_NAME_BB_SPM + "_Fit";
+    private static final String BAND_NAME_B_TSM_FIT_MAX = BAND_NAME_BB_SPM + "_Fit_max";
+    private static final String BAND_NAME_B_TSM_FIT_MIN = BAND_NAME_BB_SPM + "_Fit_min";
 
     private static final String BAND_NAME_TSM = "tsm";
     private static final String BAND_NAME_CHL_CONC = "chl_conc";
@@ -174,7 +160,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         addTargetBand(targetProduct, BAND_NAME_A_TOTAL, "m^-1",
                       "Total absorption coefficient of all water constituents at 443 nm.", false,
                       ProductData.TYPE_FLOAT32);
-        addTargetBand(targetProduct, BAND_NAME_B_TSM, "m^-1",
+        addTargetBand(targetProduct, BAND_NAME_BB_SPM, "m^-1",
                       "Total scattering or backscattering.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(targetProduct, BAND_NAME_TSM, "g m^-3",
                       "Total suspended matter dry weight concentration.", true, ProductData.TYPE_FLOAT32);
@@ -218,7 +204,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         configurator.defineSample(TARGET_A_GELBSTOFF_INDEX, BAND_NAME_A_GELBSTOFF);
         configurator.defineSample(TARGET_A_PIGMENT_INDEX, BAND_NAME_A_PIGMENT);
         configurator.defineSample(TARGET_A_TOTAL_INDEX, BAND_NAME_A_TOTAL);
-        configurator.defineSample(TARGET_B_TSM_INDEX, BAND_NAME_B_TSM);
+        configurator.defineSample(TARGET_BB_SPM_INDEX, BAND_NAME_BB_SPM);
         configurator.defineSample(TARGET_TSM_INDEX, BAND_NAME_TSM);
         configurator.defineSample(TARGET_CHL_CONC_INDEX, BAND_NAME_CHL_CONC);
         configurator.defineSample(TARGET_CHI_SQUARE_INDEX, BAND_NAME_CHI_SQUARE);

@@ -30,7 +30,7 @@ public class RegionalWaterAlgorithmTest {
         assertEquals(0.0166, targetSamples[WaterAlgorithm.TARGET_A_GELBSTOFF_INDEX].getDouble(), 1.0e-3);
         assertEquals(0.0256, targetSamples[WaterAlgorithm.TARGET_A_PIGMENT_INDEX].getDouble(), 1.0e-3);
         assertEquals(0.0423, targetSamples[WaterAlgorithm.TARGET_A_TOTAL_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.7449, targetSamples[WaterAlgorithm.TARGET_B_TSM_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0148, targetSamples[WaterAlgorithm.TARGET_BB_SPM_INDEX].getDouble(), 1.0e-3);
         assertEquals(1.2887, targetSamples[WaterAlgorithm.TARGET_TSM_INDEX].getDouble(), 1.0e-3);
         assertEquals(0.4660, targetSamples[WaterAlgorithm.TARGET_CHL_CONC_INDEX].getDouble(), 1.0e-3);
         assertEquals(0.2236, targetSamples[WaterAlgorithm.TARGET_CHI_SQUARE_INDEX].getDouble(), 1.0e-3);
