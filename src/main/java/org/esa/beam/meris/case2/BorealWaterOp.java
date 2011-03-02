@@ -13,7 +13,8 @@ import org.esa.beam.meris.case2.water.WaterAlgorithm;
                   description = "Performs IOP retrieval on atmospherically corrected MERIS products.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2010 by Brockmann Consult",
-                  version = "1.0")
+                  version = "1.5",
+                  internal = true)
 public class BorealWaterOp extends MerisCase2BasisWaterOp {
 
     private static final String PRODUCT_TYPE_SUFFIX = "BOR";
