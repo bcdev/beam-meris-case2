@@ -63,57 +63,26 @@
         </action>
     </extension>
 
-    <!--  Water specific actions- not added to the Tools menu
-    <extension point="beam-ui:actions">
-        <action>
-            <id>merisRegionalCase2Water</id>
-            <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
-            <text>Regional Case-2-Water (MERIS)...</text>
-            <shortDescr>Performs IOP retrieval on MERIS</shortDescr>
-            <longDescr>Performs IOP retrieval on MERIS data products</longDescr>
-            <parent>tools</parent>
-            <helpID>merisCase2Water</helpID>
-            <placeAfter>flhMciScientificTool</placeAfter>
-            <operatorName>Meris.RegionalWater</operatorName>
-            <dialogTitle>Regional Case-2-Water</dialogTitle>
-            <targetProductNameSuffix>_c2r</targetProductNameSuffix>
-        </action>
-    </extension>
-    <extension point="beam-ui:actions">
-        <action>
-            <id>merisBorealCase2Water</id>
-            <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
-            <text>Boreal Case-2-Water (MERIS)...</text>
-            <shortDescr>Performs IOP retrieval for boreal water on MERIS</shortDescr>
-            <longDescr>Performs IOP retrieval for boreal water on MERIS data products</longDescr>
-            <parent>tools</parent>
-            <helpID>merisCase2Water</helpID>
-            <placeAfter>flhMciScientificTool</placeAfter>
-            <operatorName>Meris.BorealWater</operatorName>
-            <dialogTitle>Boreal Case-2-Water</dialogTitle>
-            <targetProductNameSuffix>_c2b</targetProductNameSuffix>
-        </action>
-    </extension>
-    <extension point="beam-ui:actions">
-        <action>
-            <id>merisEutrophicCase2Water</id>
-            <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
-            <text>Eutrophic Case-2-Water (MERIS)...</text>
-            <shortDescr>Performs IOP retrieval for eutrophic water on MERIS</shortDescr>
-            <longDescr>Performs IOP retrieval for eutrophic water on MERIS data products</longDescr>
-            <parent>tools</parent>
-            <helpID>merisCase2Water</helpID>
-            <placeAfter>flhMciScientificTool</placeAfter>
-            <operatorName>Meris.EutrophicWater</operatorName>
-            <dialogTitle>Eutrophic Case-2-Water</dialogTitle>
-            <targetProductNameSuffix>_c2e</targetProductNameSuffix>
-        </action>
-    </extension>-->
+    <!-- For specific UI
+        <extension point="beam-ui:actions">
+            <action>
+                <id>merisCase2IOP</id>
+                <class>org.esa.beam.meris.case2.ui.Case2IOPAction</class>
+                <text>Case-2 IOPs (MERIS)...</text>
+                <shortDescr>Performs Case-2 IOP retrieval on MERIS</shortDescr>
+                <longDescr>Performs IOP retrieval for case-2 water on MERIS data products</longDescr>
+                <parent>tools</parent>
+                <helpID>merisCase2IOP</helpID>
+                <placeAfter>flhMciScientificTool</placeAfter>
+            </action>
+        </extension>
+    -->
+
 
     <extension point="beam-ui:helpSets">
         <helpSet>
             <parent>beam-help</parent>
-            <path>doc/help/regional/merisc2r.hs</path>
+            <path>doc/help/regional/merisCase2IOP.hs</path>
         </helpSet>
     </extension>
 
