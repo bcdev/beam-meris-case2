@@ -57,8 +57,8 @@ public class Case2IOPOperatorTest {
                 "Z90_max",
                 "Kd_490",
                 "turbidity_index",
-                "l1_flags",
                 "agc_flags",
+                "l1_flags",
                 "case2_flags"
         };
         Assert.assertArrayEquals(expectedTargetBands, bandNames);
