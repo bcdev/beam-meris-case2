@@ -50,33 +50,15 @@
     <extension point="beam-ui:actions">
         <action>
             <id>merisCase2IOP</id>
-            <class>org.esa.beam.visat.actions.DefaultOperatorAction</class>
-            <text>Case-2-Water IOPs (MERIS)...</text>
-            <shortDescr>Performs IOP retrieval on MERIS</shortDescr>
-            <longDescr>Performs IOP retrieval on MERIS data products</longDescr>
+            <class>org.esa.beam.meris.case2.ui.Case2IOPAction</class>
+            <text>Case-2 IOPs (MERIS)...</text>
+            <shortDescr>Performs Case-2 IOP retrieval on MERIS</shortDescr>
+            <longDescr>Performs IOP retrieval for case-2 water on MERIS data products</longDescr>
             <parent>tools</parent>
             <helpID>merisCase2IOP</helpID>
             <placeAfter>flhMciScientificTool</placeAfter>
-            <operatorName>Meris.Case2IOP</operatorName>
-            <dialogTitle>Case-2-Water IOP Processor</dialogTitle>
-            <targetProductNameSuffix>_C2IOP</targetProductNameSuffix>
         </action>
     </extension>
-
-    <!-- For specific UI
-        <extension point="beam-ui:actions">
-            <action>
-                <id>merisCase2IOP</id>
-                <class>org.esa.beam.meris.case2.ui.Case2IOPAction</class>
-                <text>Case-2 IOPs (MERIS)...</text>
-                <shortDescr>Performs Case-2 IOP retrieval on MERIS</shortDescr>
-                <longDescr>Performs IOP retrieval for case-2 water on MERIS data products</longDescr>
-                <parent>tools</parent>
-                <helpID>merisCase2IOP</helpID>
-                <placeAfter>flhMciScientificTool</placeAfter>
-            </action>
-        </extension>
-    -->
 
 
     <extension point="beam-ui:helpSets">

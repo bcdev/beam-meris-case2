@@ -1,6 +1,6 @@
 package org.esa.beam.meris.case2;
 
-enum Case2AlgorithmEnum {
+public enum Case2AlgorithmEnum {
 
     REGIONAL {
         @Override
