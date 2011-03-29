@@ -99,6 +99,10 @@ class Case2IOPForm extends JTabbedPane {
         return ioPanel;
     }
 
+    public Product getSourceProduct() {
+        return ioParamPanel.getSourceProductSelectorList().get(0).getSelectedProduct();
+    }
+
     public void prepareShow() {
         ioParamPanel.initSourceProductSelectors();
     }

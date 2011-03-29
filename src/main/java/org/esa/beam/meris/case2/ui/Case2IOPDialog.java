@@ -32,7 +32,8 @@ class Case2IOPDialog extends SingleTargetProductDialog {
     @Override
     protected Product createTargetProduct() throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
-        return GPF.createProduct(OPERATOR_NAME, parameters);
+        final Product sourceProduct = form.getSourceProduct();
+        return GPF.createProduct(OPERATOR_NAME, parameters, sourceProduct);
     }
 
     @Override
