@@ -11,11 +11,9 @@ public class Case2IOPAction extends AbstractVisatAction {
     public void actionPerformed(CommandEvent event) {
         final OperatorMetadata opMetadata = Case2IOPOperator.class.getAnnotation(OperatorMetadata.class);
         final String version = opMetadata.version();
-        final Case2IOPDialog operatorDialog = new Case2IOPDialog(
-                getAppContext(),
-                "Case-2 IOP Processor - v" + version, "merisCase2IOP");
-        // todo
-//        operatorDialog.setTargetProductNameSuffix("_C2IOP");
+        final Case2IOPDialog operatorDialog = new Case2IOPDialog(getAppContext(),
+                                                                 "Case-2 IOP Processor - v" + version,
+                                                                 "merisCase2IOP");
         operatorDialog.getJDialog().pack();
         operatorDialog.show();
     }
