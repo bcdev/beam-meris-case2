@@ -14,6 +14,7 @@ class Case2IOPDialog extends SingleTargetProductDialog {
 
     private static final String OPERATOR_NAME = "Meris.Case2IOP";
     private Case2IOPForm form;
+    private HashMap<String, Object> parameters;
 
     Case2IOPDialog(AppContext appContext, String title, String helpID) {
         super(appContext, title, helpID);
@@ -23,15 +24,15 @@ class Case2IOPDialog extends SingleTargetProductDialog {
             throw new IllegalArgumentException("operatorName");
         }
 
+        parameters = new HashMap<String, Object>();
         PropertyContainer propContainer = ParameterDescriptorFactory.createMapBackedOperatorPropertyContainer(
-                OPERATOR_NAME);
+                OPERATOR_NAME, parameters);
         propContainer.setDefaultValues();
         form = new Case2IOPForm(appContext, operatorSpi, propContainer, getTargetProductSelector());
     }
 
     @Override
     protected Product createTargetProduct() throws Exception {
-        final HashMap<String, Object> parameters = new HashMap<String, Object>();
         final Product sourceProduct = form.getSourceProduct();
         return GPF.createProduct(OPERATOR_NAME, parameters, sourceProduct);
     }
