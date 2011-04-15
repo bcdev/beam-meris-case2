@@ -5,6 +5,7 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.GPF;
 import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.beam.framework.gpf.ui.OperatorMenuSupport;
 import org.esa.beam.framework.gpf.ui.SingleTargetProductDialog;
 import org.esa.beam.framework.ui.AppContext;
 
@@ -29,6 +30,12 @@ class Case2IOPDialog extends SingleTargetProductDialog {
                 OPERATOR_NAME, parameters);
         propContainer.setDefaultValues();
         form = new Case2IOPForm(appContext, operatorSpi, propContainer, getTargetProductSelector());
+
+        OperatorMenuSupport menuSupport = new OperatorMenuSupport(this.getJDialog(),
+                                                                  operatorSpi.getOperatorClass(),
+                                                                  propContainer,
+                                                                  helpID);
+        getJDialog().setJMenuBar(menuSupport.createDefaultMenue());
     }
 
     @Override
