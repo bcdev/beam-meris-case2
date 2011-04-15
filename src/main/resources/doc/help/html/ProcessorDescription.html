@@ -1,0 +1,164 @@
+<html>
+<head>
+    <title>BEAM Data Processors - MERIS Case-2-Water</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            MERIS Case-2-Water Processor Description
+        </td>
+        <td class="header" align="right"><img src="../images/MerisC2RHeader.gif" border=0></td>
+    </tr>
+</table>
+
+<p class="inote">Please note: The chapter <i><b>Data Processors - Introduction</b></i>
+    provides a general description for all BEAM data processors. It describes the common graphical user interface (GUI),
+    the command-line interface and the common processing request file format.</p>
+
+<h4>Content</h4>
+<li><a href="MerisC2RProcessorDescription.html#InOutTab">The In- and Output Parameters tab</a></li>
+<li><a href="MerisC2RProcessorDescription.html#ProcParamTab">The Processing Parameters tab</a></li>
+<li><a href="MerisC2RAlgorithmParameter.html">Description of the Processing Parameters</a></li>
+
+<a name="InOutTab"></a>
+
+<h3>The In- and Output Parameters</h3>
+
+<p align="center"><img src="images/IOParameters.png"></p>
+
+<h5>Source Product Group</h5>
+
+<p class="i1">
+    <b>Name: </b>
+    Used to select the spectral source product. The source product shall
+    contain spectral bands providing a source spectrum at each pixel. Use the <b>...</b> button to
+    open a data product currently not opened in VISAT.
+</p>
+
+<h5>Target Product Group</h5>
+
+<p class="i1">
+    <b>Name:</b>
+    Used to specify the name of the target product.
+</p>
+
+<p class="i1">
+    <b>Save to:</b>
+    Used to specify whether the target product should be saved to the file system. The
+    combo box presents a list of file formats, currently
+    BEAM-DIMAP, GeoTIFF, and HDF5.
+</p>
+
+<p class="i1">
+    <b>Open in VISAT:</b>
+    Used to specify whether the target product should be opened in VISAT. When the
+    the target product is not saved, it is opened in VISAT automatically.
+</p>
+
+<a name="ProcParamTab"></a>
+
+
+<h3>The Processing Parameters</h3>
+
+<p align="center"><img src="images/ProcessingParameters.png"></p>
+
+
+<p class="i1">
+    <b>Perform atmospheric correction: </b><br>
+    Enables or disables the atmospheric correction. If the correction is disabled the source product must already be
+    atmospherically corrected and contain reflectance bands ("reflec_#").
+</p>
+
+<p class="i1">
+    <b>Perform SMILE correction: </b><br>
+    Whether to perform a SMILE correction or not. Only enabled if atmospheric correction is enabled too.
+</p>
+
+<p class="i1">
+    <b>Output TOSA reflectance: </b><br>
+    Whether to add TOSA reflectance bands to the target product or not. Only enabled if atmospheric correction is
+    enabled too.
+</p>
+
+<p class="i1">
+    <b>Output path reflectance: </b><br>
+    Whether to add path reflectance bands to the target product or not. Only enabled if atmospheric correction is
+    enabled too.
+</p>
+
+<p class="i1">
+    <b>Output transmittance: </b><br>
+    Whether to add transmittance bands to the target product or not. Only enabled if atmospheric correction is enabled
+    too.
+</p>
+
+<p class="i1">
+    <b>Land detection expression: </b><br>
+    An expression to detect land pixels. Only enabled if atmospheric correction is enabled too.
+</p>
+
+<p class="i1">
+    <b>Land detection expression: </b><br>
+    An expression to detect cloud/ice pixels. Only enabled if atmospheric correction is enabled too.
+</p>
+
+<p class="i1">
+    <b>Water algorithm: </b><br>
+    The algorithm used to compute the Case-2 IOPs. Must be one of <a href="RegionalBioOpticalModelSpecification.html">REGIONAL</a>,
+    <a href="BorealBioOpticalModelSpecification.html">BOREAL</a> or <a
+        href="EutrophicBioOpticalModelSpecification.html">EUTROPHIC</a>.
+</p>
+
+<p class="i1">
+    <b>Output water leaving reflectance: </b><br>
+    Whether to add water leaving reflectance bands to the target product or not. These are either computed by the
+    atmospheric correction or are provided by the source product.
+</p>
+
+<p class="i1">
+    <b>Tsm conversion exponent: </b><br>
+    <b>Tsm conversion factor: </b><br>
+    Factors for converting particle scattering into total suspended matter dry weight. <br>
+    <font face="monospace">Ctsm (g m-3) = tsmConversionFactor * b443^tsmConversionExponent</font>
+</p>
+
+<p class="i1">
+    <b>Chl conversion exponent: </b><br>
+    <b>Chl conversion factor: </b><br>
+    Factors for converting absorption of phytoplankton pigment at 443 into chlorophyll
+    concentration. <br>
+    <font face="monospace">Chlorophyll (mg m-3) = chlConversionFactor a_pig443^chlConversionExponent</font>
+</p>
+
+<p class="i1">
+    <b>Spectrum out of scope threshold: </b><br>
+    The out of scope (= out of training range) flag will be set if the chi2 value is above the given threshold.
+</p>
+
+<p class="i1">
+    <b>Invalid pixel expression: </b><br>
+    An arithmetic expression which defines the valid pixels for the processing. Pixels which are not valid
+    are skipped by the processor.
+</p>
+
+<p class="i1">
+    <b>Inverse water neural net: </b><br>
+    Path to the neural network file for the inverse model (reflectances, geometry --> concentrations).
+</p>
+
+<p class="i1">
+    <b>Forward water neural net: </b><br>
+    Path to the neural network file for the forward model (concentrations, geometry --> reflectances).
+</p>
+
+<p class="i1">
+    <b>Perform Chi-Square fitting: </b><br>
+    Perform the optimization fitting algorithm.
+</p>
+
+</body>
+</html>

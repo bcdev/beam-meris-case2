@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>BEAM Data Processors - MerisC2R</title>
+    <title>BEAM Data Processors - MERIS Case-2-Water</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -9,14 +9,14 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            Meris Case-2 Regional Bio-Optical Model Specification
+            MERIS Case-2-Water Bio-Optical Model Specification
         </td>
         <td class="header" align="right"><img src="../images/MerisC2RHeader.gif" border=0></td>
     </tr>
 </table>
 
 
-<h3>Bio-Optical Model Specification</h3>
+<h3>Regional Bio-Optical Model Specification</h3>
 
 <p>
     Details of the algorithm for the retrieval of water constituents are provided in an ATBD, which can be found at
@@ -45,10 +45,9 @@ Two NN's are trained with simulated reflectances:<br>
     </li>
 </ol>
 The <i>invNN</i> is used to obtain an estimate of the concentrations which is used as a first guess to start a
-minimization
-procedure, which uses the <i>forwNN</i> iteratively to minimize the difference between the calculated reflectances and
-the
-measured ones. The procedure is fast as it takes advantage of the Jacobian, which is a byproduct of the NN
-calculation.
+minimization procedure, which uses the <i>forwNN</i> iteratively to minimize the difference between the
+calculated reflectances and the measured ones. The procedure is fast as it takes advantage of the Jacobian,
+which is a byproduct of the NN calculation.
+
 </body>
 </html>

@@ -90,22 +90,22 @@ public class Case2IOPOperator extends Operator {
                description = "Toggles the output of water leaving irradiance reflectance.")
     private boolean outputReflec;
 
-    @Parameter(label = "Tsm conversion exponent (optional)",
+    @Parameter(label = "Tsm conversion exponent",
                description = "Exponent for conversion from TSM to B_TSM (optional). " +
                              "Defaults: Regional=1.0, Boreal=not used, Eutrophic=1.0")
     private Double tsmConversionExponent;
 
-    @Parameter(label = "Tsm conversion factor (optional)",
+    @Parameter(label = "Tsm conversion factor",
                description = "Factor for conversion from TSM to B_TSM (optional). " +
                              "Defaults: Regional=1.73, Boreal=not used, Eutrophic=1.73")
     private Double tsmConversionFactor;
 
-    @Parameter(label = "Chl conversion exponent (optional)",
+    @Parameter(label = "Chl conversion exponent",
                description = "Exponent for conversion from A_PIG to CHL_CONC (optional). " +
                              "Defaults: Regional=1.04, Boreal=not used, Eutrophic=1.0")
     private Double chlConversionExponent;
 
-    @Parameter(label = "Chl conversion factor (optional)",
+    @Parameter(label = "Chl conversion factor",
                description = "Factor for conversion from A_PIG to CHL_CONC (optional). " +
                              "Defaults: Regional=21.0, Boreal=not used, Eutrophic=0.0318")
     private Double chlConversionFactor;

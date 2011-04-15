@@ -64,7 +64,7 @@
     <extension point="beam-ui:helpSets">
         <helpSet>
             <parent>beam-help</parent>
-            <path>doc/help/regional/merisCase2IOP.hs</path>
+            <path>doc/help/merisCase2IOP.hs</path>
         </helpSet>
     </extension>
 
