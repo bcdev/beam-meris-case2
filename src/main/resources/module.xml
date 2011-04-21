@@ -55,7 +55,7 @@
             <shortDescr>Performs Case-2 IOP retrieval on MERIS</shortDescr>
             <longDescr>Performs IOP retrieval for case-2 water on MERIS data products</longDescr>
             <parent>tools</parent>
-            <helpID>merisCase2IOP</helpID>
+            <helpId>merisCase2IOP</helpId>
             <placeAfter>flhMciScientificTool</placeAfter>
         </action>
     </extension>

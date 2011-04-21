@@ -13,7 +13,7 @@ public class Case2IOPAction extends AbstractVisatAction {
         final String version = opMetadata.version();
         final Case2IOPDialog operatorDialog = new Case2IOPDialog(getAppContext(),
                                                                  "Case-2 IOP Processor - v" + version,
-                                                                 "merisCase2IOP");
+                                                                 event.getCommand().getHelpId());
         operatorDialog.getJDialog().pack();
         operatorDialog.show();
     }
