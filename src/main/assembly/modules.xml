@@ -13,6 +13,7 @@
             <scope>runtime</scope>
             <useTransitiveDependencies>true</useTransitiveDependencies>
             <includes>
+                <include>*:beam-meris-case2*</include>
                 <include>*:beam-meris-l2auxdata*</include>
                 <include>*:beam-meris-sdr*</include>
                 <include>*:beam-meris-brr*</include>
