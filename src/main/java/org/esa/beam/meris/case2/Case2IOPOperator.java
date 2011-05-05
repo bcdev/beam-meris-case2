@@ -50,6 +50,10 @@ public class Case2IOPOperator extends Operator {
                description = "Whether or not to perform atmospheric correction.")
     private boolean doAtmosphericCorrection;
 
+    @Parameter(label = "Atmospheric correction neural net (optional)",
+               description = "The file of the atmospheric net to be used instead of the default neural net.")
+    private File atmoNetFile;
+
     @Parameter(defaultValue = "true",
                label = "Perform SMILE correction",
                description = "Whether to perform SMILE correction.")
@@ -137,6 +141,9 @@ public class Case2IOPOperator extends Operator {
         if (doAtmosphericCorrection) {
             Operator atmoCorOp = new GlintCorrectionOperator();
             atmoCorOp.setParameter("doSmileCorrection", doSmileCorrection);
+            if (atmoNetFile != null) {
+                atmoCorOp.setParameter("atmoNetMerisFile", atmoNetFile);
+            }
             atmoCorOp.setParameter("outputReflec", true);
             atmoCorOp.setParameter("outputTosa", outputTosa);
             atmoCorOp.setParameter("outputPath", outputPath);

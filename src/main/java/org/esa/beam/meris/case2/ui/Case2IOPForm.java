@@ -48,6 +48,7 @@ class Case2IOPForm extends JTabbedPane {
     private JScrollPane createProcessingParamTab() {
         PropertyPane parametersPane = new PropertyPane(propertyContainer);
         final BindingContext bindingContext = parametersPane.getBindingContext();
+        bindingContext.bindEnabledState("atmoNetFile", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("doSmileCorrection", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("outputTosa", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("outputPath", true, "doAtmosphericCorrection", true);
