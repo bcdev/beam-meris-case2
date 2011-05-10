@@ -1,6 +1,6 @@
 package org.esa.beam.meris.case2.fit;
 
-import org.esa.beam.framework.gpf.experimental.PointOperator;
+import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.nn.NNffbpAlphaTabFast;
 
 import static org.esa.beam.meris.case2.water.WaterAlgorithm.*;
@@ -38,7 +38,7 @@ public class ChiSquareFitting {
 
     public void perform(NNffbpAlphaTabFast forwardWaterNet, double[] RLw_cut,
                         double teta_sun_deg, double teta_view_deg, double azi_diff_deg,
-                        PointOperator.WritableSample[] targetSamples) {
+                        WritableSample[] targetSamples) {
 
         final double waterReflLogVariance = 1.5;
         myFitLvMq.initSetOfFits(forwardWaterNet, waterReflLogVariance);

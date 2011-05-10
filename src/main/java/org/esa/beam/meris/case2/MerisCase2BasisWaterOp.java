@@ -11,7 +11,10 @@ import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.gpf.OperatorException;
 import org.esa.beam.framework.gpf.annotations.Parameter;
-import org.esa.beam.framework.gpf.experimental.PixelOperator;
+import org.esa.beam.framework.gpf.pointop.PixelOperator;
+import org.esa.beam.framework.gpf.pointop.Sample;
+import org.esa.beam.framework.gpf.pointop.SampleConfigurer;
+import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.jai.ResolutionLevel;
 import org.esa.beam.jai.VirtualBandOpImage;
 import org.esa.beam.meris.case2.fit.ChiSquareFitting;
@@ -200,7 +203,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     }
 
     @Override
-    protected void configureTargetSamples(Configurator configurator) {
+    protected void configureTargetSamples(SampleConfigurer configurator) {
         configurator.defineSample(TARGET_A_GELBSTOFF_INDEX, BAND_NAME_A_GELBSTOFF);
         configurator.defineSample(TARGET_A_PIGMENT_INDEX, BAND_NAME_A_PIGMENT);
         configurator.defineSample(TARGET_A_TOTAL_INDEX, BAND_NAME_A_TOTAL);
@@ -235,7 +238,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     }
 
     @Override
-    protected void configureSourceSamples(Configurator configurator) {
+    protected void configureSourceSamples(SampleConfigurer configurator) {
         final Product sourceProduct = getSourceProduct();
         validateSourceProduct(sourceProduct);
         final MetadataElement sph = sourceProduct.getMetadataRoot().getElement("SPH");

@@ -1,6 +1,6 @@
 package org.esa.beam.meris.case2.water;
 
-import org.esa.beam.framework.gpf.experimental.PointOperator;
+import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.meris.case2.algorithm.KMin;
 
 
@@ -12,7 +12,7 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected KMin createKMin(PointOperator.WritableSample[] targetSamples) {
+    protected KMin createKMin(WritableSample[] targetSamples) {
         final double bTsm = targetSamples[TARGET_BB_SPM_INDEX].getDouble() / BTSM_TO_SPM_FACTOR;
         final double aPig = targetSamples[TARGET_A_PIGMENT_INDEX].getDouble();
         final double aGelbstoff = targetSamples[TARGET_A_GELBSTOFF_INDEX].getDouble();
@@ -46,7 +46,7 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected void fillOutput(double[] waterOutnet, PointOperator.WritableSample[] targetSamples) {
+    protected void fillOutput(double[] waterOutnet, WritableSample[] targetSamples) {
         double bTsm = Math.exp(waterOutnet[0]);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
         targetSamples[TARGET_TSM_INDEX].set(bTsm / 0.95);

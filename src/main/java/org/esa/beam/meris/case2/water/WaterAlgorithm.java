@@ -1,6 +1,7 @@
 package org.esa.beam.meris.case2.water;
 
-import org.esa.beam.framework.gpf.experimental.PointOperator;
+import org.esa.beam.framework.gpf.pointop.Sample;
+import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.meris.case2.algorithm.KMin;
 import org.esa.beam.nn.NNffbpAlphaTabFast;
 
@@ -70,8 +71,8 @@ public abstract class WaterAlgorithm {
     }
 
     public double[] perform(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
-                            double solzen, double satzen, double azi_diff_deg, PointOperator.Sample[] sourceSamples,
-                            PointOperator.WritableSample[] targetSamples) {
+                            double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
+                            WritableSample[] targetSamples) {
         /* determine cut_thresh from waterNet minimum */
         double cut_thresh = getCutThreshold(inverseWaterNet.getInmin());
 
@@ -153,14 +154,14 @@ public abstract class WaterAlgorithm {
     }
 
 
-    protected abstract KMin createKMin(PointOperator.WritableSample[] targetSamples);
+    protected abstract KMin createKMin(WritableSample[] targetSamples);
 
     protected abstract double computeChiSquare(double[] forwardWaterOutnet, double[] RLw_cut);
 
     protected abstract double[] getForwardWaterInnet(double solzen, double satzen, double azi_diff_deg,
                                                      double[] waterOutnet);
 
-    protected abstract void fillOutput(double[] waterOutnet, PointOperator.WritableSample[] targetSamples);
+    protected abstract void fillOutput(double[] waterOutnet, WritableSample[] targetSamples);
 
     protected abstract double[] getWaterInnet(double teta_sun_deg, double teta_view_deg, double azi_diff_deg,
                                               double[] RLw_cut);
