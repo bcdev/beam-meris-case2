@@ -6,6 +6,7 @@ import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
+import org.esa.beam.framework.gpf.pointop.ProductConfigurer;
 import org.esa.beam.framework.gpf.pointop.SampleConfigurer;
 import org.esa.beam.meris.case2.fit.ChiSquareFitting;
 import org.esa.beam.meris.case2.fit.MerisGLM;
@@ -37,9 +38,9 @@ public class EutrophicWaterOp extends MerisCase2BasisWaterOp {
 
 
     @Override
-    protected void addTargetBands(Product targetProduct) {
-        super.addTargetBands(targetProduct);
-        addTargetBand(targetProduct, BAND_NAME_A_BTSM, "m^-1", "btsm absorption at 442 nm", true,
+    protected void addTargetBands(ProductConfigurer productConfigurer) {
+        super.addTargetBands(productConfigurer);
+        addTargetBand(productConfigurer, BAND_NAME_A_BTSM, "m^-1", "btsm absorption at 442 nm", true,
                       ProductData.TYPE_FLOAT32);
     }
 
