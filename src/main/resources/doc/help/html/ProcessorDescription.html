@@ -20,9 +20,8 @@
     the command-line interface and the common processing request file format.</p>
 
 <h4>Content</h4>
-<li><a href="MerisC2RProcessorDescription.html#InOutTab">The In- and Output Parameters tab</a></li>
-<li><a href="MerisC2RProcessorDescription.html#ProcParamTab">The Processing Parameters tab</a></li>
-<li><a href="MerisC2RAlgorithmParameter.html">Description of the Processing Parameters</a></li>
+<li><a href="#InOutTab">The In- and Output Parameters tab</a></li>
+<li><a href="#ProcParamTab">The Processing Parameters tab</a></li>
 
 <a name="InOutTab"></a>
 
@@ -91,6 +90,12 @@
 </p>
 
 <p class="i1">
+    <b>Output normalization of bidirectional reflectances: </b><br>
+    Whether to add normalised reflectance bands to the target product or not. Only enabled if atmospheric correction is
+    enabled too.
+</p>
+
+<p class="i1">
     <b>Output path reflectance: </b><br>
     Whether to add path reflectance bands to the target product or not. Only enabled if atmospheric correction is
     enabled too.
@@ -114,9 +119,8 @@
 
 <p class="i1">
     <b>Water algorithm: </b><br>
-    The algorithm used to compute the Case-2 IOPs. Must be one of <a href="RegionalBioOpticalModelSpecification.html">REGIONAL</a>,
-    <a href="BorealBioOpticalModelSpecification.html">BOREAL</a> or <a
-        href="EutrophicBioOpticalModelSpecification.html">EUTROPHIC</a>.
+    The algorithm used to compute the Case-2 IOPs. Must be <a
+        href="RegionalBioOpticalModelSpecification.html">REGIONAL</a>.
 </p>
 
 <p class="i1">
@@ -159,11 +163,6 @@
 <p class="i1">
     <b>Forward water neural net: </b><br>
     Path to the neural network file for the forward model (concentrations, geometry --> reflectances).
-</p>
-
-<p class="i1">
-    <b>Perform Chi-Square fitting: </b><br>
-    Perform the optimization fitting algorithm.
 </p>
 
 </body>

@@ -5,11 +5,7 @@
 <toc version="2.0" categoryclosedimage="folder" categoryopenimage="folder" topicimage="doc">
     <tocitem text="Meris Case-2 IOP Processor (PlugIn)" target="overview">
         <tocitem text="Processor Description" target="processorDescription"/>
-        <tocitem text="Bio-optical Model Specification">
-            <tocitem text="Regional" target="regionalBOMSpecification"/>
-            <tocitem text="Boreal" target="borealBOMSpecification"/>
-            <tocitem text="Eutrophic" target="eutrophicBOMSpecification"/>
-        </tocitem>
+        <tocitem text="Bio-optical Model Specification" target="regionalBOMSpecification"/>
         <tocitem text="Atmospheric Correction Specification" target="atmosphericCorrectionSpecification"/>
     </tocitem>
 </toc>

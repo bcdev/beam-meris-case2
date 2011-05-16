@@ -129,7 +129,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     };
 
     @Override
-    protected void configureTargetProduct(ProductConfigurer productConfigurer) {
+    protected void configureTargetProduct(final ProductConfigurer productConfigurer) {
         super.configureTargetProduct(productConfigurer);
         productConfigurer.copyMetadata();
 
@@ -142,9 +142,21 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
             @Override
             public boolean accept(Band band) {
                 String name = band.getName();
-                return MERIS_AMORGOS_L1B_CORR_LATITUDE_BAND_NAME.equals(name) ||
-                       MERIS_AMORGOS_L1B_CORR_LONGITUDE_BAND_NAME.equals(name) ||
-                       MERIS_AMORGOS_L1B_ALTIUDE_BAND_NAME.equals(name) || band.isFlagBand();
+                Product targetProduct = productConfigurer.getTargetProduct();
+                if (MERIS_AMORGOS_L1B_CORR_LATITUDE_BAND_NAME.equals(name) && !targetProduct.containsBand(name)) {
+                    return true;
+                }
+                if (MERIS_AMORGOS_L1B_CORR_LONGITUDE_BAND_NAME.equals(name) && !targetProduct.containsBand(name)) {
+                    return true;
+                }
+                if (MERIS_AMORGOS_L1B_ALTIUDE_BAND_NAME.equals(name) && !targetProduct.containsBand(name)) {
+                    return true;
+                }
+                if (band.isFlagBand() && !targetProduct.containsBand(name)) {
+                    return true;
+                }
+                return false;
+
             }
         };
         productConfigurer.copyBands(amorgosBandFilter);

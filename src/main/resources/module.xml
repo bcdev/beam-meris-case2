@@ -1,8 +1,8 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
-    <symbolicName>beam-meris-case2-water</symbolicName>
-    <version>1.5</version>
-    <name>MERIS Case-2-Water Processor</name>
+    <symbolicName>beam-meris-case2-regional</symbolicName>
+    <version>1.5.1</version>
+    <name>MERIS Case-2-Regional Processor</name>
 
     <description>
         This processor derives Level 2 water quality parameters of
@@ -16,6 +16,11 @@
 
     <changelog>
         <![CDATA[
+        Changes in version 1.5:<br/>
+          [CIIR-36] Make normalized reflectances as additional output<br/>
+          [CIIR-35]	Remove option for ChiSquare computation<br/>
+          [CIIR-34] Algorithms for Eutrophic and Boreal lakes shall not be included<br/>
+          [CIIR-33] Change menu entry for processor<br/>
         Changes in version 1.5:<br/>
           [CIIR-32] Add Turbidity_Index to output bands<br/>
           [CIIR-31] Add Kd_490 to output bands<br/>
@@ -49,13 +54,13 @@
 
     <extension point="beam-ui:actions">
         <action>
-            <id>merisCase2IOP</id>
-            <class>org.esa.beam.meris.case2.ui.Case2IOPAction</class>
-            <text>Case-2 IOPs (MERIS)...</text>
-            <shortDescr>Performs Case-2 IOP retrieval on MERIS</shortDescr>
-            <longDescr>Performs IOP retrieval for case-2 water on MERIS data products</longDescr>
+            <id>merisCase2Regional</id>
+            <class>org.esa.beam.meris.case2.ui.Case2RegionalAction</class>
+            <text>Case-2 Regional Processor (MERIS)...</text>
+            <shortDescr>Invokes the Case-2 Regional processor</shortDescr>
+            <longDescr>Invokes the Case-2 Regional processor for MERIS data products</longDescr>
             <parent>tools</parent>
-            <helpId>merisCase2IOP</helpId>
+            <helpId>merisCase2Regional</helpId>
             <placeAfter>flhMciScientificTool</placeAfter>
         </action>
     </extension>
@@ -64,7 +69,7 @@
     <extension point="beam-ui:helpSets">
         <helpSet>
             <parent>beam-help</parent>
-            <path>doc/help/merisCase2IOP.hs</path>
+            <path>doc/help/merisCase2Regional.hs</path>
         </helpSet>
     </extension>
 

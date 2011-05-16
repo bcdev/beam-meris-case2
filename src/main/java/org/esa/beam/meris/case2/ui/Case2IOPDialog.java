@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 class Case2IOPDialog extends SingleTargetProductDialog {
 
-    private static final String OPERATOR_NAME = "Meris.Case2IOP";
+    private static final String OPERATOR_NAME = "Meris.Case2Regional";
     private Case2IOPForm form;
     private HashMap<String, Object> parameters;
 

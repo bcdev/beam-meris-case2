@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.esa.beam</groupId>
     <artifactId>beam-meris-case2-water</artifactId>
-    <version>1.5</version>
+    <version>1.5.1</version>
     <packaging>jar</packaging>
     <name>BEAM MERIS Case-2 Water Processor</name>
 
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.esa.beam</groupId>
             <artifactId>beam-meris-glint</artifactId>
-            <version>1.2</version>
+            <version>1.2.1</version>
         </dependency>
 
         <dependency>
