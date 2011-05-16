@@ -16,7 +16,9 @@
 
     <changelog>
         <![CDATA[
-        Changes in version 1.5:<br/>
+        Changes in version 1.5.1:<br/>
+          [CIIR-38] Allow specifing the kind of reflectances<br/>
+          [CIIR-37] Error occures if MERIS FSG products are processed<br/>
           [CIIR-36] Make normalized reflectances as additional output<br/>
           [CIIR-35]	Remove option for ChiSquare computation<br/>
           [CIIR-34] Algorithms for Eutrophic and Boreal lakes shall not be included<br/>

@@ -32,7 +32,6 @@ class Case2IOPDialog extends SingleTargetProductDialog {
         propContainer.setDefaultValues();
         form = new Case2IOPForm(appContext, operatorSpi, propContainer, getTargetProductSelector());
 
-
         final OperatorParameterSupport parameterSupport = new OperatorParameterSupport(operatorSpi.getOperatorClass(),
                                                                                        propContainer, parameters, null);
         OperatorMenu menuSupport = new OperatorMenu(this.getJDialog(),

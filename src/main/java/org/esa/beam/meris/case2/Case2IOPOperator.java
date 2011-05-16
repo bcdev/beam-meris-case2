@@ -17,6 +17,7 @@
 package org.esa.beam.meris.case2;
 
 import org.esa.beam.atmosphere.operator.GlintCorrectionOperator;
+import org.esa.beam.atmosphere.operator.ReflectanceEnum;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
@@ -51,7 +52,7 @@ public class Case2IOPOperator extends Operator {
                description = "Whether or not to perform atmospheric correction.")
     private boolean doAtmosphericCorrection;
 
-    @Parameter(label = "Atmospheric correction neural net (optional)",
+    @Parameter(label = "Alternative atm. corr. neural net (optional)",
                description = "The file of the atmospheric net to be used instead of the default neural net.")
     private File atmoNetFile;
 
@@ -60,22 +61,32 @@ public class Case2IOPOperator extends Operator {
                description = "Whether to perform SMILE correction.")
     private boolean doSmileCorrection;
 
-    @Parameter(defaultValue = "true", label = "Output TOSA reflectance",
+    @Parameter(defaultValue = "false", label = "Output TOSA reflectance",
                description = "Toggles the output of TOSA reflectance.")
     private boolean outputTosa;
 
-    @Parameter(defaultValue = "false",
-               label = "Output normalization of bidirectional reflectances",
-               description = "Toggles the output of normalised reflectances.")
-    private boolean outputNormReflec;
+    @Parameter(defaultValue = "true", label = "Output water leaving reflectance",
+               description = "Toggles the output of water leaving reflectance.")
+    private boolean outputReflec;
+
+    @Parameter(defaultValue = "RADIANCE_REFLECTANCES", valueSet = {"RADIANCE_REFLECTANCES", "IRRADIANCE_REFLECTANCES"},
+               label = "Output water leaving reflectance as",
+               description = "Select if reflectances shall be written as radiances or irradiances. " +
+                             "The irradiances are compatible with standard MERIS product.")
+    private ReflectanceEnum outputReflecAs;
 
     @Parameter(defaultValue = "true", label = "Output path reflectance",
                description = "Toggles the output of water leaving path reflectance.")
     private boolean outputPath;
 
-    @Parameter(defaultValue = "true", label = "Output transmittance",
+    @Parameter(defaultValue = "false", label = "Output transmittance",
                description = "Toggles the output of downwelling irradiance transmittance.")
     private boolean outputTransmittance;
+
+    @Parameter(defaultValue = "false",
+               label = "Output normalised bidirectional reflectances",
+               description = "Toggles the output of normalised reflectances.")
+    private boolean outputNormReflec;
 
     @Parameter(defaultValue = "toa_reflec_10 > toa_reflec_6 AND toa_reflec_13 > 0.0475",
                label = "Land detection expression",
@@ -96,10 +107,6 @@ public class Case2IOPOperator extends Operator {
                label = "Water algorithm",
                description = "The algorithm used for IOP computation. Currently only 'REGIONAL' is valid")
     private Case2AlgorithmEnum algorithm;
-
-    @Parameter(defaultValue = "true", label = "Output water leaving reflectance",
-               description = "Toggles the output of water leaving irradiance reflectance.")
-    private boolean outputReflec;
 
     @Parameter(label = "Tsm conversion exponent",
                defaultValue = "1.0",
@@ -128,11 +135,11 @@ public class Case2IOPOperator extends Operator {
                description = "Expression defining pixels not considered for processing.")
     private String invalidPixelExpression;
 
-    @Parameter(label = "Inverse water neural net (optional)",
+    @Parameter(label = "Alternative inverse water neural net (optional)",
                description = "The file of the inverse water neural net to be used instead of the default.")
     private File inverseWaterNnFile;
 
-    @Parameter(label = "Forward water neural net (optional)",
+    @Parameter(label = "Alternative forward water neural net (optional)",
                description = "The file of the forward water neural net to be used instead of the default.")
     private File forwardWaterNnFile;
 
@@ -148,6 +155,7 @@ public class Case2IOPOperator extends Operator {
                 atmoCorOp.setParameter("atmoNetMerisFile", atmoNetFile);
             }
             atmoCorOp.setParameter("outputReflec", true);
+            atmoCorOp.setParameter("outputReflecAs", outputReflecAs);
             atmoCorOp.setParameter("outputTosa", outputTosa);
             atmoCorOp.setParameter("outputNormReflec", outputNormReflec);
             atmoCorOp.setParameter("outputPath", outputPath);
@@ -184,13 +192,13 @@ public class Case2IOPOperator extends Operator {
             case2Op.setParameter("chlConversionExponent", chlConversionExponent);
             case2Op.setParameter("chlConversionFactor", chlConversionFactor);
         }
+        case2Op.setParameter("inputReflecAre", outputReflecAs);
         case2Op.setParameter("spectrumOutOfScopeThreshold", spectrumOutOfScopeThreshold);
         case2Op.setParameter("invalidPixelExpression", invalidPixelExpression);
         case2Op.setParameter("inverseWaterNnFile", inverseWaterNnFile);
         case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
         case2Op.setSourceProduct("acProduct", inputProduct);
         final Product case2Product = case2Op.getTargetProduct();
-
         final String[] case2names = case2Product.getBandNames();
         for (String name : case2names) {
             if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&

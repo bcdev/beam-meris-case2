@@ -26,10 +26,6 @@ public class Case2IOPOperatorTest {
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", GPF.NO_PARAMS, getL1bProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
-                "tosa_reflec_1", "tosa_reflec_2", "tosa_reflec_3",
-                "tosa_reflec_4", "tosa_reflec_5", "tosa_reflec_6",
-                "tosa_reflec_7", "tosa_reflec_8", "tosa_reflec_9",
-                "tosa_reflec_10", "tosa_reflec_12", "tosa_reflec_13",
                 "reflec_1", "reflec_2", "reflec_3",
                 "reflec_4", "reflec_5", "reflec_6",
                 "reflec_7", "reflec_8", "reflec_9",
@@ -38,10 +34,6 @@ public class Case2IOPOperatorTest {
                 "path_4", "path_5", "path_6",
                 "path_7", "path_8", "path_9",
                 "path_10", "path_12", "path_13",
-                "trans_1", "trans_2", "trans_3",
-                "trans_4", "trans_5", "trans_6",
-                "trans_7", "trans_8", "trans_9",
-                "trans_10", "trans_12", "trans_13",
                 "tau_550", "tau_778", "tau_865",
                 "glint_ratio",
                 "ang_443_865",

@@ -1,5 +1,6 @@
 package org.esa.beam.meris.case2.water;
 
+import org.esa.beam.atmosphere.operator.ReflectanceEnum;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.gpf.pointop.Sample;
 import org.esa.beam.framework.gpf.pointop.WritableSample;
@@ -27,7 +28,8 @@ public class RegionalWaterAlgorithmTest {
         final double aziDiff = MerisCase2BasisWaterOp.getAzimuthDifference(89.83, 283.79);
         final Sample[] sourceSamples = createSourceSamples();
         final WritableSample[] targetSamples = createTargetSamples();
-        regionalAlgo.perform(inverseNet, forwardNet, 23.255, 16.845, aziDiff, sourceSamples, targetSamples);
+        regionalAlgo.perform(inverseNet, forwardNet, 23.255, 16.845, aziDiff, sourceSamples, targetSamples,
+                             ReflectanceEnum.RADIANCE_REFLECTANCES);
         assertEquals(0.0166, targetSamples[WaterAlgorithm.TARGET_A_GELBSTOFF_INDEX].getDouble(), 1.0e-3);
         assertEquals(0.0256, targetSamples[WaterAlgorithm.TARGET_A_PIGMENT_INDEX].getDouble(), 1.0e-3);
         assertEquals(0.0423, targetSamples[WaterAlgorithm.TARGET_A_TOTAL_INDEX].getDouble(), 1.0e-3);

@@ -1,6 +1,7 @@
 package org.esa.beam.meris.case2;
 
 import org.esa.beam.atmosphere.operator.MerisFlightDirection;
+import org.esa.beam.atmosphere.operator.ReflectanceEnum;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.Mask;
@@ -80,6 +81,11 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final String BAND_NAME_PARAM_CHANGE = "paramChange";
 
     private static final double WINDSPEED_THRESHOLD = 12.0;
+
+    @Parameter(defaultValue = "RADIANCE_REFLECTANCES", valueSet = {"RADIANCE_REFLECTANCES", "IRRADIANCE_REFLECTANCES"},
+               label = "Input water leaving reflectance is",
+               description = "Select if input reflectances defined as radiances or irradiances. ")
+    private ReflectanceEnum inputReflecAre;
 
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope")
     private double spectrumOutOfScopeThreshold;
@@ -335,7 +341,8 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         NNffbpAlphaTabFast inverseWaterNet = threadLocalInverseWaterNet.get();
         NNffbpAlphaTabFast forwardWaterNet = threadLocalForwardWaterNet.get();
         double[] RLw_cut = waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
-                                                  solzen, satzen, azi_diff_deg, sourceSamples, targetSamples);
+                                                  solzen, satzen, azi_diff_deg, sourceSamples, targetSamples,
+                                                  inputReflecAre);
         if (performChiSquareFit) {
             final ChiSquareFitting fitting = createChiSquareFitting();
             fitting.perform(forwardWaterNet, RLw_cut, solzen, satzen, azi_diff_deg, targetSamples);
