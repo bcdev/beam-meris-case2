@@ -23,7 +23,7 @@ public class Case2IOPOperatorTest {
 
     @Test
     public void testInitializationWithAtmoCorr() throws Exception {
-        final Product c2rProduct = GPF.createProduct("Meris.Case2IOP", GPF.NO_PARAMS, getL1bProduct());
+        final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", GPF.NO_PARAMS, getL1bProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
                 "tosa_reflec_1", "tosa_reflec_2", "tosa_reflec_3",
@@ -69,7 +69,7 @@ public class Case2IOPOperatorTest {
     public void testInitializationWithoutAtmoCorr() throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("doAtmosphericCorrection", false);
-        final Product c2rProduct = GPF.createProduct("Meris.Case2IOP", parameters, getAtmoCorrectedProduct());
+        final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
                 "reflec_1", "reflec_2", "reflec_3",
@@ -98,7 +98,7 @@ public class Case2IOPOperatorTest {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("doAtmosphericCorrection", false);
         parameters.put("outputReflec", false);
-        final Product c2rProduct = GPF.createProduct("Meris.Case2IOP", parameters, getAtmoCorrectedProduct());
+        final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
                 "a_ys_443",
