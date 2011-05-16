@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.esa.beam</groupId>
-    <artifactId>beam-meris-case2-water</artifactId>
+    <artifactId>beam-meris-case2-regional</artifactId>
     <version>1.5.1</version>
     <packaging>jar</packaging>
-    <name>BEAM MERIS Case-2 Water Processor</name>
+    <name>BEAM MERIS Case-2 Regional Processor</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
