@@ -38,8 +38,8 @@ import java.util.List;
 @OperatorMetadata(alias = "Meris.Case2Regional",
                   description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
-                  copyright = "(c) 2010 by Brockmann Consult",
-                  version = "1.5.1")
+                  copyright = "(c) 2011 by Brockmann Consult",
+                  version = "1.6")
 public class Case2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
@@ -147,7 +147,6 @@ public class Case2IOPOperator extends Operator {
     public void initialize() throws OperatorException {
         Product inputProduct = sourceProduct;
 
-        List<MergeOp.BandDesc> bandDescList = new ArrayList<MergeOp.BandDesc>();
         if (doAtmosphericCorrection) {
             Operator atmoCorOp = new GlintCorrectionOperator();
             atmoCorOp.setParameter("doSmileCorrection", doSmileCorrection);
@@ -166,23 +165,6 @@ public class Case2IOPOperator extends Operator {
             inputProduct = atmoCorOp.getTargetProduct();
         }
 
-        final String[] names = inputProduct.getBandNames();
-        for (String name : names) {
-            if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
-                continue;
-            }
-            if (!outputReflec && name.startsWith("reflec")) {
-                continue;
-            }
-            if (name.startsWith("corr_")) {
-                continue;
-            }
-            final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
-            bandDesc.setProduct("inputProduct");
-            bandDesc.setNamePattern(name);
-            bandDescList.add(bandDesc);
-        }
-
         Operator case2Op = algorithm.createOperatorInstance();
 
         initConversionDefaults();
@@ -199,6 +181,25 @@ public class Case2IOPOperator extends Operator {
         case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
         case2Op.setSourceProduct("acProduct", inputProduct);
         final Product case2Product = case2Op.getTargetProduct();
+
+        List<MergeOp.BandDesc> bandDescList = new ArrayList<MergeOp.BandDesc>();
+        final String[] names = inputProduct.getBandNames();
+        for (String name : names) {
+            if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
+                continue;
+            }
+            if (!outputReflec && name.startsWith("reflec")) {
+                continue;
+            }
+            if (case2Product.containsBand(name)) {
+                continue;
+            }
+            final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
+            bandDesc.setProduct("inputProduct");
+            bandDesc.setNamePattern(name);
+            bandDescList.add(bandDesc);
+        }
+
         final String[] case2names = case2Product.getBandNames();
         for (String name : case2names) {
             if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&
