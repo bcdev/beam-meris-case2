@@ -26,13 +26,8 @@ import org.esa.beam.nn.NNffbpAlphaTabFast;
 
 import java.awt.Color;
 import java.awt.Rectangle;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import static org.esa.beam.dataio.envisat.EnvisatConstants.*;
 import static org.esa.beam.meris.case2.water.WaterAlgorithm.*;
@@ -279,8 +274,10 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
         centerPixel = MerisFlightDirection.findNadirColumnIndex(sourceProduct);
         waterAlgorithm = createAlgorithm();
-        inverseWaterNnString = readNeuralNetString(getDefaultInverseWaterNetResourcePath(), inverseWaterNnFile);
-        forwardWaterNnString = readNeuralNetString(getDefaultForwardWaterNetResourcePath(), forwardWaterNnFile);
+        inverseWaterNnString = NeuralNetReader.readNeuralNetString(getDefaultInverseWaterNetResourcePath(),
+                                                                   inverseWaterNnFile);
+        forwardWaterNnString = NeuralNetReader.readNeuralNetString(getDefaultForwardWaterNetResourcePath(),
+                                                                   forwardWaterNnFile);
         threadLocalInverseWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
             @Override
             protected NNffbpAlphaTabFast initialValue() {
@@ -447,36 +444,4 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         band.setValidPixelExpression("!case2_flags.INVALID");
     }
 
-    private String readNeuralNetString(String resourceNetName, File neuralNetFile) {
-        InputStream neuralNetStream;
-        if (neuralNetFile == null) {
-            neuralNetStream = getClass().getResourceAsStream(resourceNetName);
-        } else {
-            try {
-                //noinspection IOResourceOpenedButNotSafelyClosed
-                neuralNetStream = new FileInputStream(neuralNetFile);
-            } catch (FileNotFoundException e) {
-                throw new OperatorException(e);
-            }
-        }
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(neuralNetStream));
-        try {
-            String line = reader.readLine();
-            final StringBuilder sb = new StringBuilder();
-            while (line != null) {
-                // have to append line terminator, cause it's not included in line
-                sb.append(line).append('\n');
-                line = reader.readLine();
-            }
-            return sb.toString();
-        } catch (IOException ioe) {
-            throw new OperatorException("Could not initialize neural net", ioe);
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException ignore) {
-            }
-        }
-    }
 }

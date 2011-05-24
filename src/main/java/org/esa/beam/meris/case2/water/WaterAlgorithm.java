@@ -1,10 +1,14 @@
 package org.esa.beam.meris.case2.water;
 
 import org.esa.beam.atmosphere.operator.ReflectanceEnum;
+import org.esa.beam.framework.gpf.OperatorException;
 import org.esa.beam.framework.gpf.pointop.Sample;
 import org.esa.beam.framework.gpf.pointop.WritableSample;
+import org.esa.beam.meris.case2.NeuralNetReader;
 import org.esa.beam.meris.case2.algorithm.KMin;
 import org.esa.beam.nn.NNffbpAlphaTabFast;
+
+import java.io.IOException;
 
 public abstract class WaterAlgorithm {
 
@@ -67,9 +71,24 @@ public abstract class WaterAlgorithm {
     public static final double BTSM_TO_SPM_FACTOR = 0.02;
 
     private double spectrumOutOfScopeThreshold;
+    private ThreadLocal<NNffbpAlphaTabFast> chlRatNet;
 
     protected WaterAlgorithm(double spectrumOutOfScopeThreshold) {
         this.spectrumOutOfScopeThreshold = spectrumOutOfScopeThreshold;
+        final String chlRatNetString = NeuralNetReader.readNeuralNetString(
+                "/org/esa/beam/meris/case2/regional/chl_rat560/2_16.2.net", null);
+
+        chlRatNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+            @Override
+            protected NNffbpAlphaTabFast initialValue() {
+                try {
+                    return new NNffbpAlphaTabFast(chlRatNetString);
+                } catch (IOException e) {
+                    throw new OperatorException("Not able to init neural net", e);
+                }
+            }
+        };
+
     }
 
     public double[] perform(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
@@ -117,6 +136,8 @@ public abstract class WaterAlgorithm {
         double[] waterOutnet = inverseWaterNet.calc(waterInnet);
 
         fillOutput(waterOutnet, targetSamples);
+        double chl = computeChlWithNewNet(RLw, solzen);
+        targetSamples[TARGET_CHL_CONC_INDEX].set(Math.exp(chl));
 
         /* test if concentrations are within training range */
         final double bbSpm = targetSamples[TARGET_BB_SPM_INDEX].getDouble();
@@ -150,6 +171,18 @@ public abstract class WaterAlgorithm {
         targetSamples[TARGET_TURBIDITY_INDEX_INDEX].set(turbidity);
         return RLw_cut;
 
+    }
+
+    protected double computeChlWithNewNet(double[] rLw, double solzen) {
+        double[] inValues = new double[6];
+        inValues[0] = solzen;
+        inValues[1] = Math.log(rLw[0] / rLw[4]);
+        inValues[2] = Math.log(rLw[1] / rLw[4]);
+        inValues[3] = Math.log(rLw[2] / rLw[4]);
+        inValues[4] = Math.log(rLw[3] / rLw[4]);
+        inValues[5] = Math.log(rLw[6] / rLw[4]);
+
+        return chlRatNet.get().calc(inValues)[0];
     }
 
     private double computeTurbidityIndex(double rlw620) {
