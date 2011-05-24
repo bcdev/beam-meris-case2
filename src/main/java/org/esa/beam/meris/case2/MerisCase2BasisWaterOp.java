@@ -52,9 +52,10 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final int FIT_FAILED = 0x01 << FIT_FAILED_INDEX;          // fit failed
     private static final int INVALID = 0x01 << INVALID_BIT_INDEX;           // not a usable water pixel
 
+    private static final String BAND_NAME_A_TOTAL = "a_total_443";
     private static final String BAND_NAME_A_GELBSTOFF = "a_ys_443";
     private static final String BAND_NAME_A_PIGMENT = "a_pig_443";
-    private static final String BAND_NAME_A_TOTAL = "a_total_443";
+    private static final String BAND_NAME_A_POC = "a_poc_443";
     private static final String BAND_NAME_BB_SPM = "bb_spm_443";
     private static final String BAND_NAME_A_GELBSTOFF_FIT = BAND_NAME_A_GELBSTOFF + "_Fit";
     private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = BAND_NAME_A_GELBSTOFF + "_Fit_max";
@@ -173,13 +174,15 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     }
 
     protected void addTargetBands(ProductConfigurer productConfigurer) {
+        addTargetBand(productConfigurer, BAND_NAME_A_TOTAL, "m^-1",
+                      "Total absorption coefficient of all water constituents at 443 nm.", false,
+                      ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_A_GELBSTOFF, "m^-1",
                       "Yellow substance absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_A_PIGMENT, "m^-1",
                       "Pigment absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
-        addTargetBand(productConfigurer, BAND_NAME_A_TOTAL, "m^-1",
-                      "Total absorption coefficient of all water constituents at 443 nm.", false,
-                      ProductData.TYPE_FLOAT32);
+        addTargetBand(productConfigurer, BAND_NAME_A_POC, "m^-1",
+                      "Absorption by particulate organic matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_BB_SPM, "m^-1",
                       "Backscattering of suspended particulate matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_TSM, "g m^-3",
@@ -190,11 +193,11 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                       "Chi Square Out of Scope.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_K_MIN, "m^-1",
                       "Minimum downwelling irradiance attenuation coefficient.", false, ProductData.TYPE_FLOAT32);
-        addTargetBand(productConfigurer, BAND_NAME_Z90_MAX, "m",
-                      "Maximum signal depth.", false, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_KD_490, "m^-1",
                       "Downwelling irradiance attenuation coefficient at wavelength 490.", false,
                       ProductData.TYPE_FLOAT32);
+        addTargetBand(productConfigurer, BAND_NAME_Z90_MAX, "m",
+                      "Maximum signal depth.", false, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_TURBIDITY_INDEX, "FNU",
                       "Turbidity index in FNU (Formazine Nephelometric Unit).", false, ProductData.TYPE_FLOAT32);
         if (performChiSquareFit) {
@@ -224,6 +227,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         configurator.defineSample(TARGET_A_GELBSTOFF_INDEX, BAND_NAME_A_GELBSTOFF);
         configurator.defineSample(TARGET_A_PIGMENT_INDEX, BAND_NAME_A_PIGMENT);
         configurator.defineSample(TARGET_A_TOTAL_INDEX, BAND_NAME_A_TOTAL);
+        configurator.defineSample(TARGET_A_POC_INDEX, BAND_NAME_A_POC);
         configurator.defineSample(TARGET_BB_SPM_INDEX, BAND_NAME_BB_SPM);
         configurator.defineSample(TARGET_TSM_INDEX, BAND_NAME_TSM);
         configurator.defineSample(TARGET_CHL_CONC_INDEX, BAND_NAME_CHL_CONC);
