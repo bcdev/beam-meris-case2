@@ -16,7 +16,7 @@
 
     <changelog>
         <![CDATA[
-        Changes in version 1.5.1:<br/>
+        Changes in version 1.6:<br/>
           [CIIR-40] Add band a_poc_443 as output<br/>
           [CIIR-39] Adapt target product creation according to changes in AGC processor<br/>
         Changes in version 1.5.1:<br/>
