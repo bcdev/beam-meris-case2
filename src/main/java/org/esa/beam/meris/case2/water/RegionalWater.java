@@ -68,7 +68,7 @@ public class RegionalWater extends WaterAlgorithm {
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
         targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff);
         // todo - How to compute a_poc_443?
-        targetSamples[TARGET_A_POC_INDEX].set(0);
+        targetSamples[TARGET_A_POC_INDEX].set(0.0);
     }
 
     @Override

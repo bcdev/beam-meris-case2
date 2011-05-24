@@ -65,7 +65,7 @@ public class RegionalWaterAlgorithmTest {
     }
 
     private WritableSample[] createTargetSamples() {
-        final WritableSample[] targetSamples = new WritableSample[12];
+        final WritableSample[] targetSamples = new WritableSample[13];
         for (int i = 0; i < targetSamples.length; i++) {
             targetSamples[i] = new TestSample(Double.NaN);
         }

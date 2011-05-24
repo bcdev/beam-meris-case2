@@ -83,7 +83,7 @@ public class EutrophicWater extends WaterAlgorithm {
         targetSamples[TARGET_A_BTSM_INDEX].set(bTsm); // bleached suspended matter absorption at 442
         targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff + aBtsm);
         // todo - How to compute a_poc_443?
-        targetSamples[TARGET_A_POC_INDEX].set(0);
+        targetSamples[TARGET_A_POC_INDEX].set(0.0);
     }
 
     @Override
