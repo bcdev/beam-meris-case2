@@ -1,0 +1,45 @@
+problem: D:\projekte\nn_hs\coastcolourrat_kdmin_20110507/nomad_sel_cas2chlf_lograt_kdmin_20110507
+saved at Tue May 24 15:40:44 2011
+
+trainings sample has total sum of error^2=4.052120
+average of residues:
+ training 4.052120/1204/6=0.003366  test 1.206709/364/1=0.003315
+ ratio avg.train/avg.test=1.015207
+
+the net has 6 inputs:
+input  1 is sun_zeni in [1.981000,100.400000]
+input  2 is log_rlw_443_412 in [-0.450600,0.848200]
+input  3 is log_rlw_489_443 in [-0.736000,0.814800]
+input  4 is log_rlw_510_489 in [-0.729800,0.592200]
+input  5 is log_rlw_560_510 in [-1.273000,0.786800]
+input  6 is log_rlw_665_560 in [-7.277000,-0.282400]
+
+the net has 1 outputs:
+output  1 is log_kdmin in [-5.684000,0.391000]
+
+ranges repeated for easier input
+#
+6
+1.981000 100.400000
+-0.450600 0.848200
+-0.736000 0.814800
+-0.729800 0.592200
+-1.273000 0.786800
+-7.277000 -0.282400
+1
+-5.684000 0.391000
+$
+#planes=3 6 1 1
+bias 1 1
+-1.515219
+bias 2 1
+-1.390706
+wgt 0 6 1
+0.187909
+0.822433
+1.243369
+1.491785
+1.282448
+-0.608951
+wgt 1 1 1
+2.614626

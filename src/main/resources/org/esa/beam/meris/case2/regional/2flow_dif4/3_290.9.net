@@ -1,0 +1,57 @@
+problem: D:\projekte\nn_hs\coastcolour_2flow_1_20110511/nomad_2flowout_traindif_2std_20110520
+saved at Tue May 24 14:07:21 2011
+
+trainings sample has total sum of error^2=290.948785
+average of residues:
+ training 290.948785/40007/4=0.003636  test 71.757018/9993/2=0.003590
+ ratio avg.train/avg.test=1.012773
+
+the net has 4 inputs:
+input  1 is RLwdif620 in [0.000091,0.001230]
+input  2 is RLwdif665 in [0.000015,0.000123]
+input  3 is RLwdif708 in [0.000028,0.000500]
+input  4 is RLwdif753 in [-0.000006,0.000000]
+
+the net has 2 outputs:
+output  1 is log_conc_chl in [-3.000000,3.400000]
+output  2 is log_apig2 in [-5.890000,0.382000]
+
+ranges repeated for easier input
+#
+4
+0.000091 0.001230
+0.000015 0.000123
+0.000028 0.000500
+-0.000006 0.000000
+2
+-3.000000 3.400000
+-5.890000 0.382000
+$
+#planes=3 4 3 2
+bias 1 3
+34.076546
+12.815017
+-51.408533
+bias 2 2
+-3.988023
+0.562207
+wgt 0 4 3
+82.502434
+-27.381556
+66.699725
+-33.298729
+5.342308
+2.694460
+-21.364054
+-13.055030
+86.240319
+32.394367
+-103.025900
+48.042895
+wgt 1 3 2
+9.391504
+-10.382089
+-52.587218
+3.056562
+-6.944757
+-37.870561

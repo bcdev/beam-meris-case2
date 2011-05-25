@@ -21,12 +21,14 @@ public abstract class WaterAlgorithm {
     public static final int SOURCE_REFLEC_7_INDEX = 6;
     public static final int SOURCE_REFLEC_8_INDEX = 7;
     public static final int SOURCE_REFLEC_9_INDEX = 8;
-    public static final int SOURCE_SOLAZI_INDEX = 9;
-    public static final int SOURCE_SOLZEN_INDEX = 10;
-    public static final int SOURCE_SATAZI_INDEX = 11;
-    public static final int SOURCE_SATZEN_INDEX = 12;
-    public static final int SOURCE_ZONAL_WIND_INDEX = 13;
-    public static final int SOURCE_MERID_WIND_INDEX = 14;
+    public static final int SOURCE_REFLEC_10_INDEX = 9;
+    public static final int SOURCE_REFLEC_12_INDEX = 10;
+    public static final int SOURCE_SOLAZI_INDEX = 11;
+    public static final int SOURCE_SOLZEN_INDEX = 12;
+    public static final int SOURCE_SATAZI_INDEX = 13;
+    public static final int SOURCE_SATZEN_INDEX = 14;
+    public static final int SOURCE_ZONAL_WIND_INDEX = 15;
+    public static final int SOURCE_MERID_WIND_INDEX = 16;
 
     public static final int TARGET_A_GELBSTOFF_INDEX = 0;
     public static final int TARGET_A_PIGMENT_INDEX = 1;
@@ -72,6 +74,10 @@ public abstract class WaterAlgorithm {
 
     private double spectrumOutOfScopeThreshold;
     private ThreadLocal<NNffbpAlphaTabFast> chlRatNet;
+    private ThreadLocal<NNffbpAlphaTabFast> ysRatNet;
+    private ThreadLocal<NNffbpAlphaTabFast> bbRatNet;
+    private ThreadLocal<NNffbpAlphaTabFast> kdminRatNet;
+    private ThreadLocal<NNffbpAlphaTabFast> twoFlowNet;
 
     protected WaterAlgorithm(double spectrumOutOfScopeThreshold) {
         this.spectrumOutOfScopeThreshold = spectrumOutOfScopeThreshold;
@@ -89,6 +95,61 @@ public abstract class WaterAlgorithm {
             }
         };
 
+        final String ysRatNetString = NeuralNetReader.readNeuralNetString(
+                "/org/esa/beam/meris/case2/regional/ag_rat560/1_5.0.net", null);
+
+        ysRatNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+            @Override
+            protected NNffbpAlphaTabFast initialValue() {
+                try {
+                    return new NNffbpAlphaTabFast(ysRatNetString);
+                } catch (IOException e) {
+                    throw new OperatorException("Not able to init neural net", e);
+                }
+            }
+        };
+        final String bbRatNetString = NeuralNetReader.readNeuralNetString(
+                "/org/esa/beam/meris/case2/regional/bb_rat/1_6.2.net", null);
+
+        bbRatNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+            @Override
+            protected NNffbpAlphaTabFast initialValue() {
+                try {
+                    return new NNffbpAlphaTabFast(bbRatNetString);
+                } catch (IOException e) {
+                    throw new OperatorException("Not able to init neural net", e);
+                }
+            }
+        };
+        final String kdminNetString = NeuralNetReader.readNeuralNetString(
+                "/org/esa/beam/meris/case2/regional/kdmin/1_4.1.net", null);
+
+        kdminRatNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+            @Override
+            protected NNffbpAlphaTabFast initialValue() {
+                try {
+                    return new NNffbpAlphaTabFast(kdminNetString);
+                } catch (IOException e) {
+                    throw new OperatorException("Not able to init neural net", e);
+                }
+            }
+        };
+
+        // Deactivated all inputs are out of training range
+//        final String twoFlowNetString = NeuralNetReader.readNeuralNetString(
+//                "/org/esa/beam/meris/case2/regional/2flow_dif4/7x5_103.5.net", null);
+//
+//        twoFlowNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+//            @Override
+//            protected NNffbpAlphaTabFast initialValue() {
+//                try {
+//                    return new NNffbpAlphaTabFast(twoFlowNetString);
+//                } catch (IOException e) {
+//                    throw new OperatorException("Not able to init neural net", e);
+//                }
+//            }
+//        };
+
     }
 
     public double[] perform(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
@@ -98,7 +159,7 @@ public abstract class WaterAlgorithm {
         double cut_thresh = getCutThreshold(inverseWaterNet.getInmin());
 
         // test RLw against lowest or cut value in NN and set in lower
-        double[] RLw = new double[9];
+        double[] RLw = new double[11];
         RLw[0] = sourceSamples[SOURCE_REFLEC_1_INDEX].getDouble();
         RLw[1] = sourceSamples[SOURCE_REFLEC_2_INDEX].getDouble();
         RLw[2] = sourceSamples[SOURCE_REFLEC_3_INDEX].getDouble();
@@ -108,6 +169,8 @@ public abstract class WaterAlgorithm {
         RLw[6] = sourceSamples[SOURCE_REFLEC_7_INDEX].getDouble();
         RLw[7] = sourceSamples[SOURCE_REFLEC_8_INDEX].getDouble();
         RLw[8] = sourceSamples[SOURCE_REFLEC_9_INDEX].getDouble();
+        RLw[9] = sourceSamples[SOURCE_REFLEC_10_INDEX].getDouble();
+        RLw[10] = sourceSamples[SOURCE_REFLEC_12_INDEX].getDouble();
         if (ReflectanceEnum.IRRADIANCE_REFLECTANCES.equals(inputReflecAre)) {
             for (int i = 0; i < RLw.length; i++) {
                 RLw[i] /= Math.PI;
@@ -136,8 +199,27 @@ public abstract class WaterAlgorithm {
         double[] waterOutnet = inverseWaterNet.calc(waterInnet);
 
         fillOutput(waterOutnet, targetSamples);
-        double chl = computeChlWithNewNet(RLw, solzen);
+        /////////////////////////////////////////////////////////////////////////////
+        // New nets from 25.05.2011 for CoastColour
+
+        double chl = computeChlWithChlRatNet(RLw, solzen);
         targetSamples[TARGET_CHL_CONC_INDEX].set(Math.exp(chl));
+
+        double ys = computeChlWithYsRatNet(RLw, solzen);
+        targetSamples[TARGET_A_GELBSTOFF_INDEX].set(Math.exp(ys));
+
+        double[] bb = computeChlWithBbRatNet(RLw, solzen);
+        double logBb560 = bb[0];
+        double logBb620 = bb[1];
+        targetSamples[TARGET_BB_SPM_INDEX].set(Math.exp(logBb560));
+
+        // TODO add option to select which one to use for Chl computation
+        // Deactivated all inputs are out of training range
+//        double[] twoFlowResult = computeChlWithTwoFlowNet(RLw);
+//        targetSamples[TARGET_CHL_CONC_INDEX].set(Math.exp(twoFlowResult[0]));
+//        targetSamples[TARGET_A_PIGMENT_INDEX].set(Math.exp(twoFlowResult[1]));
+        // New nets from 25.05.2011 for CoastColour
+        /////////////////////////////////////////////////////////////////////////////
 
         /* test if concentrations are within training range */
         final double bbSpm = targetSamples[TARGET_BB_SPM_INDEX].getDouble();
@@ -161,7 +243,9 @@ public abstract class WaterAlgorithm {
         }
         // compute k_min and z90_max RD 20060811
         final KMin kMin = createKMin(targetSamples);
-        double k_min = kMin.computeKMinValue();
+
+//        double k_min = kMin.computeKMinValue();
+        double k_min = Math.exp(computeKminWithKdminNet(RLw, solzen));
         targetSamples[TARGET_K_MIN_INDEX].set(k_min);
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
 
@@ -173,7 +257,44 @@ public abstract class WaterAlgorithm {
 
     }
 
-    protected double computeChlWithNewNet(double[] rLw, double solzen) {
+    private double computeKminWithKdminNet(double[] rLw, double solzen) {
+        double[] inValues = new double[6];
+        inValues[0] = solzen;
+        inValues[1] = Math.log(rLw[1] / rLw[0]);
+        inValues[2] = Math.log(rLw[2] / rLw[1]);
+        inValues[3] = Math.log(rLw[3] / rLw[2]);
+        inValues[4] = Math.log(rLw[4] / rLw[3]);
+        inValues[5] = Math.log(rLw[6] / rLw[4]);
+
+        return kdminRatNet.get().calc(inValues)[0];
+
+    }
+
+    private double[] computeChlWithBbRatNet(double[] rLw, double solzen) {
+        double[] inValues = new double[6];
+        inValues[0] = solzen;
+        inValues[1] = Math.log(rLw[1] / rLw[0]);
+        inValues[2] = Math.log(rLw[2] / rLw[1]);
+        inValues[3] = Math.log(rLw[3] / rLw[2]);
+        inValues[4] = Math.log(rLw[4] / rLw[3]);
+        inValues[5] = Math.log(rLw[6] / rLw[4]);
+
+        return bbRatNet.get().calc(inValues);
+    }
+
+    private double computeChlWithYsRatNet(double[] rLw, double solzen) {
+        double[] inValues = new double[6];
+        inValues[0] = solzen;
+        inValues[1] = Math.log(rLw[0] / rLw[4]);
+        inValues[2] = Math.log(rLw[1] / rLw[4]);
+        inValues[3] = Math.log(rLw[2] / rLw[4]);
+        inValues[4] = Math.log(rLw[3] / rLw[4]);
+        inValues[5] = Math.log(rLw[6] / rLw[4]);
+
+        return ysRatNet.get().calc(inValues)[0];
+    }
+
+    protected double computeChlWithChlRatNet(double[] rLw, double solzen) {
         double[] inValues = new double[6];
         inValues[0] = solzen;
         inValues[1] = Math.log(rLw[0] / rLw[4]);
@@ -184,6 +305,17 @@ public abstract class WaterAlgorithm {
 
         return chlRatNet.get().calc(inValues)[0];
     }
+
+    private double[] computeChlWithTwoFlowNet(double[] rLw) {
+        double[] inValues = new double[4];
+        inValues[0] = rLw[5] - rLw[5 + 1];  // 620 - 665
+        inValues[1] = rLw[6] - rLw[6 + 1];  // 665 - 681
+        inValues[2] = rLw[8] - rLw[8 + 1];  // 708 - 753
+        inValues[3] = rLw[9] - rLw[9 + 1];  // 753 - 778
+        // two values are returned; log_conc_chl and log_apig2
+        return twoFlowNet.get().calc(inValues);
+    }
+
 
     private double computeTurbidityIndex(double rlw620) {
         if (rlw620 > RLW620_MAX) {  // maximum value for computing the turbidity Index

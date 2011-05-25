@@ -119,7 +119,9 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
             MERIS_L2_REFLEC_6_BAND_NAME,
             MERIS_L2_REFLEC_7_BAND_NAME,
             MERIS_L2_REFLEC_8_BAND_NAME,
-            MERIS_L2_REFLEC_9_BAND_NAME
+            MERIS_L2_REFLEC_9_BAND_NAME,
+            MERIS_L2_REFLEC_10_BAND_NAME,
+            MERIS_L2_REFLEC_12_BAND_NAME
     };
     private final String[] requiredTPGNames = new String[]{
             MERIS_SUN_AZIMUTH_DS_NAME,
