@@ -30,6 +30,7 @@ public class Case2IOPOperatorTest {
                 "reflec_4", "reflec_5", "reflec_6",
                 "reflec_7", "reflec_8", "reflec_9",
                 "reflec_10", "reflec_12", "reflec_13",
+                "reflec_error",
                 "path_1", "path_2", "path_3",
                 "path_4", "path_5", "path_6",
                 "path_7", "path_8", "path_9",
