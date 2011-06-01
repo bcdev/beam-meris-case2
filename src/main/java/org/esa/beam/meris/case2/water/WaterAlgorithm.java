@@ -17,12 +17,13 @@ public abstract class WaterAlgorithm {
     public static final int SOURCE_REFLEC_7_INDEX = 6;
     public static final int SOURCE_REFLEC_8_INDEX = 7;
     public static final int SOURCE_REFLEC_9_INDEX = 8;
-    public static final int SOURCE_SOLAZI_INDEX = 9;
-    public static final int SOURCE_SOLZEN_INDEX = 10;
-    public static final int SOURCE_SATAZI_INDEX = 11;
-    public static final int SOURCE_SATZEN_INDEX = 12;
-    public static final int SOURCE_ZONAL_WIND_INDEX = 13;
-    public static final int SOURCE_MERID_WIND_INDEX = 14;
+    public static final int SOURCE_REFLEC_10_INDEX = 9;
+    public static final int SOURCE_SOLAZI_INDEX = 10;
+    public static final int SOURCE_SOLZEN_INDEX = 11;
+    public static final int SOURCE_SATAZI_INDEX = 12;
+    public static final int SOURCE_SATZEN_INDEX = 13;
+    public static final int SOURCE_ZONAL_WIND_INDEX = 14;
+    public static final int SOURCE_MERID_WIND_INDEX = 15;
 
     public static final int TARGET_A_GELBSTOFF_INDEX = 0;
     public static final int TARGET_A_PIGMENT_INDEX = 1;
@@ -64,22 +65,23 @@ public abstract class WaterAlgorithm {
     private static final double TURBIDITY_BT = 0.39;
     private static final double TURBIDITY_C = 0.1533;
 
-    public static final double BTSM_TO_SPM_FACTOR = 0.02;
+    public static final double BTSM_TO_SPM_FACTOR = 0.01;
 
     private double spectrumOutOfScopeThreshold;
+    private double averageSalinity;
+    private double averageTemperature;
 
-    protected WaterAlgorithm(double spectrumOutOfScopeThreshold) {
+    protected WaterAlgorithm(double spectrumOutOfScopeThreshold, double averageSalinity, double averageTemperature) {
         this.spectrumOutOfScopeThreshold = spectrumOutOfScopeThreshold;
+        this.averageSalinity = averageSalinity;
+        this.averageTemperature = averageTemperature;
     }
 
     public double[] perform(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
                             double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
                             WritableSample[] targetSamples, ReflectanceEnum inputReflecAre) {
-        /* determine cut_thresh from waterNet minimum */
-        double cut_thresh = getCutThreshold(inverseWaterNet.getInmin());
-
         // test RLw against lowest or cut value in NN and set in lower
-        double[] RLw = new double[9];
+        double[] RLw = new double[10];
         RLw[0] = sourceSamples[SOURCE_REFLEC_1_INDEX].getDouble();
         RLw[1] = sourceSamples[SOURCE_REFLEC_2_INDEX].getDouble();
         RLw[2] = sourceSamples[SOURCE_REFLEC_3_INDEX].getDouble();
@@ -89,27 +91,24 @@ public abstract class WaterAlgorithm {
         RLw[6] = sourceSamples[SOURCE_REFLEC_7_INDEX].getDouble();
         RLw[7] = sourceSamples[SOURCE_REFLEC_8_INDEX].getDouble();
         RLw[8] = sourceSamples[SOURCE_REFLEC_9_INDEX].getDouble();
+        RLw[9] = sourceSamples[SOURCE_REFLEC_10_INDEX].getDouble();
         if (ReflectanceEnum.IRRADIANCE_REFLECTANCES.equals(inputReflecAre)) {
             for (int i = 0; i < RLw.length; i++) {
                 RLw[i] /= Math.PI;
             }
         }
-        double[] RLw_cut = new double[RLw.length];
+        double[] logRLw = new double[RLw.length];
         for (int i = 0; i < RLw.length; i++) {
-            final double Rlw = RLw[i];
-            if (Rlw < cut_thresh) {
-                RLw_cut[i] = cut_thresh;
-            } else {
-                RLw_cut[i] = Rlw;
-            }
+            logRLw[i] = Math.log(RLw[i]);
         }
 
+
         /* prepare for water net */
-        double[] waterInnet = getWaterInnet(solzen, satzen, azi_diff_deg, RLw_cut);
+        double[] waterInnet = getWaterInnet(solzen, satzen, azi_diff_deg, averageSalinity, averageTemperature, logRLw);
 
         // test if water leaving radiance reflectance are within training range,
         // otherwise set to training range
-        if (!test_logRLw(waterInnet, inverseWaterNet)) {
+        if (isLogRLwOutOfRange(waterInnet, inverseWaterNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(WLR_OOR_BIT_INDEX, true);
         }
 
@@ -119,19 +118,18 @@ public abstract class WaterAlgorithm {
         fillOutput(waterOutnet, targetSamples);
 
         /* test if concentrations are within training range */
-        final double bbSpm = targetSamples[TARGET_BB_SPM_INDEX].getDouble();
-        final double aPig = targetSamples[TARGET_A_PIGMENT_INDEX].getDouble();
-        final double aGelbstoff = targetSamples[TARGET_A_GELBSTOFF_INDEX].getDouble();
-        if (!test_watconc(bbSpm / BTSM_TO_SPM_FACTOR, aPig, aGelbstoff, inverseWaterNet)) {
+        if (!test_watconc(waterOutnet, inverseWaterNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(CONC_OOR_BIT_INDEX, true);
         }
 
         /* do forward NN computation */
-        double[] forwardWaterInnet = getForwardWaterInnet(solzen, satzen, azi_diff_deg, waterOutnet);
+        double[] forwardWaterInnet = getForwardWaterInnet(solzen, satzen, azi_diff_deg, averageTemperature,
+                                                          averageSalinity, waterOutnet
+        );
         double[] forwardWaterOutnet = forwardWaterNet.calc(forwardWaterInnet);
 
         /* compute chi square deviation on log scale between measured and computed spectrum */
-        double chiSquare = computeChiSquare(forwardWaterOutnet, RLw_cut);
+        double chiSquare = computeChiSquare(forwardWaterOutnet, logRLw);
 
         targetSamples[TARGET_CHI_SQUARE_INDEX].set(chiSquare);
 
@@ -140,7 +138,7 @@ public abstract class WaterAlgorithm {
         }
         // compute k_min and z90_max RD 20060811
         final KMin kMin = createKMin(targetSamples);
-        double k_min = kMin.computeKMinValue();
+        double k_min = Math.exp(waterOutnet[6]);
         targetSamples[TARGET_K_MIN_INDEX].set(k_min);
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
 
@@ -148,7 +146,7 @@ public abstract class WaterAlgorithm {
 
         final double turbidity = computeTurbidityIndex(RLw[5]);// parameter Rlw at 620 'reflec_6'
         targetSamples[TARGET_TURBIDITY_INDEX_INDEX].set(turbidity);
-        return RLw_cut;
+        return logRLw;
 
     }
 
@@ -163,51 +161,53 @@ public abstract class WaterAlgorithm {
 
     protected abstract KMin createKMin(WritableSample[] targetSamples);
 
-    protected abstract double computeChiSquare(double[] forwardWaterOutnet, double[] RLw_cut);
+    protected abstract double computeChiSquare(double[] forwardWaterOutnet, double[] logRLw_cut);
 
     protected abstract double[] getForwardWaterInnet(double solzen, double satzen, double azi_diff_deg,
+                                                     double averageTemperature, double averageSalinity,
                                                      double[] waterOutnet);
 
     protected abstract void fillOutput(double[] waterOutnet, WritableSample[] targetSamples);
 
     protected abstract double[] getWaterInnet(double teta_sun_deg, double teta_view_deg, double azi_diff_deg,
-                                              double[] RLw_cut);
-
-    protected abstract double getCutThreshold(double[] inmin);
+                                              double averageSalinity, double averageTemperature, double[] RLw_cut);
 
     /*-----------------------------------------------------------------------------------
      **	test water leaving radiances as input to neural network for out of training range
      **	if out of range set to lower or upper boundary value
     -----------------------------------------------------------------------------------*/
-    private boolean test_logRLw(double[] innet, NNffbpAlphaTabFast inverseWaterNet) {
+    private boolean isLogRLwOutOfRange(double[] innet, NNffbpAlphaTabFast inverseWaterNet) {
         final double[] inmax = inverseWaterNet.getInmax();
         final double[] inmin = inverseWaterNet.getInmin();
+        boolean isOutOfRange = false;
         for (int i = 0; i < innet.length; i++) {
             if (innet[i] > inmax[i]) {
                 innet[i] = inmax[i];
-                return false;
+                isOutOfRange |= true;
             }
             if (innet[i] < inmin[i]) {
                 innet[i] = inmin[i];
-                return false;
+                isOutOfRange |= true;
             }
         }
-        return true;
+        return isOutOfRange;
     }
 
     /*-------------------------------------------------------------------------------
      **	test water constituents as output of neural network for out of training range
      **
     --------------------------------------------------------------------------------*/
-    private boolean test_watconc(double bTsm, double aPig, double aGelbstoff, NNffbpAlphaTabFast inverseWaterNet) {
-        double log_spm = Math.log(bTsm);
-        double log_pig = Math.log(aPig);
-        double log_gelb = Math.log(aGelbstoff);
+    private boolean test_watconc(double[] waterOut, NNffbpAlphaTabFast inverseWaterNet) {
         final double[] outmax = inverseWaterNet.getOutmax();
         final double[] outmin = inverseWaterNet.getOutmin();
-        final boolean ootr0 = log_spm > outmax[0] || log_spm < outmin[0];
-        final boolean ootr1 = log_pig > outmax[1] || log_pig < outmin[1];
-        final boolean ootr2 = log_gelb > outmax[2] || log_gelb < outmin[2];
-        return !(ootr0 || ootr1 || ootr2);
+        for (int i = 0; i < outmin.length; i++) {
+            double min = outmin[i];
+            double max = outmax[i];
+            double value = waterOut[i];
+            if (value > max || value < min) {
+                return true;
+            }
+        }
+        return false;
     }
 }

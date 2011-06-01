@@ -31,23 +31,27 @@ public class RegionalWaterOp extends MerisCase2BasisWaterOp {
     private double chlConversionExponent;
     @Parameter(defaultValue = "21.0", description = "Factor for conversion from A_PIG to CHL_CONC")
     private double chlConversionFactor;
+    @Parameter(defaultValue = "35", description = "The salinity of the water")
+    private double averageSalinity;
+    @Parameter(defaultValue = "15", unit = "°C", description = "The Water temperature")
+    private double averageTemperature;
 
 
     @Override
     protected String getDefaultForwardWaterNetResourcePath() {
-        return "/org/esa/beam/meris/case2/regional/meris_fn_20040319_15x15x15_1750.4.net";
+        return "/org/esa/beam/meris/case2/regional/CC_23x7x16_182.0.net";
     }
 
     @Override
     protected String getDefaultInverseWaterNetResourcePath() {
-        return "/org/esa/beam/meris/case2/regional/meris_bn_20040322_45x16x12x8x5_5177.9.net";
+        return "/org/esa/beam/meris/case2/regional/CC_45x16x12_3340.4.net";
     }
 
     @Override
     protected WaterAlgorithm createAlgorithm() {
         return new RegionalWater(getSpectrumOutOfScopeThreshold(),
                                  tsmConversionExponent, tsmConversionFactor,
-                                 chlConversionExponent, chlConversionFactor);
+                                 chlConversionExponent, chlConversionFactor, averageSalinity, averageTemperature);
     }
 
     @Override

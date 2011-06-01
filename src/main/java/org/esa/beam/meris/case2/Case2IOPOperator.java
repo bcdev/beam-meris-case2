@@ -39,7 +39,7 @@ import java.util.List;
                   description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2011 by Brockmann Consult",
-                  version = "1.6")
+                  version = "1.6-CC2")
 public class Case2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
@@ -108,6 +108,12 @@ public class Case2IOPOperator extends Operator {
                description = "The algorithm used for IOP computation. Currently only 'REGIONAL' is valid")
     private Case2AlgorithmEnum algorithm;
 
+    @Parameter(label = "Average salinity", defaultValue = "35", description = "The salinity of the water")
+    private double averageSalinity;
+
+    @Parameter(label = "Average temperature", defaultValue = "15", unit = "°C", description = "The Water temperature")
+    private double averageTemperature;
+
     @Parameter(label = "Tsm conversion exponent",
                defaultValue = "1.0",
                description = "Exponent for conversion from TSM to B_TSM.")
@@ -174,6 +180,8 @@ public class Case2IOPOperator extends Operator {
             case2Op.setParameter("chlConversionExponent", chlConversionExponent);
             case2Op.setParameter("chlConversionFactor", chlConversionFactor);
         }
+        case2Op.setParameter("averageSalinity", averageSalinity);
+        case2Op.setParameter("averageTemperature", averageTemperature);
         case2Op.setParameter("inputReflecAre", outputReflecAs);
         case2Op.setParameter("spectrumOutOfScopeThreshold", spectrumOutOfScopeThreshold);
         case2Op.setParameter("invalidPixelExpression", invalidPixelExpression);
