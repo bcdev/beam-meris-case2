@@ -38,9 +38,9 @@ public class RegionalWaterAlgorithmTest {
         assertEquals(0.0507, targetSamples[WaterAlgorithm.TARGET_TSM_INDEX].getDouble(), 1.0e-3);
         assertEquals(0.1498, targetSamples[WaterAlgorithm.TARGET_CHL_CONC_INDEX].getDouble(), 1.0e-3);
         assertEquals(39.9181, targetSamples[WaterAlgorithm.TARGET_CHI_SQUARE_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.1273, targetSamples[WaterAlgorithm.TARGET_K_MIN_INDEX].getDouble(), 1.0e-3);
-        assertEquals(-7.8505, targetSamples[WaterAlgorithm.TARGET_Z90_MAX_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.0626, targetSamples[WaterAlgorithm.TARGET_KD_490_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.1129, targetSamples[WaterAlgorithm.TARGET_K_MIN_INDEX].getDouble(), 1.0e-3);
+        assertEquals(-8.8498, targetSamples[WaterAlgorithm.TARGET_Z90_MAX_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0594, targetSamples[WaterAlgorithm.TARGET_KD_490_INDEX].getDouble(), 1.0e-3);
         assertEquals(1.5541, targetSamples[WaterAlgorithm.TARGET_TURBIDITY_INDEX_INDEX].getDouble(), 1.0e-3);
         assertEquals(0, targetSamples[WaterAlgorithm.TARGET_FLAG_INDEX].getInt(), 1.0e-3);
     }
