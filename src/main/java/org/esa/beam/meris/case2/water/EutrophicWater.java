@@ -38,14 +38,14 @@ public class EutrophicWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double computeChiSquare(double[] forwardWaterOutnet, double[] logRLw_cut) {
-        return Math.pow(forwardWaterOutnet[0] - logRLw_cut[1], 2) + // it starts with 442 nm
-               Math.pow(forwardWaterOutnet[1] - logRLw_cut[2], 2) +
-               Math.pow(forwardWaterOutnet[2] - logRLw_cut[3], 2) +
-               Math.pow(forwardWaterOutnet[3] - logRLw_cut[4], 2) +
-               Math.pow(forwardWaterOutnet[4] - logRLw_cut[5], 2) +
-               Math.pow(forwardWaterOutnet[5] - logRLw_cut[6], 2) +
-               Math.pow(forwardWaterOutnet[6] - logRLw_cut[8], 2);
+    protected double computeChiSquare(double[] forwardWaterOutput, double[] logRLw_cut) {
+        return Math.pow(forwardWaterOutput[0] - logRLw_cut[1], 2) + // it starts with 442 nm
+               Math.pow(forwardWaterOutput[1] - logRLw_cut[2], 2) +
+               Math.pow(forwardWaterOutput[2] - logRLw_cut[3], 2) +
+               Math.pow(forwardWaterOutput[3] - logRLw_cut[4], 2) +
+               Math.pow(forwardWaterOutput[4] - logRLw_cut[5], 2) +
+               Math.pow(forwardWaterOutput[5] - logRLw_cut[6], 2) +
+               Math.pow(forwardWaterOutput[6] - logRLw_cut[8], 2);
     }
 
     @Override
@@ -65,21 +65,21 @@ public class EutrophicWater extends WaterAlgorithm {
     }
 
     @Override
-    protected void fillTargetSamples(double[] waterOutnet, WritableSample[] targetSamples) {
-        double bTsm = Math.exp(waterOutnet[3]);
+    protected void fillTargetSamples(double[] backwardWaterOutput, WritableSample[] targetSamples) {
+        double bTsm = Math.exp(backwardWaterOutput[3]);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
-        targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + waterOutnet[3] * tsmExponent));
+        targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + backwardWaterOutput[3] * tsmExponent));
 
-        double aPig = Math.exp(waterOutnet[2]) * chlFactor;
+        double aPig = Math.exp(backwardWaterOutput[2]) * chlFactor;
         targetSamples[TARGET_A_PIGMENT_INDEX].set(aPig);
 //        targetSamples[TARGET_CHL_CONC_INDEX].set(Math.exp(Math.log(chlFactor) + waterOutnet[2] * chlExponent));
-        targetSamples[TARGET_CHL_CONC_INDEX].set(Math.exp(Math.log(1.0) + waterOutnet[2] * chlExponent));
+        targetSamples[TARGET_CHL_CONC_INDEX].set(Math.exp(Math.log(1.0) + backwardWaterOutput[2] * chlExponent));
 
-        double aGelbstoff = Math.exp(waterOutnet[0]);
+        double aGelbstoff = Math.exp(backwardWaterOutput[0]);
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
         targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff);
 
-        double aBtsm = Math.exp(waterOutnet[1]);
+        double aBtsm = Math.exp(backwardWaterOutput[1]);
         targetSamples[TARGET_A_BTSM_INDEX].set(bTsm); // bleached suspended matter absorption at 442
         targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff + aBtsm);
         // todo - How to compute a_poc_443?

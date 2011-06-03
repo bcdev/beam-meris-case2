@@ -39,12 +39,12 @@ public class RegionalWaterOp extends MerisCase2BasisWaterOp {
 
     @Override
     protected String getDefaultForwardWaterNetResourcePath() {
-        return "/org/esa/beam/meris/case2/regional/CC_23x7x16_182.0.net";
+        return "/org/esa/beam/meris/case2/regional/CC_forw_23x7x16_192.3.net";
     }
 
     @Override
     protected String getDefaultInverseWaterNetResourcePath() {
-        return "/org/esa/beam/meris/case2/regional/CC_45x16x12_3340.4.net";
+        return "/org/esa/beam/meris/case2/regional/CC_backw_46x16x12_34337.4.net";
     }
 
     @Override

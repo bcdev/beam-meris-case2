@@ -32,19 +32,11 @@ public class RegionalWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double computeChiSquare(double[] forwardWaterOutnet, double[] logRLw_cut) {
+    protected double computeChiSquare(double[] forwardWaterOutput, double[] logRLw_cut) {
         double chiSquare = 0.0;
-        chiSquare += Math.pow(forwardWaterOutnet[0] - logRLw_cut[0], 2);
-        chiSquare += Math.pow(forwardWaterOutnet[1] - logRLw_cut[1], 2);
-        chiSquare += Math.pow(forwardWaterOutnet[2] - logRLw_cut[2], 2);
-        chiSquare += Math.pow(forwardWaterOutnet[3] - logRLw_cut[3], 2);
-        chiSquare += Math.pow(forwardWaterOutnet[4] - logRLw_cut[4], 2);
-        chiSquare += Math.pow(forwardWaterOutnet[5] - logRLw_cut[5], 2);
-        chiSquare += Math.pow(forwardWaterOutnet[6] - logRLw_cut[6], 2);
-        // pay attention these are mixed up in the forward output net
-        chiSquare += Math.pow(forwardWaterOutnet[7] - logRLw_cut[8], 2);
-        chiSquare += Math.pow(forwardWaterOutnet[8] - logRLw_cut[7], 2);
-        chiSquare += Math.pow(forwardWaterOutnet[9] - logRLw_cut[9], 2);
+        for (int i = 0; i < forwardWaterOutput.length; i++) {
+            chiSquare += Math.pow(forwardWaterOutput[i] - logRLw_cut[i], 2);
+        }
         return chiSquare;
     }
 
@@ -69,21 +61,21 @@ public class RegionalWater extends WaterAlgorithm {
     }
 
     @Override
-    protected void fillTargetSamples(double[] waterOutnet, WritableSample[] targetSamples) {
-        double chlConc = Math.exp(waterOutnet[0]);
+    protected void fillTargetSamples(double[] backwardWaterOutput, WritableSample[] targetSamples) {
+        double chlConc = Math.exp(backwardWaterOutput[0]);
 
         targetSamples[TARGET_CHL_CONC_INDEX].set(chlConc);
 
-        double aPart = Math.exp(waterOutnet[1]);
-        double aGelbstoff = Math.exp(waterOutnet[2]);
-        double aPig = Math.exp(waterOutnet[3]);
+        double aPart = Math.exp(backwardWaterOutput[1]);
+        double aGelbstoff = Math.exp(backwardWaterOutput[2]);
+        double aPig = Math.exp(backwardWaterOutput[3]);
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
         targetSamples[TARGET_A_PIGMENT_INDEX].set(aPig);
         targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff + aPart);
 
-        double bTsm = Math.exp(waterOutnet[4]);
+        double bTsm = Math.exp(backwardWaterOutput[4]);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
-        targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + waterOutnet[4] * tsmExponent));
+        targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + backwardWaterOutput[4] * tsmExponent));
 
         if (outputAPoc) {
             // todo - How to compute a_poc_443?

@@ -179,13 +179,13 @@ public abstract class WaterAlgorithm {
 
     protected abstract KMin createKMin(WritableSample[] targetSamples);
 
-    protected abstract double computeChiSquare(double[] forwardWaterOutnet, double[] logRLw_cut);
+    protected abstract double computeChiSquare(double[] forwardWaterOutput, double[] logRLw_cut);
 
     protected abstract double[] getForwardWaterInput(double solzen, double satzen, double azi_diff_deg,
                                                      double averageTemperature, double averageSalinity,
                                                      double[] waterOutnet);
 
-    protected abstract void fillTargetSamples(double[] waterOutnet, WritableSample[] targetSamples);
+    protected abstract void fillTargetSamples(double[] backwardWaterOutput, WritableSample[] targetSamples);
 
     protected abstract double[] getBackwardWaterInput(double teta_sun_deg, double teta_view_deg, double azi_diff_deg,
                                                       double averageSalinity, double averageTemperature,
@@ -195,17 +195,17 @@ public abstract class WaterAlgorithm {
      **	test water leaving radiances as input to neural network for out of training range
      **	if out of range set to lower or upper boundary value
     -----------------------------------------------------------------------------------*/
-    private boolean isLogRLwOutOfRange(double[] innet, NNffbpAlphaTabFast inverseWaterNet) {
-        final double[] inmax = inverseWaterNet.getInmax();
-        final double[] inmin = inverseWaterNet.getInmin();
+    private boolean isLogRLwOutOfRange(double[] backwardWaterInput, NNffbpAlphaTabFast backwardWaterNet) {
+        final double[] inmax = backwardWaterNet.getInmax();
+        final double[] inmin = backwardWaterNet.getInmin();
         boolean isOutOfRange = false;
-        for (int i = 0; i < innet.length; i++) {
-            if (innet[i] > inmax[i]) {
-                innet[i] = inmax[i];
+        for (int i = 0; i < backwardWaterInput.length; i++) {
+            if (backwardWaterInput[i] > inmax[i]) {
+                backwardWaterInput[i] = inmax[i];
                 isOutOfRange |= true;
             }
-            if (innet[i] < inmin[i]) {
-                innet[i] = inmin[i];
+            if (backwardWaterInput[i] < inmin[i]) {
+                backwardWaterInput[i] = inmin[i];
                 isOutOfRange |= true;
             }
         }
@@ -216,13 +216,13 @@ public abstract class WaterAlgorithm {
      **	test water constituents as output of neural network for out of training range
      **
     --------------------------------------------------------------------------------*/
-    private boolean isWaterConcentrationOOR(double[] waterOut, NNffbpAlphaTabFast inverseWaterNet) {
-        final double[] outmax = inverseWaterNet.getOutmax();
-        final double[] outmin = inverseWaterNet.getOutmin();
+    private boolean isWaterConcentrationOOR(double[] backwardWaterOutput, NNffbpAlphaTabFast backwardWaterNet) {
+        final double[] outmax = backwardWaterNet.getOutmax();
+        final double[] outmin = backwardWaterNet.getOutmin();
         for (int i = 0; i < outmin.length; i++) {
             double min = outmin[i];
             double max = outmax[i];
-            double value = waterOut[i];
+            double value = backwardWaterOutput[i];
             if (value > max || value < min) {
                 return true;
             }

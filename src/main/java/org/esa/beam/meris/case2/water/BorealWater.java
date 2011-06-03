@@ -20,15 +20,15 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double computeChiSquare(double[] forwardWaterOutnet, double[] logRLw_cut) {
-        return Math.pow(forwardWaterOutnet[0] - logRLw_cut[0], 2) +
-               Math.pow(forwardWaterOutnet[1] - logRLw_cut[1], 2) +
-               Math.pow(forwardWaterOutnet[2] - logRLw_cut[2], 2) +
-               Math.pow(forwardWaterOutnet[3] - logRLw_cut[3], 2) +
-               Math.pow(forwardWaterOutnet[4] - logRLw_cut[4], 2) +
-               Math.pow(forwardWaterOutnet[5] - logRLw_cut[5], 2) +
-               Math.pow(forwardWaterOutnet[6] - logRLw_cut[6], 2) +
-               Math.pow(forwardWaterOutnet[8] - logRLw_cut[8], 2);
+    protected double computeChiSquare(double[] forwardWaterOutput, double[] logRLw_cut) {
+        return Math.pow(forwardWaterOutput[0] - logRLw_cut[0], 2) +
+               Math.pow(forwardWaterOutput[1] - logRLw_cut[1], 2) +
+               Math.pow(forwardWaterOutput[2] - logRLw_cut[2], 2) +
+               Math.pow(forwardWaterOutput[3] - logRLw_cut[3], 2) +
+               Math.pow(forwardWaterOutput[4] - logRLw_cut[4], 2) +
+               Math.pow(forwardWaterOutput[5] - logRLw_cut[5], 2) +
+               Math.pow(forwardWaterOutput[6] - logRLw_cut[6], 2) +
+               Math.pow(forwardWaterOutput[8] - logRLw_cut[8], 2);
     }
 
     @Override
@@ -46,16 +46,16 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected void fillTargetSamples(double[] waterOutnet, WritableSample[] targetSamples) {
-        double bTsm = Math.exp(waterOutnet[0]);
+    protected void fillTargetSamples(double[] backwardWaterOutput, WritableSample[] targetSamples) {
+        double bTsm = Math.exp(backwardWaterOutput[0]);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
         targetSamples[TARGET_TSM_INDEX].set(bTsm / 0.95);
 
-        double aPig = Math.exp(waterOutnet[1]);
+        double aPig = Math.exp(backwardWaterOutput[1]);
         targetSamples[TARGET_A_PIGMENT_INDEX].set(aPig);
         targetSamples[TARGET_CHL_CONC_INDEX].set(62.6 * Math.pow(aPig, 1.29));
 
-        double aGelbstoff = Math.exp(waterOutnet[2]);
+        double aGelbstoff = Math.exp(backwardWaterOutput[2]);
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
         targetSamples[TARGET_A_TOTAL_INDEX].set(
                 aPig + aGelbstoff + bTsm / 0.95 * 0.089); // all water constituents absorption

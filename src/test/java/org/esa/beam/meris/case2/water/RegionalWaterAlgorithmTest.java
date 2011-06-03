@@ -31,13 +31,13 @@ public class RegionalWaterAlgorithmTest {
         final WritableSample[] targetSamples = createTargetSamples();
         regionalAlgo.perform(inverseNet, forwardNet, 23.255, 16.845, aziDiff, sourceSamples, targetSamples,
                              ReflectanceEnum.RADIANCE_REFLECTANCES);
-        assertEquals(0.0367, targetSamples[WaterAlgorithm.TARGET_A_GELBSTOFF_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.0028, targetSamples[WaterAlgorithm.TARGET_A_PIGMENT_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.0720, targetSamples[WaterAlgorithm.TARGET_A_TOTAL_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.0077, targetSamples[WaterAlgorithm.TARGET_BB_SPM_INDEX].getDouble(), 1.0e-3);
-        assertEquals(1.3403, targetSamples[WaterAlgorithm.TARGET_TSM_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.8412, targetSamples[WaterAlgorithm.TARGET_CHL_CONC_INDEX].getDouble(), 1.0e-3);
-        assertEquals(2.1705, targetSamples[WaterAlgorithm.TARGET_CHI_SQUARE_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0553, targetSamples[WaterAlgorithm.TARGET_A_GELBSTOFF_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0232, targetSamples[WaterAlgorithm.TARGET_A_PIGMENT_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0806, targetSamples[WaterAlgorithm.TARGET_A_TOTAL_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0002, targetSamples[WaterAlgorithm.TARGET_BB_SPM_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0507, targetSamples[WaterAlgorithm.TARGET_TSM_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.1498, targetSamples[WaterAlgorithm.TARGET_CHL_CONC_INDEX].getDouble(), 1.0e-3);
+        assertEquals(39.9181, targetSamples[WaterAlgorithm.TARGET_CHI_SQUARE_INDEX].getDouble(), 1.0e-3);
         assertEquals(0.1273, targetSamples[WaterAlgorithm.TARGET_K_MIN_INDEX].getDouble(), 1.0e-3);
         assertEquals(-7.8505, targetSamples[WaterAlgorithm.TARGET_Z90_MAX_INDEX].getDouble(), 1.0e-3);
         assertEquals(0.0626, targetSamples[WaterAlgorithm.TARGET_KD_490_INDEX].getDouble(), 1.0e-3);
