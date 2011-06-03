@@ -41,7 +41,6 @@ public class Case2IOPOperatorTest {
                 "a_total_443",
                 "a_ys_443",
                 "a_pig_443",
-                "a_poc_443",
                 "bb_spm_443",
                 "tsm",
                 "chl_conc",
@@ -62,6 +61,7 @@ public class Case2IOPOperatorTest {
     public void testInitializationWithoutAtmoCorr() throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("doAtmosphericCorrection", false);
+        parameters.put("outputAPoc", true);
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
@@ -92,6 +92,7 @@ public class Case2IOPOperatorTest {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("doAtmosphericCorrection", false);
         parameters.put("outputReflec", false);
+        parameters.put("outputAPoc", true);
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
