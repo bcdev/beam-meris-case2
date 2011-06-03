@@ -122,7 +122,7 @@ public abstract class WaterAlgorithm {
         fillOutput(waterOutnet, targetSamples);
 
         /* test if concentrations are within training range */
-        if (!test_watconc(waterOutnet, inverseWaterNet)) {
+        if (isWaterConcentrationOOR(waterOutnet, inverseWaterNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(CONC_OOR_BIT_INDEX, true);
         }
 
@@ -213,7 +213,7 @@ public abstract class WaterAlgorithm {
      **	test water constituents as output of neural network for out of training range
      **
     --------------------------------------------------------------------------------*/
-    private boolean test_watconc(double[] waterOut, NNffbpAlphaTabFast inverseWaterNet) {
+    private boolean isWaterConcentrationOOR(double[] waterOut, NNffbpAlphaTabFast inverseWaterNet) {
         final double[] outmax = inverseWaterNet.getOutmax();
         final double[] outmin = inverseWaterNet.getOutmin();
         for (int i = 0; i < outmin.length; i++) {
