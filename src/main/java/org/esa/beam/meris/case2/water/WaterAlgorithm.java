@@ -108,32 +108,34 @@ public abstract class WaterAlgorithm {
 
 
         /* prepare for water net */
-        double[] waterInnet = getWaterInnet(solzen, satzen, azi_diff_deg, averageSalinity, averageTemperature, logRLw);
+        double[] backwardWaterInput = getBackwardWaterInput(solzen, satzen, azi_diff_deg, averageSalinity,
+                                                            averageTemperature,
+                                                            logRLw);
 
         // test if water leaving radiance reflectance are within training range,
         // otherwise set to training range
-        if (isLogRLwOutOfRange(waterInnet, inverseWaterNet)) {
+        if (isLogRLwOutOfRange(backwardWaterInput, inverseWaterNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(WLR_OOR_BIT_INDEX, true);
         }
 
         /* calculate concentrations using the water nn */
-        double[] waterOutnet = inverseWaterNet.calc(waterInnet);
+        double[] backwardWaterOutput = inverseWaterNet.calc(backwardWaterInput);
 
-        fillOutput(waterOutnet, targetSamples);
+        fillTargetSamples(backwardWaterOutput, targetSamples);
 
         /* test if concentrations are within training range */
-        if (isWaterConcentrationOOR(waterOutnet, inverseWaterNet)) {
+        if (isWaterConcentrationOOR(backwardWaterOutput, inverseWaterNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(CONC_OOR_BIT_INDEX, true);
         }
 
         /* do forward NN computation */
-        double[] forwardWaterInnet = getForwardWaterInnet(solzen, satzen, azi_diff_deg, averageTemperature,
-                                                          averageSalinity, waterOutnet
+        double[] forwardWaterInput = getForwardWaterInput(solzen, satzen, azi_diff_deg, averageTemperature,
+                                                          averageSalinity, backwardWaterOutput
         );
-        double[] forwardWaterOutnet = forwardWaterNet.calc(forwardWaterInnet);
+        double[] forwardWaterOutput = forwardWaterNet.calc(forwardWaterInput);
 
         /* compute chi square deviation on log scale between measured and computed spectrum */
-        double chiSquare = computeChiSquare(forwardWaterOutnet, logRLw);
+        double chiSquare = computeChiSquare(forwardWaterOutput, logRLw);
 
         targetSamples[TARGET_CHI_SQUARE_INDEX].set(chiSquare);
 
@@ -146,7 +148,7 @@ public abstract class WaterAlgorithm {
         // If we use the k_min computed by the neural net, it won't be consistent with the kd-spectrum
         // If we use the k_min from the class KMin we have a huge difference
 //        double k_min = kMin.computeKMinValue();
-        double k_min = Math.exp(waterOutnet[6]);
+        double k_min = Math.exp(backwardWaterOutput[6]);
         targetSamples[TARGET_K_MIN_INDEX].set(k_min);
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
 
@@ -179,14 +181,15 @@ public abstract class WaterAlgorithm {
 
     protected abstract double computeChiSquare(double[] forwardWaterOutnet, double[] logRLw_cut);
 
-    protected abstract double[] getForwardWaterInnet(double solzen, double satzen, double azi_diff_deg,
+    protected abstract double[] getForwardWaterInput(double solzen, double satzen, double azi_diff_deg,
                                                      double averageTemperature, double averageSalinity,
                                                      double[] waterOutnet);
 
-    protected abstract void fillOutput(double[] waterOutnet, WritableSample[] targetSamples);
+    protected abstract void fillTargetSamples(double[] waterOutnet, WritableSample[] targetSamples);
 
-    protected abstract double[] getWaterInnet(double teta_sun_deg, double teta_view_deg, double azi_diff_deg,
-                                              double averageSalinity, double averageTemperature, double[] RLw_cut);
+    protected abstract double[] getBackwardWaterInput(double teta_sun_deg, double teta_view_deg, double azi_diff_deg,
+                                                      double averageSalinity, double averageTemperature,
+                                                      double[] RLw_cut);
 
     /*-----------------------------------------------------------------------------------
      **	test water leaving radiances as input to neural network for out of training range

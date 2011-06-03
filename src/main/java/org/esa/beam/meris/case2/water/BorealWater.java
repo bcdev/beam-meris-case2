@@ -32,7 +32,7 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double[] getForwardWaterInnet(double solzen, double satzen, double azi_diff_deg,
+    protected double[] getForwardWaterInput(double solzen, double satzen, double azi_diff_deg,
                                             double averageTemperature, double averageSalinity, double[] waterOutnet) {
         double[] forwardWaterInnet = new double[6];
         forwardWaterInnet[0] = solzen;
@@ -46,7 +46,7 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected void fillOutput(double[] waterOutnet, WritableSample[] targetSamples) {
+    protected void fillTargetSamples(double[] waterOutnet, WritableSample[] targetSamples) {
         double bTsm = Math.exp(waterOutnet[0]);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
         targetSamples[TARGET_TSM_INDEX].set(bTsm / 0.95);
@@ -64,8 +64,8 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double[] getWaterInnet(double solzen, double satzen, double azi_diff_deg, double averageSalinity,
-                                     double averageTemperature, double[] logRLw_cut) {
+    protected double[] getBackwardWaterInput(double solzen, double satzen, double azi_diff_deg, double averageSalinity,
+                                             double averageTemperature, double[] logRLw_cut) {
         double[] waterInnet = new double[11];
         waterInnet[0] = solzen;
         waterInnet[1] = satzen;

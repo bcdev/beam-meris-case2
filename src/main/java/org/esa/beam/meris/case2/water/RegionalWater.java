@@ -49,7 +49,7 @@ public class RegionalWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double[] getForwardWaterInnet(double solzen, double satzen, double azi_diff_deg,
+    protected double[] getForwardWaterInput(double solzen, double satzen, double azi_diff_deg,
                                             double averageTemperature, double averageSalinity, double[] waterOutnet) {
         double[] forwardWaterInnet = new double[12];
         forwardWaterInnet[0] = solzen;
@@ -69,7 +69,7 @@ public class RegionalWater extends WaterAlgorithm {
     }
 
     @Override
-    protected void fillOutput(double[] waterOutnet, WritableSample[] targetSamples) {
+    protected void fillTargetSamples(double[] waterOutnet, WritableSample[] targetSamples) {
         double chlConc = Math.exp(waterOutnet[0]);
 
         targetSamples[TARGET_CHL_CONC_INDEX].set(chlConc);
@@ -92,8 +92,8 @@ public class RegionalWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double[] getWaterInnet(double solzen, double satzen, double azi_diff_deg, double averageSalinity,
-                                     double averageTemperature, double[] logRLw) {
+    protected double[] getBackwardWaterInput(double solzen, double satzen, double azi_diff_deg, double averageSalinity,
+                                             double averageTemperature, double[] logRLw) {
         double[] waterInnet = new double[14];
         waterInnet[0] = solzen;
         waterInnet[1] = satzen;
