@@ -15,7 +15,7 @@ public class EutrophicWater extends WaterAlgorithm {
 
     public EutrophicWater(double spectrumOutOfScopeThreshold, double tsmExponent,
                           double tsmFactor, double chlExponent, double chlFactor) {
-        super(spectrumOutOfScopeThreshold, 0, 0);
+        super(false, spectrumOutOfScopeThreshold, 0, 0);
         this.tsmExponent = tsmExponent;
         this.tsmFactor = tsmFactor;
         this.chlExponent = chlExponent;

@@ -10,11 +10,13 @@ public class RegionalWater extends WaterAlgorithm {
     private final double tsmFactor;
     private final double chlExponent;
     private final double chlFactor;
+    private boolean outputAPoc;
 
-    public RegionalWater(double spectrumOutOfScopeThreshold, double tsmExponent,
-                         double tsmFactor, double chlExponent, double chlFactor, double averageSalinity,
-                         double averageTemperature) {
-        super(spectrumOutOfScopeThreshold, averageSalinity, averageTemperature);
+    public RegionalWater(boolean outputAllKds, boolean outputAPoc, double spectrumOutOfScopeThreshold,
+                         double tsmExponent, double tsmFactor, double chlExponent, double chlFactor,
+                         double averageSalinity, double averageTemperature) {
+        super(outputAllKds, spectrumOutOfScopeThreshold, averageSalinity, averageTemperature);
+        this.outputAPoc = outputAPoc;
         this.tsmExponent = tsmExponent;
         this.tsmFactor = tsmFactor;
         this.chlExponent = chlExponent;
@@ -83,8 +85,10 @@ public class RegionalWater extends WaterAlgorithm {
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
         targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + waterOutnet[4] * tsmExponent));
 
-        // todo - How to compute a_poc_443?
-        targetSamples[TARGET_A_POC_INDEX].set(0.0);
+        if (outputAPoc) {
+            // todo - How to compute a_poc_443?
+            targetSamples[TARGET_A_POC_INDEX].set(0.0);
+        }
     }
 
     @Override

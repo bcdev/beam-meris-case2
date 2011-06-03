@@ -83,10 +83,19 @@ public class Case2IOPOperator extends Operator {
                description = "Toggles the output of downwelling irradiance transmittance.")
     private boolean outputTransmittance;
 
+    @Parameter(defaultValue = "false", label = "Output Kd spectrum",
+               description = "Toggles the output of downwelling irradiance attenuation coefficients. " +
+                             "If disabled only Kd_490 is added to the output.")
+    private boolean outputKdSpectrum;
+
     @Parameter(defaultValue = "false",
                label = "Output normalised bidirectional reflectances",
                description = "Toggles the output of normalised reflectances.")
     private boolean outputNormReflec;
+
+    @Parameter(defaultValue = "false", label = "Output A_Poc",
+               description = "Toggles the output of absorption by particulate organic matter.")
+    private boolean outputAPoc;
 
     @Parameter(defaultValue = "toa_reflec_10 > toa_reflec_6 AND toa_reflec_13 > 0.0475",
                label = "Land detection expression",
@@ -108,7 +117,7 @@ public class Case2IOPOperator extends Operator {
                description = "The algorithm used for IOP computation. Currently only 'REGIONAL' is valid")
     private Case2AlgorithmEnum algorithm;
 
-    @Parameter(label = "Average salinity", defaultValue = "35", description = "The salinity of the water")
+    @Parameter(label = "Average salinity", defaultValue = "35", unit = "PSU", description = "The salinity of the water")
     private double averageSalinity;
 
     @Parameter(label = "Average temperature", defaultValue = "15", unit = "°C", description = "The Water temperature")
@@ -187,6 +196,8 @@ public class Case2IOPOperator extends Operator {
         case2Op.setParameter("invalidPixelExpression", invalidPixelExpression);
         case2Op.setParameter("inverseWaterNnFile", inverseWaterNnFile);
         case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
+        case2Op.setParameter("outputKdSpectrum", outputKdSpectrum);
+        case2Op.setParameter("outputAPoc", outputAPoc);
         case2Op.setSourceProduct("acProduct", inputProduct);
         final Product case2Product = case2Op.getTargetProduct();
 

@@ -118,6 +118,13 @@ public class KMin {
         return k_mean;
     }
 
+    public double[] computeKdSpectrum() {
+        double[] kdSpectrum = new double[8];
+        for (int i = 0; i < kdSpectrum.length; i++) {
+            kdSpectrum[i] = computeKdAtIndex(i);
+        }
+        return kdSpectrum;
+    }
 
     public double computeKd490() {
         // Kd_490 is the third (2) wavelength

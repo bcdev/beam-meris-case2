@@ -52,6 +52,7 @@ public abstract class WaterAlgorithm {
     public static final int TARGET_CHI_SQUARE_FIT_INDEX = 24;
     public static final int TARGET_N_ITER_FIT_INDEX = 25;
     public static final int TARGET_PARAM_CHANGE_FIT_INDEX = 26;
+    public static final int TARGET_KD_SPECTRUM_START_INDEX = 50;
 
     public static final int WLR_OOR_BIT_INDEX = 0;
     public static final int CONC_OOR_BIT_INDEX = 1;
@@ -70,8 +71,11 @@ public abstract class WaterAlgorithm {
     private double spectrumOutOfScopeThreshold;
     private double averageSalinity;
     private double averageTemperature;
+    private boolean outputKdSpectrum;
 
-    protected WaterAlgorithm(double spectrumOutOfScopeThreshold, double averageSalinity, double averageTemperature) {
+    protected WaterAlgorithm(boolean outputKdSpectrum, double spectrumOutOfScopeThreshold, double averageSalinity,
+                             double averageTemperature) {
+        this.outputKdSpectrum = outputKdSpectrum;
         this.spectrumOutOfScopeThreshold = spectrumOutOfScopeThreshold;
         this.averageSalinity = averageSalinity;
         this.averageTemperature = averageTemperature;
@@ -138,11 +142,23 @@ public abstract class WaterAlgorithm {
         }
         // compute k_min and z90_max RD 20060811
         final KMin kMin = createKMin(targetSamples);
+        // todo - What shall we use?
+        // If we use the k_min computed by the neural net, it won't be consistent with the kd-spectrum
+        // If we use the k_min from the class KMin we have a huge difference
+//        double k_min = kMin.computeKMinValue();
         double k_min = Math.exp(waterOutnet[6]);
         targetSamples[TARGET_K_MIN_INDEX].set(k_min);
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
 
-        targetSamples[TARGET_KD_490_INDEX].set(kMin.computeKd490());
+        if (outputKdSpectrum) {
+            double[] kdSpectrum = kMin.computeKdSpectrum();
+            for (int i = 0; i < kdSpectrum.length; i++) {
+                double aKdSpectrum = kdSpectrum[i];
+                targetSamples[TARGET_KD_SPECTRUM_START_INDEX + i].set(aKdSpectrum);
+            }
+        } else {
+            targetSamples[TARGET_KD_490_INDEX].set(kMin.computeKd490());
+        }
 
         final double turbidity = computeTurbidityIndex(RLw[5]);// parameter Rlw at 620 'reflec_6'
         targetSamples[TARGET_TURBIDITY_INDEX_INDEX].set(turbidity);

@@ -8,7 +8,7 @@ public class BorealWater extends WaterAlgorithm {
 
 
     public BorealWater(double spectrumOutOfScopeThreshold) {
-        super(spectrumOutOfScopeThreshold, 0, 0);
+        super(false, spectrumOutOfScopeThreshold, 0, 0);
     }
 
     @Override

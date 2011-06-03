@@ -80,8 +80,21 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final String BAND_NAME_CHI_SQUARE_FIT = "chiSquareFit";
     private static final String BAND_NAME_N_ITER = "nIter";
     private static final String BAND_NAME_PARAM_CHANGE = "paramChange";
+    private static final String[] BAND_NAMES_KD_SPECTRUM = new String[]{
+            "Kd_412", "Kd_443", "Kd_490", "Kd_510",
+            "Kd_560", "Kd_620", "Kd_664", "Kd_680",
+    };
 
     private static final double WINDSPEED_THRESHOLD = 12.0;
+
+    @Parameter(defaultValue = "false", label = "Output Kd spectrum",
+               description = "Toggles the output of downwelling irradiance attenuation coefficients. " +
+                             "If disabled only Kd_490 is added to the output.")
+    private boolean outputKdSpectrum;
+
+    @Parameter(defaultValue = "false", label = "Output A_Poc",
+               description = "Toggles the output of absorption by particulate organic matter.")
+    private boolean outputAPoc;
 
     @Parameter(defaultValue = "RADIANCE_REFLECTANCES", valueSet = {"RADIANCE_REFLECTANCES", "IRRADIANCE_REFLECTANCES"},
                label = "Input water leaving reflectance is",
@@ -182,8 +195,10 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                       "Yellow substance absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_A_PIGMENT, "m^-1",
                       "Pigment absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
-        addTargetBand(productConfigurer, BAND_NAME_A_POC, "m^-1",
-                      "Absorption by particulate organic matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
+        if (outputAPoc) {
+            addTargetBand(productConfigurer, BAND_NAME_A_POC, "m^-1",
+                          "Absorption by particulate organic matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
+        }
         addTargetBand(productConfigurer, BAND_NAME_BB_SPM, "m^-1",
                       "Backscattering of suspended particulate matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_TSM, "g m^-3",
@@ -194,9 +209,23 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                       "Chi Square Out of Scope.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_K_MIN, "m^-1",
                       "Minimum downwelling irradiance attenuation coefficient.", false, ProductData.TYPE_FLOAT32);
-        addTargetBand(productConfigurer, BAND_NAME_KD_490, "m^-1",
-                      "Downwelling irradiance attenuation coefficient at wavelength 490.", false,
-                      ProductData.TYPE_FLOAT32);
+        if (outputKdSpectrum) {
+            for (int i = 0; i < BAND_NAMES_KD_SPECTRUM.length; i++) {
+                String bandName = BAND_NAMES_KD_SPECTRUM[i];
+                String wavelength = bandName.substring(bandName.length() - 3, bandName.length());
+                String description = String.format("Downwelling irradiance attenuation coefficient at wavelength %s.",
+                                                   wavelength);
+                Band kdBand = addTargetBand(productConfigurer, bandName, "m^-1", description, false,
+                                            ProductData.TYPE_FLOAT32);
+                kdBand.setSpectralBandIndex(i);
+                kdBand.setSpectralWavelength(Float.parseFloat(wavelength));
+                productConfigurer.getTargetProduct().setAutoGrouping("Kd");
+            }
+        } else {
+            addTargetBand(productConfigurer, BAND_NAME_KD_490, "m^-1",
+                          "Downwelling irradiance attenuation coefficient at wavelength 490.", false,
+                          ProductData.TYPE_FLOAT32);
+        }
         addTargetBand(productConfigurer, BAND_NAME_Z90_MAX, "m",
                       "Maximum signal depth.", false, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_TURBIDITY_INDEX, "FNU",
@@ -228,14 +257,23 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         configurator.defineSample(TARGET_A_GELBSTOFF_INDEX, BAND_NAME_A_GELBSTOFF);
         configurator.defineSample(TARGET_A_PIGMENT_INDEX, BAND_NAME_A_PIGMENT);
         configurator.defineSample(TARGET_A_TOTAL_INDEX, BAND_NAME_A_TOTAL);
-        configurator.defineSample(TARGET_A_POC_INDEX, BAND_NAME_A_POC);
+        if (outputAPoc) {
+            configurator.defineSample(TARGET_A_POC_INDEX, BAND_NAME_A_POC);
+        }
         configurator.defineSample(TARGET_BB_SPM_INDEX, BAND_NAME_BB_SPM);
         configurator.defineSample(TARGET_TSM_INDEX, BAND_NAME_TSM);
         configurator.defineSample(TARGET_CHL_CONC_INDEX, BAND_NAME_CHL_CONC);
         configurator.defineSample(TARGET_CHI_SQUARE_INDEX, BAND_NAME_CHI_SQUARE);
         configurator.defineSample(TARGET_K_MIN_INDEX, BAND_NAME_K_MIN);
         configurator.defineSample(TARGET_Z90_MAX_INDEX, BAND_NAME_Z90_MAX);
-        configurator.defineSample(TARGET_KD_490_INDEX, BAND_NAME_KD_490);
+        if (outputKdSpectrum) {
+            for (int i = 0; i < BAND_NAMES_KD_SPECTRUM.length; i++) {
+                String requiredReflecBandName = BAND_NAMES_KD_SPECTRUM[i];
+                configurator.defineSample(TARGET_KD_SPECTRUM_START_INDEX + i, BAND_NAMES_KD_SPECTRUM[i]);
+            }
+        } else {
+            configurator.defineSample(TARGET_KD_490_INDEX, BAND_NAME_KD_490);
+        }
         configurator.defineSample(TARGET_TURBIDITY_INDEX_INDEX, BAND_NAME_TURBIDITY_INDEX);
         configurator.defineSample(TARGET_FLAG_INDEX, BAND_NAME_CASE2_FLAGS);
         if (performChiSquareFit) {
@@ -368,6 +406,14 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         return spectrumOutOfScopeThreshold;
     }
 
+    protected boolean isOutputKdSpectrum() {
+        return outputKdSpectrum;
+    }
+
+    protected boolean isOutputAPoc() {
+        return outputAPoc;
+    }
+
     private void validateSourceProduct(Product sourceProduct) {
         for (String requiredReflecBandName : requiredReflecBandNames) {
             if (!sourceProduct.containsRasterDataNode(requiredReflecBandName)) {
@@ -438,14 +484,14 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                                                 expression, color, transparency));
     }
 
-    protected final void addTargetBand(ProductConfigurer productConfigurer, String bandName, String unit,
-                                       String description,
-                                       boolean log10Scaled, int dataType) {
+    protected final Band addTargetBand(ProductConfigurer productConfigurer, String bandName, String unit,
+                                       String description, boolean log10Scaled, int dataType) {
         final Band band = productConfigurer.addBand(bandName, dataType);
         band.setDescription(description);
         band.setUnit(unit);
         band.setLog10Scaled(log10Scaled);
         band.setValidPixelExpression("!case2_flags.INVALID");
+        return band;
     }
 
     private String readNeuralNetString(String resourceNetName, File neuralNetFile) {

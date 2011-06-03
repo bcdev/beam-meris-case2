@@ -6,13 +6,12 @@ import org.esa.beam.framework.gpf.pointop.Sample;
 import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.meris.case2.MerisCase2BasisWaterOp;
 import org.esa.beam.nn.NNffbpAlphaTabFast;
+import org.esa.beam.util.BitSetter;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-@Ignore("The used test net does not fit to the current implementation")
 public class RegionalWaterAlgorithmTest {
 
     private NNffbpAlphaTabFast inverseNet;
@@ -26,24 +25,24 @@ public class RegionalWaterAlgorithmTest {
 
     @Test
     public void testComputation() throws Exception {
-        final RegionalWater regionalAlgo = new RegionalWater(4.0, 1.0, 1.73, 1.04, 21.0, Double.NaN, Double.NaN);
+        final RegionalWater regionalAlgo = new RegionalWater(false, false, 4.0, 1.0, 1.73, 1.04, 21.0, 35.0, 15.0);
         final double aziDiff = MerisCase2BasisWaterOp.getAzimuthDifference(89.83, 283.79);
         final Sample[] sourceSamples = createSourceSamples();
         final WritableSample[] targetSamples = createTargetSamples();
         regionalAlgo.perform(inverseNet, forwardNet, 23.255, 16.845, aziDiff, sourceSamples, targetSamples,
                              ReflectanceEnum.RADIANCE_REFLECTANCES);
-        assertEquals(0.0166, targetSamples[WaterAlgorithm.TARGET_A_GELBSTOFF_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.0256, targetSamples[WaterAlgorithm.TARGET_A_PIGMENT_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.0423, targetSamples[WaterAlgorithm.TARGET_A_TOTAL_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.0148, targetSamples[WaterAlgorithm.TARGET_BB_SPM_INDEX].getDouble(), 1.0e-3);
-        assertEquals(1.2887, targetSamples[WaterAlgorithm.TARGET_TSM_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.4660, targetSamples[WaterAlgorithm.TARGET_CHL_CONC_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.2236, targetSamples[WaterAlgorithm.TARGET_CHI_SQUARE_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.0705, targetSamples[WaterAlgorithm.TARGET_K_MIN_INDEX].getDouble(), 1.0e-3);
-        assertEquals(-14.1833, targetSamples[WaterAlgorithm.TARGET_Z90_MAX_INDEX].getDouble(), 1.0e-3);
-        assertEquals(0.0663, targetSamples[WaterAlgorithm.TARGET_KD_490_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0367, targetSamples[WaterAlgorithm.TARGET_A_GELBSTOFF_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0028, targetSamples[WaterAlgorithm.TARGET_A_PIGMENT_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0720, targetSamples[WaterAlgorithm.TARGET_A_TOTAL_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0077, targetSamples[WaterAlgorithm.TARGET_BB_SPM_INDEX].getDouble(), 1.0e-3);
+        assertEquals(1.3403, targetSamples[WaterAlgorithm.TARGET_TSM_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.8412, targetSamples[WaterAlgorithm.TARGET_CHL_CONC_INDEX].getDouble(), 1.0e-3);
+        assertEquals(2.1705, targetSamples[WaterAlgorithm.TARGET_CHI_SQUARE_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.1273, targetSamples[WaterAlgorithm.TARGET_K_MIN_INDEX].getDouble(), 1.0e-3);
+        assertEquals(-7.8505, targetSamples[WaterAlgorithm.TARGET_Z90_MAX_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0.0626, targetSamples[WaterAlgorithm.TARGET_KD_490_INDEX].getDouble(), 1.0e-3);
         assertEquals(1.5541, targetSamples[WaterAlgorithm.TARGET_TURBIDITY_INDEX_INDEX].getDouble(), 1.0e-3);
-        assertEquals(Double.NaN, targetSamples[WaterAlgorithm.TARGET_FLAG_INDEX].getDouble(), 1.0e-3);
+        assertEquals(0, targetSamples[WaterAlgorithm.TARGET_FLAG_INDEX].getInt(), 1.0e-3);
     }
 
     private Sample[] createSourceSamples() {
@@ -94,8 +93,9 @@ public class RegionalWaterAlgorithmTest {
         }
 
         @Override
-        public void set(int bitIndex, boolean v) {
-            throw new IllegalStateException("Not implemented!");
+        public void set(int bitIndex, boolean condition) {
+            long flagValues = BitSetter.setFlag(Double.doubleToLongBits(value), bitIndex, condition);
+            value = Double.longBitsToDouble(flagValues);
         }
 
         @Override
@@ -141,7 +141,7 @@ public class RegionalWaterAlgorithmTest {
 
         @Override
         public int getInt() {
-            throw new IllegalStateException("Not implemented!");
+            return (int) Double.doubleToLongBits(value);
         }
 
         @Override

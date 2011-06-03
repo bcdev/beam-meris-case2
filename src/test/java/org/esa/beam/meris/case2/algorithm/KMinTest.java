@@ -38,4 +38,13 @@ public class KMinTest {
         assertEquals(0.255409, kMin.computeKMinValue(), 1.0e-6);
         assertEquals(0.283257, kMin.computeKd490(), 1.0e-6);
     }
+
+    @Test
+    public void testSpectrumComputation() throws Exception {
+        KMin kMin = new KMin(bTsm, aPig, aGelbstoff);
+        double[] kdSpectrum = kMin.computeKdSpectrum();
+        for (int i = 0; i < kdSpectrum.length; i++) {
+            assertTrue(String.format("KD[%d] should not be zero", i), kdSpectrum[i] != 0.0);
+        }
+    }
 }

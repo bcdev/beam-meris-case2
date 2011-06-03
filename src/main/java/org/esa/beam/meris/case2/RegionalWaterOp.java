@@ -31,7 +31,7 @@ public class RegionalWaterOp extends MerisCase2BasisWaterOp {
     private double chlConversionExponent;
     @Parameter(defaultValue = "21.0", description = "Factor for conversion from A_PIG to CHL_CONC")
     private double chlConversionFactor;
-    @Parameter(defaultValue = "35", description = "The salinity of the water")
+    @Parameter(defaultValue = "35", unit = "PSU", description = "The salinity of the water")
     private double averageSalinity;
     @Parameter(defaultValue = "15", unit = "°C", description = "The Water temperature")
     private double averageTemperature;
@@ -49,9 +49,10 @@ public class RegionalWaterOp extends MerisCase2BasisWaterOp {
 
     @Override
     protected WaterAlgorithm createAlgorithm() {
-        return new RegionalWater(getSpectrumOutOfScopeThreshold(),
+        return new RegionalWater(isOutputKdSpectrum(), isOutputAPoc(), getSpectrumOutOfScopeThreshold(),
                                  tsmConversionExponent, tsmConversionFactor,
-                                 chlConversionExponent, chlConversionFactor, averageSalinity, averageTemperature);
+                                 chlConversionExponent, chlConversionFactor, averageSalinity, averageTemperature
+        );
     }
 
     @Override
