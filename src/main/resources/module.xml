@@ -16,6 +16,8 @@
 
     <changelog>
         <![CDATA[
+        Changes in version 1.5.2:<br/>
+          [CIIR-42] Handle PixelGeoCoding more generic<br/>
         Changes in version 1.5.1:<br/>
           [CIIR-38] Allow specifing the kind of reflectances<br/>
           [CIIR-37] Error occures if MERIS FSG products are processed<br/>

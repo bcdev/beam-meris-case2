@@ -18,6 +18,8 @@ package org.esa.beam.meris.case2;
 
 import org.esa.beam.atmosphere.operator.GlintCorrectionOperator;
 import org.esa.beam.atmosphere.operator.ReflectanceEnum;
+import org.esa.beam.framework.datamodel.Band;
+import org.esa.beam.framework.datamodel.GeoCoding;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
@@ -37,9 +39,9 @@ import java.util.List;
 
 @OperatorMetadata(alias = "Meris.Case2Regional",
                   description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
-                  authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
-                  copyright = "(c) 2010 by Brockmann Consult",
-                  version = "1.5.1")
+                  authors = "Roland Doerffer (HGZ); Marco Peters (Brockmann Consult)",
+                  copyright = "(c) 2011 by Brockmann Consult",
+                  version = "1.5.2")
 public class Case2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
@@ -174,12 +176,12 @@ public class Case2IOPOperator extends Operator {
             if (!outputReflec && name.startsWith("reflec")) {
                 continue;
             }
-            if (name.startsWith("corr_")) {
+            if (isPixelGeoCodingBandName(name, inputProduct.getGeoCoding())) {
                 continue;
             }
             final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
             bandDesc.setProduct("inputProduct");
-            bandDesc.setNamePattern(name);
+            bandDesc.setName(name);
             bandDescList.add(bandDesc);
         }
 
@@ -201,13 +203,15 @@ public class Case2IOPOperator extends Operator {
         final Product case2Product = case2Op.getTargetProduct();
         final String[] case2names = case2Product.getBandNames();
         for (String name : case2names) {
-            if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&
-                (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
+            if (isPixelGeoCodingBandName(name, inputProduct.getGeoCoding())) {
+                continue;
+            }
+            if (name.startsWith("l1_flags")) {
                 continue;
             }
             final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
             bandDesc.setProduct("case2Product");
-            bandDesc.setNamePattern(name);
+            bandDesc.setName(name);
             bandDescList.add(bandDesc);
         }
 
@@ -224,6 +228,16 @@ public class Case2IOPOperator extends Operator {
         removeAllMetadata(metadataRoot);
         ProductUtils.copyMetadata(case2Product, targetProduct);
         setTargetProduct(targetProduct);
+    }
+
+    private boolean isPixelGeoCodingBandName(String name, GeoCoding geoCoding) {
+        if (geoCoding instanceof PixelGeoCoding) {
+            PixelGeoCoding pixelGeoCoding = (PixelGeoCoding) geoCoding;
+            Band latBand = pixelGeoCoding.getLatBand();
+            Band lonBand = pixelGeoCoding.getLonBand();
+            return latBand.getName().equals(name) || lonBand.getName().equals(name);
+        }
+        return false;
     }
 
     private void removeAllMetadata(MetadataElement metadataRoot) {
