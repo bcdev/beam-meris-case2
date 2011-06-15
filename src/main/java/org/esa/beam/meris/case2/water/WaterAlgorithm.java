@@ -1,5 +1,6 @@
 package org.esa.beam.meris.case2.water;
 
+import org.esa.beam.atmosphere.operator.ReflectanceEnum;
 import org.esa.beam.framework.gpf.pointop.Sample;
 import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.meris.case2.algorithm.KMin;
@@ -72,7 +73,7 @@ public abstract class WaterAlgorithm {
 
     public double[] perform(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
                             double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
-                            WritableSample[] targetSamples) {
+                            WritableSample[] targetSamples, ReflectanceEnum inputReflecAre) {
         /* determine cut_thresh from waterNet minimum */
         double cut_thresh = getCutThreshold(inverseWaterNet.getInmin());
 
@@ -87,6 +88,11 @@ public abstract class WaterAlgorithm {
         RLw[6] = sourceSamples[SOURCE_REFLEC_7_INDEX].getDouble();
         RLw[7] = sourceSamples[SOURCE_REFLEC_8_INDEX].getDouble();
         RLw[8] = sourceSamples[SOURCE_REFLEC_9_INDEX].getDouble();
+        if (ReflectanceEnum.IRRADIANCE_REFLECTANCES.equals(inputReflecAre)) {
+            for (int i = 0; i < RLw.length; i++) {
+                RLw[i] /= Math.PI;
+            }
+        }
         double[] RLw_cut = new double[RLw.length];
         for (int i = 0; i < RLw.length; i++) {
             final double Rlw = RLw[i];

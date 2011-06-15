@@ -17,7 +17,9 @@
 package org.esa.beam.meris.case2;
 
 import org.esa.beam.atmosphere.operator.GlintCorrectionOperator;
+import org.esa.beam.atmosphere.operator.ReflectanceEnum;
 import org.esa.beam.framework.datamodel.MetadataElement;
+import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.Operator;
 import org.esa.beam.framework.gpf.OperatorException;
@@ -33,11 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@OperatorMetadata(alias = "Meris.Case2IOP",
+@OperatorMetadata(alias = "Meris.Case2Regional",
                   description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2010 by Brockmann Consult",
-                  version = "1.5")
+                  version = "1.5.1")
 public class Case2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
@@ -50,7 +52,7 @@ public class Case2IOPOperator extends Operator {
                description = "Whether or not to perform atmospheric correction.")
     private boolean doAtmosphericCorrection;
 
-    @Parameter(label = "Atmospheric correction neural net (optional)",
+    @Parameter(label = "Alternative atm. corr. neural net (optional)",
                description = "The file of the atmospheric net to be used instead of the default neural net.")
     private File atmoNetFile;
 
@@ -59,17 +61,32 @@ public class Case2IOPOperator extends Operator {
                description = "Whether to perform SMILE correction.")
     private boolean doSmileCorrection;
 
-    @Parameter(defaultValue = "true", label = "Output TOSA reflectance",
+    @Parameter(defaultValue = "false", label = "Output TOSA reflectance",
                description = "Toggles the output of TOSA reflectance.")
     private boolean outputTosa;
+
+    @Parameter(defaultValue = "true", label = "Output water leaving reflectance",
+               description = "Toggles the output of water leaving reflectance.")
+    private boolean outputReflec;
+
+    @Parameter(defaultValue = "RADIANCE_REFLECTANCES", valueSet = {"RADIANCE_REFLECTANCES", "IRRADIANCE_REFLECTANCES"},
+               label = "Output water leaving reflectance as",
+               description = "Select if reflectances shall be written as radiances or irradiances. " +
+                             "The irradiances are compatible with standard MERIS product.")
+    private ReflectanceEnum outputReflecAs;
 
     @Parameter(defaultValue = "true", label = "Output path reflectance",
                description = "Toggles the output of water leaving path reflectance.")
     private boolean outputPath;
 
-    @Parameter(defaultValue = "true", label = "Output transmittance",
+    @Parameter(defaultValue = "false", label = "Output transmittance",
                description = "Toggles the output of downwelling irradiance transmittance.")
     private boolean outputTransmittance;
+
+    @Parameter(defaultValue = "false",
+               label = "Output normalised bidirectional reflectances",
+               description = "Toggles the output of normalised reflectances.")
+    private boolean outputNormReflec;
 
     @Parameter(defaultValue = "toa_reflec_10 > toa_reflec_6 AND toa_reflec_13 > 0.0475",
                label = "Land detection expression",
@@ -86,32 +103,29 @@ public class Case2IOPOperator extends Operator {
     ///////////  Case2WaterOp  ///////////////////////////
     ///////////
 
-    @Parameter(defaultValue = "REGIONAL", valueSet = {"REGIONAL", "BOREAL", "EUTROPHIC"},
-               label = "Water algorithm", description = "The algorithm used for IOP computation.")
+    @Parameter(defaultValue = "REGIONAL", valueSet = {"REGIONAL"},
+               label = "Water algorithm",
+               description = "The algorithm used for IOP computation. Currently only 'REGIONAL' is valid")
     private Case2AlgorithmEnum algorithm;
 
-    @Parameter(defaultValue = "true", label = "Output water leaving reflectance",
-               description = "Toggles the output of water leaving irradiance reflectance.")
-    private boolean outputReflec;
-
     @Parameter(label = "Tsm conversion exponent",
-               description = "Exponent for conversion from TSM to B_TSM (optional). " +
-                             "Defaults: Regional=1.0, Boreal=not used, Eutrophic=1.0")
+               defaultValue = "1.0",
+               description = "Exponent for conversion from TSM to B_TSM.")
     private Double tsmConversionExponent;
 
     @Parameter(label = "Tsm conversion factor",
-               description = "Factor for conversion from TSM to B_TSM (optional). " +
-                             "Defaults: Regional=1.73, Boreal=not used, Eutrophic=1.73")
+               defaultValue = "1.73",
+               description = "Factor for conversion from TSM to B_TSM.")
     private Double tsmConversionFactor;
 
     @Parameter(label = "Chl conversion exponent",
-               description = "Exponent for conversion from A_PIG to CHL_CONC (optional). " +
-                             "Defaults: Regional=1.04, Boreal=not used, Eutrophic=1.0")
+               defaultValue = "1.04",
+               description = "Exponent for conversion from A_PIG to CHL_CONC. ")
     private Double chlConversionExponent;
 
     @Parameter(label = "Chl conversion factor",
-               description = "Factor for conversion from A_PIG to CHL_CONC (optional). " +
-                             "Defaults: Regional=21.0, Boreal=not used, Eutrophic=0.0318")
+               defaultValue = "21.0",
+               description = "Factor for conversion from A_PIG to CHL_CONC. ")
     private Double chlConversionFactor;
 
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope.")
@@ -121,17 +135,13 @@ public class Case2IOPOperator extends Operator {
                description = "Expression defining pixels not considered for processing.")
     private String invalidPixelExpression;
 
-    @Parameter(label = "Inverse water neural net (optional)",
+    @Parameter(label = "Alternative inverse water neural net (optional)",
                description = "The file of the inverse water neural net to be used instead of the default.")
     private File inverseWaterNnFile;
 
-    @Parameter(label = "Forward water neural net (optional)",
+    @Parameter(label = "Alternative forward water neural net (optional)",
                description = "The file of the forward water neural net to be used instead of the default.")
     private File forwardWaterNnFile;
-
-    @Parameter(label = "Perform Chi-Square fitting", defaultValue = "false",
-               description = "Whether or not to perform the Chi-Square fitting.")
-    private boolean performChiSquareFit;
 
     @Override
     public void initialize() throws OperatorException {
@@ -145,7 +155,9 @@ public class Case2IOPOperator extends Operator {
                 atmoCorOp.setParameter("atmoNetMerisFile", atmoNetFile);
             }
             atmoCorOp.setParameter("outputReflec", true);
+            atmoCorOp.setParameter("outputReflecAs", outputReflecAs);
             atmoCorOp.setParameter("outputTosa", outputTosa);
+            atmoCorOp.setParameter("outputNormReflec", outputNormReflec);
             atmoCorOp.setParameter("outputPath", outputPath);
             atmoCorOp.setParameter("outputTransmittance", outputTransmittance);
             atmoCorOp.setParameter("landExpression", landExpression);
@@ -160,6 +172,9 @@ public class Case2IOPOperator extends Operator {
                 continue;
             }
             if (!outputReflec && name.startsWith("reflec")) {
+                continue;
+            }
+            if (name.startsWith("corr_")) {
                 continue;
             }
             final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
@@ -177,18 +192,25 @@ public class Case2IOPOperator extends Operator {
             case2Op.setParameter("chlConversionExponent", chlConversionExponent);
             case2Op.setParameter("chlConversionFactor", chlConversionFactor);
         }
+        case2Op.setParameter("inputReflecAre", outputReflecAs);
         case2Op.setParameter("spectrumOutOfScopeThreshold", spectrumOutOfScopeThreshold);
         case2Op.setParameter("invalidPixelExpression", invalidPixelExpression);
         case2Op.setParameter("inverseWaterNnFile", inverseWaterNnFile);
         case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
-        case2Op.setParameter("performChiSquareFit", performChiSquareFit);
         case2Op.setSourceProduct("acProduct", inputProduct);
         final Product case2Product = case2Op.getTargetProduct();
+        final String[] case2names = case2Product.getBandNames();
+        for (String name : case2names) {
+            if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&
+                (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
+                continue;
+            }
+            final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
+            bandDesc.setProduct("case2Product");
+            bandDesc.setNamePattern(name);
+            bandDescList.add(bandDesc);
+        }
 
-        final MergeOp.BandDesc case2Desc = new MergeOp.BandDesc();
-        case2Desc.setProduct("case2Product");
-        case2Desc.setNamePattern(".*");
-        bandDescList.add(case2Desc);
 
         final MergeOp mergeOp = new MergeOp();
         mergeOp.setSourceProduct("inputProduct", inputProduct);

@@ -51,6 +51,7 @@ class Case2IOPForm extends JTabbedPane {
         bindingContext.bindEnabledState("atmoNetFile", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("doSmileCorrection", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("outputTosa", true, "doAtmosphericCorrection", true);
+        bindingContext.bindEnabledState("outputNormReflec", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("outputPath", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("outputTransmittance", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("landExpression", true, "doAtmosphericCorrection", true);

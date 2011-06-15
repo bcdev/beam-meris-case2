@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 class Case2IOPDialog extends SingleTargetProductDialog {
 
-    private static final String OPERATOR_NAME = "Meris.Case2IOP";
+    private static final String OPERATOR_NAME = "Meris.Case2Regional";
     private Case2IOPForm form;
     private HashMap<String, Object> parameters;
 
@@ -31,7 +31,6 @@ class Case2IOPDialog extends SingleTargetProductDialog {
                 OPERATOR_NAME, parameters);
         propContainer.setDefaultValues();
         form = new Case2IOPForm(appContext, operatorSpi, propContainer, getTargetProductSelector());
-
 
         final OperatorParameterSupport parameterSupport = new OperatorParameterSupport(operatorSpi.getOperatorClass(),
                                                                                        propContainer, parameters, null);
