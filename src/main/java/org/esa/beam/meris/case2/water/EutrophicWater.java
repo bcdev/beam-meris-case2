@@ -38,18 +38,18 @@ public class EutrophicWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double computeChiSquare(double[] forwardWaterOutnet, double[] RLw_cut) {
-        return Math.pow(forwardWaterOutnet[0] - Math.log(RLw_cut[1]), 2) + // it starts with 442 nm
-               Math.pow(forwardWaterOutnet[1] - Math.log(RLw_cut[2]), 2) +
-               Math.pow(forwardWaterOutnet[2] - Math.log(RLw_cut[3]), 2) +
-               Math.pow(forwardWaterOutnet[3] - Math.log(RLw_cut[4]), 2) +
-               Math.pow(forwardWaterOutnet[4] - Math.log(RLw_cut[5]), 2) +
-               Math.pow(forwardWaterOutnet[5] - Math.log(RLw_cut[6]), 2) +
-               Math.pow(forwardWaterOutnet[6] - Math.log(RLw_cut[8]), 2);
+    protected double computeChiSquare(double[] forwardWaterOutnet, double[] logRLw) {
+        return Math.pow(forwardWaterOutnet[0] - logRLw[1], 2) + // it starts with 442 nm
+               Math.pow(forwardWaterOutnet[1] - logRLw[2], 2) +
+               Math.pow(forwardWaterOutnet[2] - logRLw[3], 2) +
+               Math.pow(forwardWaterOutnet[3] - logRLw[4], 2) +
+               Math.pow(forwardWaterOutnet[4] - logRLw[5], 2) +
+               Math.pow(forwardWaterOutnet[5] - logRLw[6], 2) +
+               Math.pow(forwardWaterOutnet[6] - logRLw[8], 2);
     }
 
     @Override
-    protected double[] getForwardWaterInnet(double solzen, double satzen, double azi_diff_deg,
+    protected double[] getForwardWaterInput(double solzen, double satzen, double azi_diff_deg,
                                             double[] waterOutnet) {
         double[] forwardWaterInnet = new double[7];
         forwardWaterInnet[0] = solzen;
@@ -65,7 +65,7 @@ public class EutrophicWater extends WaterAlgorithm {
     }
 
     @Override
-    protected void fillOutput(double[] waterOutnet, WritableSample[] targetSamples) {
+    protected void fillTargetSamples(double[] waterOutnet, WritableSample[] targetSamples) {
         double bTsm = Math.exp(waterOutnet[3]);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
         targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + waterOutnet[3] * tsmExponent));
@@ -85,13 +85,11 @@ public class EutrophicWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double[] getWaterInnet(double solzen, double satzen, double azi_diff_deg, double[] RLw_cut) {
+    protected double[] getBackwardWaterInput(double solzen, double satzen, double azi_diff_deg, double[] logRlw) {
         double[] waterInnet = new double[10];
 
-        for (int i = 0; i < 6; i++) {
-            waterInnet[i] = Math.log(RLw_cut[i + 1]); /* bands 2-7 == 442 - 664 nm */
-        }
-        waterInnet[6] = Math.log(RLw_cut[8]); /* band 708 nm */
+        System.arraycopy(logRlw, 1, waterInnet, 0, 6); /* bands 2-7 == 442 - 664 nm */
+        waterInnet[6] = logRlw[8]; /* band 708 nm */
         waterInnet[7] = solzen;
         waterInnet[8] = satzen;
         waterInnet[9] = azi_diff_deg;
@@ -100,16 +98,4 @@ public class EutrophicWater extends WaterAlgorithm {
 
     }
 
-    @Override
-    protected double getCutThreshold(double[] inmin) {
-        double cut_thresh = 1000.0;
-        for (int i = 0; i < 7; i++) {
-            double inmini = Math.exp(inmin[i]);
-            if (inmini < cut_thresh) {
-                cut_thresh = inmini;
-            }
-        }
-        return cut_thresh;
-
-    }
 }

@@ -206,9 +206,6 @@ public class Case2IOPOperator extends Operator {
             if (isPixelGeoCodingBandName(name, inputProduct.getGeoCoding())) {
                 continue;
             }
-            if (name.startsWith("l1_flags")) {
-                continue;
-            }
             final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
             bandDesc.setProduct("case2Product");
             bandDesc.setName(name);
