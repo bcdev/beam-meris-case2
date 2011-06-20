@@ -36,7 +36,7 @@ public class ChiSquareFitting {
         initSingleFit.ln_b_SPM_b_White = 0.0;
     }
 
-    public void perform(NNffbpAlphaTabFast forwardWaterNet, double[] logRLw_cut,
+    public void perform(NNffbpAlphaTabFast forwardWaterNet, double[] logRLw,
                         double teta_sun_deg, double teta_view_deg, double azi_diff_deg,
                         WritableSample[] targetSamples) {
 
@@ -50,8 +50,8 @@ public class ChiSquareFitting {
         initSingleFit.ln_a_Yellow_a_SPM = targetSamples[TARGET_A_GELBSTOFF_INDEX].getDouble();
         initSingleFit.ln_b_SPM_b_White = targetSamples[TARGET_BB_SPM_INDEX].getDouble();
 
-        System.arraycopy(logRLw_cut, 0, initSingleFit.wlRefl, 0, 7);
-        initSingleFit.wlRefl[7] = logRLw_cut[8];
+        System.arraycopy(logRLw, 0, initSingleFit.wlRefl, 0, 7);
+        initSingleFit.wlRefl[7] = logRLw[8];
 
         myFitLvMq.initSingleFit(initSingleFit);
         FitResult fitRes = myFitLvMq.getMyLM().LMFit();

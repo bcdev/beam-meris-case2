@@ -138,7 +138,9 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
             MERIS_L2_REFLEC_7_BAND_NAME,
             MERIS_L2_REFLEC_8_BAND_NAME,
             MERIS_L2_REFLEC_9_BAND_NAME,
-            MERIS_L2_REFLEC_10_BAND_NAME
+            MERIS_L2_REFLEC_10_BAND_NAME,
+            MERIS_L2_REFLEC_12_BAND_NAME,
+            MERIS_L2_REFLEC_13_BAND_NAME
     };
     private final String[] requiredTPGNames = new String[]{
             MERIS_SUN_AZIMUTH_DS_NAME,
@@ -383,12 +385,12 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
         NNffbpAlphaTabFast inverseWaterNet = threadLocalInverseWaterNet.get();
         NNffbpAlphaTabFast forwardWaterNet = threadLocalForwardWaterNet.get();
-        double[] RLw_cut = waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
-                                                  solzen, satzen, azi_diff_deg, sourceSamples, targetSamples,
-                                                  inputReflecAre);
+        double[] logRLw = waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
+                                                 solzen, satzen, azi_diff_deg, sourceSamples, targetSamples,
+                                                 inputReflecAre);
         if (performChiSquareFit) {
             final ChiSquareFitting fitting = createChiSquareFitting();
-            fitting.perform(forwardWaterNet, RLw_cut, solzen, satzen, azi_diff_deg, targetSamples);
+            fitting.perform(forwardWaterNet, logRLw, solzen, satzen, azi_diff_deg, targetSamples);
         }
     }
 

@@ -39,19 +39,19 @@ public class RegionalWaterOp extends MerisCase2BasisWaterOp {
 
     @Override
     protected String getDefaultForwardWaterNetResourcePath() {
-        return "/org/esa/beam/meris/case2/regional/CC_forw_23x7x16_192.3.net";
+        return "/org/esa/beam/meris/case2/regional/CC_std_forw_23x7x16_191.2.net";
     }
 
     @Override
     protected String getDefaultInverseWaterNetResourcePath() {
-        return "/org/esa/beam/meris/case2/regional/CC_backw_46x16x12_34337.4.net";
+        return "/org/esa/beam/meris/case2/regional/CC_std_backw_23x7x16_34286.9.net";
     }
 
     @Override
     protected WaterAlgorithm createAlgorithm() {
         return new RegionalWater(isOutputKdSpectrum(), isOutputAPoc(), getSpectrumOutOfScopeThreshold(),
                                  tsmConversionExponent, tsmConversionFactor,
-                                 chlConversionExponent, chlConversionFactor, averageSalinity, averageTemperature
+                                 averageSalinity, averageTemperature
         );
     }
 

@@ -8,19 +8,15 @@ public class RegionalWater extends WaterAlgorithm {
 
     private final double tsmExponent;
     private final double tsmFactor;
-    private final double chlExponent;
-    private final double chlFactor;
     private boolean outputAPoc;
 
     public RegionalWater(boolean outputAllKds, boolean outputAPoc, double spectrumOutOfScopeThreshold,
-                         double tsmExponent, double tsmFactor, double chlExponent, double chlFactor,
+                         double tsmExponent, double tsmFactor,
                          double averageSalinity, double averageTemperature) {
         super(outputAllKds, spectrumOutOfScopeThreshold, averageSalinity, averageTemperature);
         this.outputAPoc = outputAPoc;
         this.tsmExponent = tsmExponent;
         this.tsmFactor = tsmFactor;
-        this.chlExponent = chlExponent;
-        this.chlFactor = chlFactor;
     }
 
     @Override
@@ -43,19 +39,17 @@ public class RegionalWater extends WaterAlgorithm {
     @Override
     protected double[] getForwardWaterInput(double solzen, double satzen, double azi_diff_deg,
                                             double averageTemperature, double averageSalinity, double[] waterOutnet) {
-        double[] forwardWaterInnet = new double[12];
+        double[] forwardWaterInnet = new double[10];
         forwardWaterInnet[0] = solzen;
         forwardWaterInnet[1] = satzen;
         forwardWaterInnet[2] = azi_diff_deg;
         forwardWaterInnet[3] = averageTemperature;
         forwardWaterInnet[4] = averageSalinity;
-        forwardWaterInnet[5] = waterOutnet[0];
-        forwardWaterInnet[6] = waterOutnet[1];
-        forwardWaterInnet[7] = waterOutnet[2];
-        forwardWaterInnet[8] = waterOutnet[3];
-        forwardWaterInnet[9] = waterOutnet[4];
-        forwardWaterInnet[10] = waterOutnet[5];
-        forwardWaterInnet[11] = waterOutnet[6];
+        forwardWaterInnet[5] = waterOutnet[1]; // log_conc_apart
+        forwardWaterInnet[6] = waterOutnet[2]; // log_conc_agelb
+        forwardWaterInnet[7] = waterOutnet[3]; // log_conc_apig
+        forwardWaterInnet[8] = waterOutnet[4]; // log_conc_bpart
+        forwardWaterInnet[9] = waterOutnet[5]; // log_conc_bwit
         return forwardWaterInnet;
 
     }
@@ -86,7 +80,7 @@ public class RegionalWater extends WaterAlgorithm {
     @Override
     protected double[] getBackwardWaterInput(double solzen, double satzen, double azi_diff_deg, double averageSalinity,
                                              double averageTemperature, double[] logRLw) {
-        double[] waterInnet = new double[14];
+        double[] waterInnet = new double[16];
         waterInnet[0] = solzen;
         waterInnet[1] = satzen;
         waterInnet[2] = azi_diff_deg;
@@ -101,6 +95,8 @@ public class RegionalWater extends WaterAlgorithm {
         waterInnet[11] = logRLw[6]; // 665 reflec_7
         waterInnet[12] = logRLw[8]; // 708 reflec_9
         waterInnet[13] = logRLw[9]; // 753 reflec_10
+        waterInnet[14] = logRLw[10]; // 778 reflec_12
+        waterInnet[15] = logRLw[11]; // 865 reflec_13
         return waterInnet;
     }
 

@@ -18,12 +18,14 @@ public abstract class WaterAlgorithm {
     public static final int SOURCE_REFLEC_8_INDEX = 7;
     public static final int SOURCE_REFLEC_9_INDEX = 8;
     public static final int SOURCE_REFLEC_10_INDEX = 9;
-    public static final int SOURCE_SOLAZI_INDEX = 10;
-    public static final int SOURCE_SOLZEN_INDEX = 11;
-    public static final int SOURCE_SATAZI_INDEX = 12;
-    public static final int SOURCE_SATZEN_INDEX = 13;
-    public static final int SOURCE_ZONAL_WIND_INDEX = 14;
-    public static final int SOURCE_MERID_WIND_INDEX = 15;
+    public static final int SOURCE_REFLEC_12_INDEX = 10;
+    public static final int SOURCE_REFLEC_13_INDEX = 11;
+    public static final int SOURCE_SOLAZI_INDEX = 12;
+    public static final int SOURCE_SOLZEN_INDEX = 13;
+    public static final int SOURCE_SATAZI_INDEX = 14;
+    public static final int SOURCE_SATZEN_INDEX = 15;
+    public static final int SOURCE_ZONAL_WIND_INDEX = 16;
+    public static final int SOURCE_MERID_WIND_INDEX = 17;
 
     public static final int TARGET_A_GELBSTOFF_INDEX = 0;
     public static final int TARGET_A_PIGMENT_INDEX = 1;
@@ -85,7 +87,7 @@ public abstract class WaterAlgorithm {
                             double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
                             WritableSample[] targetSamples, ReflectanceEnum inputReflecAre) {
         // test RLw against lowest or cut value in NN and set in lower
-        double[] RLw = new double[10];
+        double[] RLw = new double[12];
         RLw[0] = sourceSamples[SOURCE_REFLEC_1_INDEX].getDouble();
         RLw[1] = sourceSamples[SOURCE_REFLEC_2_INDEX].getDouble();
         RLw[2] = sourceSamples[SOURCE_REFLEC_3_INDEX].getDouble();
@@ -96,6 +98,8 @@ public abstract class WaterAlgorithm {
         RLw[7] = sourceSamples[SOURCE_REFLEC_8_INDEX].getDouble();
         RLw[8] = sourceSamples[SOURCE_REFLEC_9_INDEX].getDouble();
         RLw[9] = sourceSamples[SOURCE_REFLEC_10_INDEX].getDouble();
+        RLw[10] = sourceSamples[SOURCE_REFLEC_12_INDEX].getDouble();
+        RLw[11] = sourceSamples[SOURCE_REFLEC_13_INDEX].getDouble();
         if (ReflectanceEnum.IRRADIANCE_REFLECTANCES.equals(inputReflecAre)) {
             for (int i = 0; i < RLw.length; i++) {
                 RLw[i] /= Math.PI;

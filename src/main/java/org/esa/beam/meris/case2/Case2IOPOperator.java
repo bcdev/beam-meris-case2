@@ -174,6 +174,8 @@ public class Case2IOPOperator extends Operator {
             atmoCorOp.setParameter("outputNormReflec", outputNormReflec);
             atmoCorOp.setParameter("outputPath", outputPath);
             atmoCorOp.setParameter("outputTransmittance", outputTransmittance);
+            atmoCorOp.setParameter("averageSalinity", averageSalinity);
+            atmoCorOp.setParameter("averageTemperature", averageTemperature);
             atmoCorOp.setParameter("landExpression", landExpression);
             atmoCorOp.setParameter("cloudIceExpression", cloudIceExpression);
             atmoCorOp.setSourceProduct("merisProduct", inputProduct);
