@@ -18,6 +18,8 @@ package org.esa.beam.meris.case2;
 
 import org.esa.beam.atmosphere.operator.GlintCorrectionOperator;
 import org.esa.beam.atmosphere.operator.ReflectanceEnum;
+import org.esa.beam.framework.datamodel.Band;
+import org.esa.beam.framework.datamodel.GeoCoding;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
@@ -147,6 +149,7 @@ public class Case2IOPOperator extends Operator {
     public void initialize() throws OperatorException {
         Product inputProduct = sourceProduct;
 
+        List<MergeOp.BandDesc> bandDescList = new ArrayList<MergeOp.BandDesc>();
         if (doAtmosphericCorrection) {
             Operator atmoCorOp = new GlintCorrectionOperator();
             atmoCorOp.setParameter("doSmileCorrection", doSmileCorrection);
@@ -165,6 +168,23 @@ public class Case2IOPOperator extends Operator {
             inputProduct = atmoCorOp.getTargetProduct();
         }
 
+        final String[] names = inputProduct.getBandNames();
+        for (String name : names) {
+            if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
+                continue;
+            }
+            if (!outputReflec && name.startsWith("reflec")) {
+                continue;
+            }
+            if (isPixelGeoCodingBandName(name, inputProduct.getGeoCoding())) {
+                continue;
+            }
+            final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
+            bandDesc.setProduct("inputProduct");
+            bandDesc.setName(name);
+            bandDescList.add(bandDesc);
+        }
+
         Operator case2Op = algorithm.createOperatorInstance();
 
         initConversionDefaults();
@@ -181,34 +201,14 @@ public class Case2IOPOperator extends Operator {
         case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
         case2Op.setSourceProduct("acProduct", inputProduct);
         final Product case2Product = case2Op.getTargetProduct();
-
-        List<MergeOp.BandDesc> bandDescList = new ArrayList<MergeOp.BandDesc>();
-        final String[] names = inputProduct.getBandNames();
-        for (String name : names) {
-            if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
-                continue;
-            }
-            if (!outputReflec && name.startsWith("reflec")) {
-                continue;
-            }
-            if (case2Product.containsBand(name)) {
-                continue;
-            }
-            final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
-            bandDesc.setProduct("inputProduct");
-            bandDesc.setNamePattern(name);
-            bandDescList.add(bandDesc);
-        }
-
         final String[] case2names = case2Product.getBandNames();
         for (String name : case2names) {
-            if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&
-                (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
+            if (isPixelGeoCodingBandName(name, inputProduct.getGeoCoding())) {
                 continue;
             }
             final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
             bandDesc.setProduct("case2Product");
-            bandDesc.setNamePattern(name);
+            bandDesc.setName(name);
             bandDescList.add(bandDesc);
         }
 
@@ -225,6 +225,16 @@ public class Case2IOPOperator extends Operator {
         removeAllMetadata(metadataRoot);
         ProductUtils.copyMetadata(case2Product, targetProduct);
         setTargetProduct(targetProduct);
+    }
+
+    private boolean isPixelGeoCodingBandName(String name, GeoCoding geoCoding) {
+        if (geoCoding instanceof PixelGeoCoding) {
+            PixelGeoCoding pixelGeoCoding = (PixelGeoCoding) geoCoding;
+            Band latBand = pixelGeoCoding.getLatBand();
+            Band lonBand = pixelGeoCoding.getLonBand();
+            return latBand.getName().equals(name) || lonBand.getName().equals(name);
+        }
+        return false;
     }
 
     private void removeAllMetadata(MetadataElement metadataRoot) {

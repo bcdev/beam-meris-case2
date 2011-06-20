@@ -20,19 +20,19 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double computeChiSquare(double[] forwardWaterOutnet, double[] RLw_cut) {
-        return Math.pow(forwardWaterOutnet[0] - Math.log(RLw_cut[0]), 2) +
-               Math.pow(forwardWaterOutnet[1] - Math.log(RLw_cut[1]), 2) +
-               Math.pow(forwardWaterOutnet[2] - Math.log(RLw_cut[2]), 2) +
-               Math.pow(forwardWaterOutnet[3] - Math.log(RLw_cut[3]), 2) +
-               Math.pow(forwardWaterOutnet[4] - Math.log(RLw_cut[4]), 2) +
-               Math.pow(forwardWaterOutnet[5] - Math.log(RLw_cut[5]), 2) +
-               Math.pow(forwardWaterOutnet[6] - Math.log(RLw_cut[6]), 2) +
-               Math.pow(forwardWaterOutnet[8] - Math.log(RLw_cut[8]), 2);
+    protected double computeChiSquare(double[] forwardWaterOutnet, double[] logRLw) {
+        return Math.pow(forwardWaterOutnet[0] - logRLw[0], 2) +
+               Math.pow(forwardWaterOutnet[1] - logRLw[1], 2) +
+               Math.pow(forwardWaterOutnet[2] - logRLw[2], 2) +
+               Math.pow(forwardWaterOutnet[3] - logRLw[3], 2) +
+               Math.pow(forwardWaterOutnet[4] - logRLw[4], 2) +
+               Math.pow(forwardWaterOutnet[5] - logRLw[5], 2) +
+               Math.pow(forwardWaterOutnet[6] - logRLw[6], 2) +
+               Math.pow(forwardWaterOutnet[8] - logRLw[8], 2);
     }
 
     @Override
-    protected double[] getForwardWaterInnet(double solzen, double satzen, double azi_diff_deg,
+    protected double[] getForwardWaterInput(double solzen, double satzen, double azi_diff_deg,
                                             double[] waterOutnet) {
         double[] forwardWaterInnet = new double[6];
         forwardWaterInnet[0] = solzen;
@@ -46,7 +46,7 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected void fillOutput(double[] waterOutnet, WritableSample[] targetSamples) {
+    protected void fillTargetSamples(double[] waterOutnet, WritableSample[] targetSamples) {
         double bTsm = Math.exp(waterOutnet[0]);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
         targetSamples[TARGET_TSM_INDEX].set(bTsm / 0.95);
@@ -64,28 +64,15 @@ public class BorealWater extends WaterAlgorithm {
     }
 
     @Override
-    protected double[] getWaterInnet(double solzen, double satzen, double azi_diff_deg, double[] RLw_cut) {
+    protected double[] getBackwardWaterInput(double solzen, double satzen, double azi_diff_deg, double[] logRlw) {
         double[] waterInnet = new double[11];
         waterInnet[0] = solzen;
         waterInnet[1] = satzen;
         waterInnet[2] = azi_diff_deg;
 
-        for (int i = 3; i < 10; i++) {
-            waterInnet[i] = Math.log(RLw_cut[i - 3]); /* bands 1-7 == 412 - 664 nm */
-        }
-        waterInnet[10] = Math.log(RLw_cut[8]); /* band 708 nm */
+        System.arraycopy(logRlw, 0, waterInnet, 3, 10 - 3); /* bands 1-7 == 412 - 664 nm */
+        waterInnet[10] = logRlw[8]; /* band 708 nm */
         return waterInnet;
     }
 
-    @Override
-    protected double getCutThreshold(double[] inmin) {
-        double cut_thresh = 1000.0;
-        for (int i = 3; i < 11; i++) {
-            double inmini = Math.exp(inmin[i]);
-            if (inmini < cut_thresh) {
-                cut_thresh = inmini;
-            }
-        }
-        return cut_thresh;
-    }
 }
