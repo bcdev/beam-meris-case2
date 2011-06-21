@@ -118,7 +118,7 @@ public abstract class WaterAlgorithm {
 
         // test if water leaving radiance reflectance are within training range,
         // otherwise set to training range
-        if (isLogRLwOutOfRange(backwardWaterInput, inverseWaterNet)) {
+        if (isInputInTrainigRange(backwardWaterInput, inverseWaterNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(WLR_OOR_BIT_INDEX, true);
         }
 
@@ -199,7 +199,7 @@ public abstract class WaterAlgorithm {
      **	test water leaving radiances as input to neural network for out of training range
      **	if out of range set to lower or upper boundary value
     -----------------------------------------------------------------------------------*/
-    private boolean isLogRLwOutOfRange(double[] backwardWaterInput, NNffbpAlphaTabFast backwardWaterNet) {
+    private boolean isInputInTrainigRange(double[] backwardWaterInput, NNffbpAlphaTabFast backwardWaterNet) {
         final double[] inmax = backwardWaterNet.getInmax();
         final double[] inmin = backwardWaterNet.getInmin();
         boolean isOutOfRange = false;
