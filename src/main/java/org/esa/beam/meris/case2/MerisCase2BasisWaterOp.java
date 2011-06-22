@@ -354,12 +354,10 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
      */
     public static double getAzimuthDifference(double satelliteAzimuth, double solarAzimuth) {
         double azi_diff_deg = Math.abs(satelliteAzimuth - solarAzimuth); /* azimuth difference */
-        /* reverse azi difference */
-        if (azi_diff_deg > 180.0) {
-            azi_diff_deg = 360.0 - azi_diff_deg;
-        }
-        azi_diff_deg = 180.0 - azi_diff_deg; /* different definitions in MERIS data and MC /HL simulation */
-        return azi_diff_deg;
+        double aziViewSurfRad = Math.toRadians(satelliteAzimuth);
+        double aziSunSurfRad = Math.toRadians(solarAzimuth);
+        double aziDiffSurfRad = Math.acos(Math.cos(aziViewSurfRad - aziSunSurfRad));
+        return Math.toDegrees(aziDiffSurfRad);
     }
 
     @Override
