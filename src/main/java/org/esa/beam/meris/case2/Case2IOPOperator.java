@@ -39,7 +39,7 @@ import java.util.List;
                   description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2011 by Brockmann Consult",
-                  version = "1.6-CC2")
+                  version = "1.6-CC3")
 public class Case2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
