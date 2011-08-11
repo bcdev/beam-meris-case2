@@ -14,23 +14,24 @@ import java.util.HashMap;
 
 class Case2IOPDialog extends SingleTargetProductDialog {
 
-    private static final String OPERATOR_NAME = "Meris.Case2Regional";
     private Case2IOPForm form;
     private HashMap<String, Object> parameters;
+    private String operatorName;
 
-    Case2IOPDialog(AppContext appContext, String title, String helpID) {
+    Case2IOPDialog(String operatorName, String targetNameSuffix, AppContext appContext, String title, String helpID) {
         super(appContext, title, helpID);
+        this.operatorName = operatorName;
 
-        final OperatorSpi operatorSpi = GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(OPERATOR_NAME);
+        final OperatorSpi operatorSpi = GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(operatorName);
         if (operatorSpi == null) {
             throw new IllegalArgumentException("operatorName");
         }
 
         parameters = new HashMap<String, Object>();
         PropertyContainer propContainer = ParameterDescriptorFactory.createMapBackedOperatorPropertyContainer(
-                OPERATOR_NAME, parameters);
+                operatorName, parameters);
         propContainer.setDefaultValues();
-        form = new Case2IOPForm(appContext, operatorSpi, propContainer, getTargetProductSelector());
+        form = new Case2IOPForm(appContext, operatorSpi, propContainer, getTargetProductSelector(), targetNameSuffix);
 
         final OperatorParameterSupport parameterSupport = new OperatorParameterSupport(operatorSpi.getOperatorClass(),
                                                                                        propContainer, parameters, null);
@@ -42,7 +43,7 @@ class Case2IOPDialog extends SingleTargetProductDialog {
     @Override
     protected Product createTargetProduct() throws Exception {
         final Product sourceProduct = form.getSourceProduct();
-        return GPF.createProduct(OPERATOR_NAME, parameters, sourceProduct);
+        return GPF.createProduct(operatorName, parameters, sourceProduct);
     }
 
     @Override

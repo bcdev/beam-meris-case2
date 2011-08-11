@@ -5,10 +5,10 @@ import org.esa.beam.framework.ui.command.CommandEvent;
 import org.esa.beam.meris.case2.Case2IOPOperator;
 import org.esa.beam.visat.actions.AbstractVisatAction;
 
-public class Case2RegionalAction extends AbstractVisatAction {
+public class Case2LakesAction extends AbstractVisatAction {
 
-    private static final String OPERATOR_NAME = "Meris.Case2Regional";
-    public static final String TARGET_NAME_SUFFIX = "_C2IOP";
+    private static final String OPERATOR_NAME = "Meris.Lakes";
+    public static final String TARGET_NAME_SUFFIX = "_lakes";
 
     @Override
     public void actionPerformed(CommandEvent event) {
