@@ -26,20 +26,21 @@ import java.util.ArrayList;
 
 class Case2IOPForm extends JTabbedPane {
 
-    private static final String TARGET_NAME_SUFFIX = "_C2IOP";
 
     private AppContext appContext;
     private OperatorSpi operatorSpi;
     private PropertyContainer propertyContainer;
     private TargetProductSelector targetProductSelector;
+    private String targetNameSuffix;
     private DefaultIOParametersPanel ioParamPanel;
 
     Case2IOPForm(AppContext appContext, OperatorSpi operatorSpi, PropertyContainer container,
-                 TargetProductSelector targetProductSelector) {
+                 TargetProductSelector targetProductSelector, String targetNameSuffix) {
         this.appContext = appContext;
         this.operatorSpi = operatorSpi;
         this.propertyContainer = container;
         this.targetProductSelector = targetProductSelector;
+        this.targetNameSuffix = targetNameSuffix;
         ioParamPanel = createIOParamTab();
         addTab("I/O Parameters", ioParamPanel);
         addTab("Processing Parameters", createProcessingParamTab());
@@ -123,7 +124,7 @@ class Case2IOPForm extends JTabbedPane {
                 productName = selectedProduct.getName();
             }
             final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-            targetProductSelectorModel.setProductName(productName + TARGET_NAME_SUFFIX);
+            targetProductSelectorModel.setProductName(productName + targetNameSuffix);
 
         }
     }
