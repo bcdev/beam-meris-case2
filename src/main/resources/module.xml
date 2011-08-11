@@ -17,6 +17,7 @@
     <changelog>
         <![CDATA[
         Changes in version 1.5.2:<br/>
+          [CIIR-43] Reintroduce separate lakes processor<br/>
           [CIIR-42] Handle PixelGeoCoding more generic<br/>
         Changes in version 1.5.1:<br/>
           [CIIR-38] Allow specifing the kind of reflectances<br/>
