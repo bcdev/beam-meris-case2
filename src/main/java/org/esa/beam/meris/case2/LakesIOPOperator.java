@@ -37,12 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@OperatorMetadata(alias = "Meris.Case2Regional",
-                  description = "Performs IOP retrieval on L1b MERIS products, including atmospheric correction.",
-                  authors = "Roland Doerffer (HGZ); Marco Peters (Brockmann Consult)",
+@OperatorMetadata(alias = "Meris.Lakes",
+                  description = "Performs IOP retrieval for eutrophic and boreal Lakes on L1b MERIS products, including atmospheric correction.",
+                  authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2011 by Brockmann Consult",
                   version = "1.5.2")
-public class Case2IOPOperator extends Operator {
+public class LakesIOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
     private Product sourceProduct;
@@ -105,9 +105,9 @@ public class Case2IOPOperator extends Operator {
     ///////////  Case2WaterOp  ///////////////////////////
     ///////////
 
-    @Parameter(defaultValue = "REGIONAL", valueSet = {"REGIONAL"},
+    @Parameter(defaultValue = "BOREAL", valueSet = {"BOREAL", "EUTROPHIC"},
                label = "Water algorithm",
-               description = "The algorithm used for IOP computation. Currently only 'REGIONAL' is valid")
+               description = "The algorithm used for IOP computation.")
     private Case2AlgorithmEnum algorithm;
 
     @Parameter(label = "Tsm conversion exponent",
@@ -262,7 +262,7 @@ public class Case2IOPOperator extends Operator {
     public static class Spi extends OperatorSpi {
 
         public Spi() {
-            super(Case2IOPOperator.class);
+            super(LakesIOPOperator.class);
         }
     }
 
