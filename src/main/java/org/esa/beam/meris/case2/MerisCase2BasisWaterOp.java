@@ -191,66 +191,72 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
 
     protected void addTargetBands(ProductConfigurer productConfigurer) {
         addTargetBand(productConfigurer, BAND_NAME_A_TOTAL, "m^-1",
-                      "Total absorption coefficient of all water constituents at 443 nm.", false,
+                      443, "Total absorption coefficient of all water constituents at 443 nm.", false,
                       ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_A_GELBSTOFF, "m^-1",
-                      "Yellow substance absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
+                      443, "Yellow substance absorption coefficient at 443 nm.", true,
+                      ProductData.TYPE_FLOAT32);
+
         addTargetBand(productConfigurer, BAND_NAME_A_PIGMENT, "m^-1",
-                      "Pigment absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
+                      443, "Pigment absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
+
         if (outputAPoc) {
             addTargetBand(productConfigurer, BAND_NAME_A_POC, "m^-1",
-                          "Absorption by particulate organic matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
+                          443, "Absorption by particulate organic matter at 443 nm.", true,
+                          ProductData.TYPE_FLOAT32);
         }
         addTargetBand(productConfigurer, BAND_NAME_BB_SPM, "m^-1",
-                      "Backscattering of suspended particulate matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
+                      443, "Backscattering of suspended particulate matter at 443 nm.", true,
+                      ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_TSM, "g m^-3",
-                      "Total suspended matter dry weight concentration.", true, ProductData.TYPE_FLOAT32);
+                      -1, "Total suspended matter dry weight concentration.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_CHL_CONC, "mg m^-3",
-                      "Chlorophyll concentration.", true, ProductData.TYPE_FLOAT32);
+                      -1, "Chlorophyll concentration.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_CHI_SQUARE, null,
-                      "Chi Square Out of Scope.", true, ProductData.TYPE_FLOAT32);
+                      -1, "Chi Square Out of Scope.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_K_MIN, "m^-1",
-                      "Minimum downwelling irradiance attenuation coefficient.", false, ProductData.TYPE_FLOAT32);
+                      -1, "Minimum downwelling irradiance attenuation coefficient.", false, ProductData.TYPE_FLOAT32);
         if (outputKdSpectrum) {
             for (int i = 0; i < BAND_NAMES_KD_SPECTRUM.length; i++) {
                 String bandName = BAND_NAMES_KD_SPECTRUM[i];
                 String wavelength = bandName.substring(bandName.length() - 3, bandName.length());
                 String description = String.format("Downwelling irradiance attenuation coefficient at wavelength %s.",
                                                    wavelength);
-                Band kdBand = addTargetBand(productConfigurer, bandName, "m^-1", description, false,
-                                            ProductData.TYPE_FLOAT32);
+                Band kdBand = addTargetBand(productConfigurer, bandName, "m^-1", Float.parseFloat(wavelength),
+                                            description, false, ProductData.TYPE_FLOAT32);
                 kdBand.setSpectralBandIndex(i);
-                kdBand.setSpectralWavelength(Float.parseFloat(wavelength));
                 productConfigurer.getTargetProduct().setAutoGrouping("Kd");
             }
         } else {
             addTargetBand(productConfigurer, BAND_NAME_KD_490, "m^-1",
-                          "Downwelling irradiance attenuation coefficient at wavelength 490.", false,
+                          490, "Downwelling irradiance attenuation coefficient at wavelength 490.", false,
                           ProductData.TYPE_FLOAT32);
         }
         addTargetBand(productConfigurer, BAND_NAME_Z90_MAX, "m",
-                      "Maximum signal depth.", false, ProductData.TYPE_FLOAT32);
+                      -1, "Maximum signal depth.", false, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_TURBIDITY_INDEX, "FNU",
-                      "Turbidity index in FNU (Formazine Nephelometric Unit).", false, ProductData.TYPE_FLOAT32);
+                      -1, "Turbidity index in FNU (Formazine Nephelometric Unit).", false, ProductData.TYPE_FLOAT32);
         if (performChiSquareFit) {
-            addTargetBand(productConfigurer, BAND_NAME_A_GELBSTOFF_FIT, null, null, true, ProductData.TYPE_FLOAT32);
-            addTargetBand(productConfigurer, BAND_NAME_A_GELBSTOFF_FIT_MAX, null, null, true, ProductData.TYPE_FLOAT32);
-            addTargetBand(productConfigurer, BAND_NAME_A_GELBSTOFF_FIT_MIN, null, null, true, ProductData.TYPE_FLOAT32);
-
-            addTargetBand(productConfigurer, BAND_NAME_A_PIG_FIT, null, null, true, ProductData.TYPE_FLOAT32);
-            addTargetBand(productConfigurer, BAND_NAME_A_PIG_FIT_MAX, null, null, true, ProductData.TYPE_FLOAT32);
-            addTargetBand(productConfigurer, BAND_NAME_A_PIG_FIT_MIN, null, null, true, ProductData.TYPE_FLOAT32);
-
-            addTargetBand(productConfigurer, BAND_NAME_B_TSM_FIT, null, null, true, ProductData.TYPE_FLOAT32);
-            addTargetBand(productConfigurer, BAND_NAME_B_TSM_FIT_MAX, null, null, true, ProductData.TYPE_FLOAT32);
-            addTargetBand(productConfigurer, BAND_NAME_B_TSM_FIT_MIN, null, null, true, ProductData.TYPE_FLOAT32);
-
-            addTargetBand(productConfigurer, BAND_NAME_TSM_FIT, null, null, true, ProductData.TYPE_FLOAT32);
-            addTargetBand(productConfigurer, BAND_NAME_CHL_CONC_FIT, null, null, true, ProductData.TYPE_FLOAT32);
-            addTargetBand(productConfigurer, BAND_NAME_CHI_SQUARE_FIT, null, null, true, ProductData.TYPE_FLOAT32);
-            addTargetBand(productConfigurer, BAND_NAME_N_ITER, null, null, false, ProductData.TYPE_INT32);
-            addTargetBand(productConfigurer, BAND_NAME_PARAM_CHANGE, "1", "Parameter change in last fit step", false,
+            addTargetBand(productConfigurer, BAND_NAME_A_GELBSTOFF_FIT, null, -1, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(productConfigurer, BAND_NAME_A_GELBSTOFF_FIT_MAX, null, -1, null, true,
                           ProductData.TYPE_FLOAT32);
+            addTargetBand(productConfigurer, BAND_NAME_A_GELBSTOFF_FIT_MIN, null, -1, null, true,
+                          ProductData.TYPE_FLOAT32);
+
+            addTargetBand(productConfigurer, BAND_NAME_A_PIG_FIT, null, -1, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(productConfigurer, BAND_NAME_A_PIG_FIT_MAX, null, -1, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(productConfigurer, BAND_NAME_A_PIG_FIT_MIN, null, -1, null, true, ProductData.TYPE_FLOAT32);
+
+            addTargetBand(productConfigurer, BAND_NAME_B_TSM_FIT, null, -1, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(productConfigurer, BAND_NAME_B_TSM_FIT_MAX, null, -1, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(productConfigurer, BAND_NAME_B_TSM_FIT_MIN, null, -1, null, true, ProductData.TYPE_FLOAT32);
+
+            addTargetBand(productConfigurer, BAND_NAME_TSM_FIT, null, -1, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(productConfigurer, BAND_NAME_CHL_CONC_FIT, null, -1, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(productConfigurer, BAND_NAME_CHI_SQUARE_FIT, null, -1, null, true, ProductData.TYPE_FLOAT32);
+            addTargetBand(productConfigurer, BAND_NAME_N_ITER, null, -1, null, false, ProductData.TYPE_INT32);
+            addTargetBand(productConfigurer, BAND_NAME_PARAM_CHANGE, "1", -1, "Parameter change in last fit step",
+                          false, ProductData.TYPE_FLOAT32);
         }
     }
 
@@ -487,12 +493,15 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     }
 
     protected final Band addTargetBand(ProductConfigurer productConfigurer, String bandName, String unit,
-                                       String description, boolean log10Scaled, int dataType) {
+                                       float wavelength, String description, boolean log10Scaled, int dataType) {
         final Band band = productConfigurer.addBand(bandName, dataType);
         band.setDescription(description);
         band.setUnit(unit);
         band.setLog10Scaled(log10Scaled);
         band.setValidPixelExpression("!case2_flags.INVALID");
+        if (wavelength > 0) {
+            band.setSpectralWavelength(wavelength);
+        }
         return band;
     }
 

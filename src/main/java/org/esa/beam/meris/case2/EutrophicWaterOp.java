@@ -40,7 +40,7 @@ public class EutrophicWaterOp extends MerisCase2BasisWaterOp {
     @Override
     protected void addTargetBands(ProductConfigurer productConfigurer) {
         super.addTargetBands(productConfigurer);
-        addTargetBand(productConfigurer, BAND_NAME_A_BTSM, "m^-1", "btsm absorption at 442 nm", true,
+        addTargetBand(productConfigurer, BAND_NAME_A_BTSM, "m^-1", 442, "btsm absorption at 442 nm", true,
                       ProductData.TYPE_FLOAT32);
     }
 
