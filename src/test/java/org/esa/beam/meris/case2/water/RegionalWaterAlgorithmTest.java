@@ -4,7 +4,7 @@ import org.esa.beam.atmosphere.operator.ReflectanceEnum;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.gpf.pointop.Sample;
 import org.esa.beam.framework.gpf.pointop.WritableSample;
-import org.esa.beam.meris.case2.MerisCase2BasisWaterOp;
+import org.esa.beam.meris.case2.RegionalWaterOp;
 import org.esa.beam.nn.NNffbpAlphaTabFast;
 import org.esa.beam.util.BitSetter;
 import org.junit.Before;
@@ -25,8 +25,8 @@ public class RegionalWaterAlgorithmTest {
 
     @Test
     public void testComputation() throws Exception {
-        final RegionalWater regionalAlgo = new RegionalWater(false, false, 4.0, 1.0, 1.73, 35.0, 15.0);
-        final double aziDiff = MerisCase2BasisWaterOp.getAzimuthDifference(89.83, 283.79);
+        final WaterAlgorithm regionalAlgo = new WaterAlgorithm(false, false, 4.0, 1.0, 1.73, 35.0, 15.0);
+        final double aziDiff = RegionalWaterOp.getAzimuthDifference(89.83, 283.79);
         final Sample[] sourceSamples = createSourceSamples();
         final WritableSample[] targetSamples = createTargetSamples();
         regionalAlgo.perform(inverseNet, forwardNet, 23.255, 16.845, aziDiff, sourceSamples, targetSamples,

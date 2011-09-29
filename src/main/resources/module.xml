@@ -69,16 +69,6 @@
             <helpId>merisCase2Regional</helpId>
             <placeAfter>flhMciScientificTool</placeAfter>
         </action>
-        <action>
-            <id>merisCase2Lakes</id>
-            <class>org.esa.beam.meris.case2.ui.Case2LakesAction</class>
-            <text>Lakes Processor (MERIS)...</text>
-            <shortDescr>Invokes the Case-2 Lakes processor</shortDescr>
-            <longDescr>Invokes the Case-2 (Eutrophic and Boreal) Lakes processor for MERIS data products</longDescr>
-            <parent>tools</parent>
-            <helpId>merisCase2Regional</helpId>
-            <placeAfter>merisCase2Regional</placeAfter>
-        </action>
     </extension>
 
 

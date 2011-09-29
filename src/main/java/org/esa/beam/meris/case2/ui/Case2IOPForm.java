@@ -2,7 +2,6 @@ package org.esa.beam.meris.case2.ui;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyPane;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
@@ -14,7 +13,6 @@ import org.esa.beam.framework.gpf.ui.SourceProductSelector;
 import org.esa.beam.framework.gpf.ui.TargetProductSelector;
 import org.esa.beam.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.beam.framework.ui.AppContext;
-import org.esa.beam.meris.case2.Case2AlgorithmEnum;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -70,25 +68,10 @@ class Case2IOPForm extends JTabbedPane {
                 }
             }
         });
-        bindingContext.addPropertyChangeListener("algorithm", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                Case2AlgorithmEnum algo = (Case2AlgorithmEnum) evt.getNewValue();
-                setConversionValues(algo, propertyContainer);
-            }
-        });
-        setConversionValues((Case2AlgorithmEnum) propertyContainer.getValue("algorithm"), propertyContainer);
 
         final JPanel parametersPanel = parametersPane.createPanel();
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         return new JScrollPane(parametersPanel);
-    }
-
-    private void setConversionValues(Case2AlgorithmEnum algo, PropertySet propertySet) {
-        propertySet.setValue("chlConversionExponent", algo.getDefaultChlExponent());
-        propertySet.setValue("chlConversionFactor", algo.getDefaultChlFactor());
-        propertySet.setValue("tsmConversionExponent", algo.getDefaultTsmExponent());
-        propertySet.setValue("tsmConversionFactor", algo.getDefaultTsmFactor());
     }
 
     private DefaultIOParametersPanel createIOParamTab() {

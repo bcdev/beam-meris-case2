@@ -39,7 +39,7 @@ import java.util.List;
                   description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2011 by Brockmann Consult",
-                  version = "1.6-CC3")
+                  version = "1.6.5-CC3")
 public class Case2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
@@ -112,10 +112,6 @@ public class Case2IOPOperator extends Operator {
     ///////////  Case2WaterOp  ///////////////////////////
     ///////////
 
-    @Parameter(defaultValue = "REGIONAL", valueSet = {"REGIONAL"},
-               label = "Water algorithm",
-               description = "The algorithm used for IOP computation. Currently only 'REGIONAL' is valid")
-    private Case2AlgorithmEnum algorithm;
 
     @Parameter(label = "Average salinity", defaultValue = "35", unit = "PSU", description = "The salinity of the water")
     private double averageSalinity;
@@ -182,15 +178,8 @@ public class Case2IOPOperator extends Operator {
             inputProduct = atmoCorOp.getTargetProduct();
         }
 
-        Operator case2Op = algorithm.createOperatorInstance();
+        Operator case2Op = new RegionalWaterOp();
 
-        initConversionDefaults();
-        if (!Case2AlgorithmEnum.BOREAL.equals(algorithm)) {
-            case2Op.setParameter("tsmConversionExponent", tsmConversionExponent);
-            case2Op.setParameter("tsmConversionFactor", tsmConversionFactor);
-            case2Op.setParameter("chlConversionExponent", chlConversionExponent);
-            case2Op.setParameter("chlConversionFactor", chlConversionFactor);
-        }
         case2Op.setParameter("averageSalinity", averageSalinity);
         case2Op.setParameter("averageTemperature", averageTemperature);
         case2Op.setParameter("inputReflecAre", outputReflecAs);
@@ -252,21 +241,6 @@ public class Case2IOPOperator extends Operator {
         final MetadataElement[] elements = metadataRoot.getElements();
         for (MetadataElement element : elements) {
             metadataRoot.removeElement(element);
-        }
-    }
-
-    private void initConversionDefaults() {
-        if (tsmConversionExponent == null) {
-            tsmConversionExponent = algorithm.getDefaultTsmExponent();
-        }
-        if (tsmConversionFactor == null) {
-            tsmConversionFactor = algorithm.getDefaultTsmFactor();
-        }
-        if (chlConversionExponent == null) {
-            chlConversionExponent = algorithm.getDefaultChlExponent();
-        }
-        if (chlConversionFactor == null) {
-            chlConversionFactor = algorithm.getDefaultChlFactor();
         }
     }
 

@@ -51,7 +51,6 @@ class Case2IOPDialog extends SingleTargetProductDialog {
         form.prepareShow();
         setContent(form);
         return super.show();
-
     }
 
     @Override

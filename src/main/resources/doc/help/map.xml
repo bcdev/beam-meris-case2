@@ -8,8 +8,6 @@
     <mapID target="merisCase2Regional" url="html/Overview.html"/>
     <mapID target="processorDescription" url="html/ProcessorDescription.html"/>
     <mapID target="regionalBOMSpecification" url="html/RegionalBioOpticalModelSpecification.html"/>
-    <mapID target="borealBOMSpecification" url="html/BorealBioOpticalModelSpecification.html"/>
-    <mapID target="eutrophicBOMSpecification" url="html/EutrophicBioOpticalModelSpecification.html"/>
     <mapID target="atmosphericCorrectionSpecification" url="html/AtmosphericCorrectionSpecification.html"/>
 
 </map>
