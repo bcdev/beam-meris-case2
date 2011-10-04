@@ -14,13 +14,19 @@ import static org.junit.Assert.*;
 
 public class RegionalWaterAlgorithmTest {
 
-    private NNffbpAlphaTabFast inverseNet;
+    private NNffbpAlphaTabFast detritusNet;
+    private NNffbpAlphaTabFast gelbstoffNet;
+    private NNffbpAlphaTabFast pigmentNet;
+    private NNffbpAlphaTabFast suspendedMatterNet;
     private NNffbpAlphaTabFast forwardNet;
 
     @Before
     public void before() throws Exception {
-        inverseNet = new NNffbpAlphaTabFast(getClass().getResourceAsStream("regional_inverse_test.net"));
-        forwardNet = new NNffbpAlphaTabFast(getClass().getResourceAsStream("regional_forward_test.net"));
+        detritusNet = new NNffbpAlphaTabFast(getClass().getResourceAsStream("multi/a_detritus_test.net"));
+        gelbstoffNet = new NNffbpAlphaTabFast(getClass().getResourceAsStream("multi/a_gelbstoff_test.net"));
+        pigmentNet = new NNffbpAlphaTabFast(getClass().getResourceAsStream("multi/a_pig_test.net"));
+        suspendedMatterNet = new NNffbpAlphaTabFast(getClass().getResourceAsStream("multi/b_min_test.net"));
+        forwardNet = new NNffbpAlphaTabFast(getClass().getResourceAsStream("multi/forward_test.net"));
     }
 
     @Test
@@ -29,8 +35,8 @@ public class RegionalWaterAlgorithmTest {
         final double aziDiff = RegionalWaterOp.getAzimuthDifference(89.83, 283.79);
         final Sample[] sourceSamples = createSourceSamples();
         final WritableSample[] targetSamples = createTargetSamples();
-        regionalAlgo.perform(inverseNet, forwardNet, 23.255, 16.845, aziDiff, sourceSamples, targetSamples,
-                             ReflectanceEnum.RADIANCE_REFLECTANCES);
+        regionalAlgo.perform(detritusNet, gelbstoffNet, pigmentNet, suspendedMatterNet, forwardNet, 23.255, 16.845,
+                             aziDiff, sourceSamples, targetSamples, ReflectanceEnum.RADIANCE_REFLECTANCES);
         assertFalse(Double.isNaN(targetSamples[WaterAlgorithm.TARGET_A_GELBSTOFF_INDEX].getDouble()));
         assertFalse(Double.isNaN(targetSamples[WaterAlgorithm.TARGET_A_PIGMENT_INDEX].getDouble()));
         assertFalse(Double.isNaN(targetSamples[WaterAlgorithm.TARGET_A_TOTAL_INDEX].getDouble()));

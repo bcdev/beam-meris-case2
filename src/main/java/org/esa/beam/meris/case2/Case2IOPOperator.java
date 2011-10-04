@@ -146,9 +146,21 @@ public class Case2IOPOperator extends Operator {
                description = "Expression defining pixels not considered for processing.")
     private String invalidPixelExpression;
 
-    @Parameter(label = "Alternative inverse water neural net (optional)",
-               description = "The file of the inverse water neural net to be used instead of the default.")
-    private File inverseWaterNnFile;
+    @Parameter(label = "Alternative neural net for detritus (optional)",
+               description = "The file of the detritus neural net to be used instead of the default.")
+    private File detritusNnFile;
+
+    @Parameter(label = "Alternative neural net for gelbstoff (optional)",
+               description = "The file of the gelbstoff neural net to be used instead of the default.")
+    private File gelbstoffNnFile;
+
+    @Parameter(label = "Alternative neural net for pigment (optional)",
+               description = "The file of the pigment neural net to be used instead of the default.")
+    private File pigmentNnFile;
+
+    @Parameter(label = "Alternative neural net for suspended matter (optional)",
+               description = "The file of the suspended matter neural net to be used instead of the default.")
+    private File suspendedMatterNnFile;
 
     @Parameter(label = "Alternative forward water neural net (optional)",
                description = "The file of the forward water neural net to be used instead of the default.")
@@ -185,7 +197,10 @@ public class Case2IOPOperator extends Operator {
         case2Op.setParameter("inputReflecAre", outputReflecAs);
         case2Op.setParameter("spectrumOutOfScopeThreshold", spectrumOutOfScopeThreshold);
         case2Op.setParameter("invalidPixelExpression", invalidPixelExpression);
-        case2Op.setParameter("inverseWaterNnFile", inverseWaterNnFile);
+        case2Op.setParameter("detritusNnFile", detritusNnFile);
+        case2Op.setParameter("gelbstoffNnFile", gelbstoffNnFile);
+        case2Op.setParameter("pigmentNnFile", pigmentNnFile);
+        case2Op.setParameter("suspendedMatterNnFile", suspendedMatterNnFile);
         case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
         case2Op.setParameter("outputKdSpectrum", outputKdSpectrum);
         case2Op.setParameter("outputAPoc", outputAPoc);

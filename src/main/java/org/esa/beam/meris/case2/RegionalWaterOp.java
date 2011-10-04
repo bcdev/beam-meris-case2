@@ -117,9 +117,21 @@ public class RegionalWaterOp extends PixelOperator {
                description = "Expression defining pixels not considered for processing")
     private String invalidPixelExpression;
 
-    @Parameter(label = "Inverse water neural net (optional)",
-               description = "The file of the inverse water neural net to be used instead of the default.")
-    private File inverseWaterNnFile;
+    @Parameter(label = "Alternative neural net for detritus (optional)",
+               description = "The file of the detritus neural net to be used instead of the default.")
+    private File detritusNnFile;
+
+    @Parameter(label = "Alternative neural net for gelbstoff (optional)",
+               description = "The file of the gelbstoff neural net to be used instead of the default.")
+    private File gelbstoffNnFile;
+
+    @Parameter(label = "Alternative neural net for pigment (optional)",
+               description = "The file of the pigment neural net to be used instead of the default.")
+    private File pigmentNnFile;
+
+    @Parameter(label = "Alternative neural net for suspended matter (optional)",
+               description = "The file of the suspended matter neural net to be used instead of the default.")
+    private File suspendedMatterNnFile;
 
     @Parameter(label = "Forward water neural net (optional)",
                description = "The file of the forward water neural net to be used instead of the default.")
@@ -136,14 +148,19 @@ public class RegionalWaterOp extends PixelOperator {
 
     @Parameter(defaultValue = "1.0", description = "Exponent for conversion from TSM to B_TSM")
     private double tsmConversionExponent;
+
     @Parameter(defaultValue = "1.73", description = "Factor for conversion from TSM to B_TSM")
     private double tsmConversionFactor;
+
     @Parameter(defaultValue = "1.04", description = "Exponent for conversion from A_PIG to CHL_CONC")
     private double chlConversionExponent;
+
     @Parameter(defaultValue = "21.0", description = "Factor for conversion from A_PIG to CHL_CONC")
     private double chlConversionFactor;
+
     @Parameter(defaultValue = "35", unit = "PSU", description = "The salinity of the water")
     private double averageSalinity;
+
     @Parameter(defaultValue = "15", unit = "°C", description = "The Water temperature")
     private double averageTemperature;
 
@@ -151,9 +168,15 @@ public class RegionalWaterOp extends PixelOperator {
     private int centerPixel;
     private boolean isFullResolution;
     private org.esa.beam.meris.case2.water.WaterAlgorithm waterAlgorithm;
-    private String inverseWaterNnString;
+    private String detritusNnString;
+    private String gelbstoffNnString;
+    private String pigmentNnString;
+    private String suspendedMatterNnString;
     private String forwardWaterNnString;
-    private ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseWaterNet;
+    private ThreadLocal<NNffbpAlphaTabFast> threadLocalDetritusNet;
+    private ThreadLocal<NNffbpAlphaTabFast> threadLocalGelbstoffNet;
+    private ThreadLocal<NNffbpAlphaTabFast> threadLocalPigmentNet;
+    private ThreadLocal<NNffbpAlphaTabFast> threadLocalSuspendedMatterNet;
     private ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardWaterNet;
     private VirtualBandOpImage invalidOpImage;
     private static final String[] REQUIRED_REFLEC_BAND_NAMES = new String[]{
@@ -363,13 +386,46 @@ public class RegionalWaterOp extends PixelOperator {
 
         centerPixel = MerisFlightDirection.findNadirColumnIndex(sourceProduct);
         waterAlgorithm = createAlgorithm();
-        inverseWaterNnString = readNeuralNetString(getDefaultInverseWaterNetResourcePath(), inverseWaterNnFile);
-        forwardWaterNnString = readNeuralNetString(getDefaultForwardWaterNetResourcePath(), forwardWaterNnFile);
-        threadLocalInverseWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+        detritusNnString = readNeuralNet(getDefaultDetritusNetResourcePath(), detritusNnFile);
+        gelbstoffNnString = readNeuralNet(getDefaultGelbstoffNetResourcePath(), gelbstoffNnFile);
+        pigmentNnString = readNeuralNet(getDefaultPigmentNetResourcePath(), pigmentNnFile);
+        suspendedMatterNnString = readNeuralNet(getDefaultSuspendedMatterNetResourcePath(), suspendedMatterNnFile);
+        forwardWaterNnString = readNeuralNet(getDefaultForwardWaterNetResourcePath(), forwardWaterNnFile);
+        threadLocalDetritusNet = new ThreadLocal<NNffbpAlphaTabFast>() {
             @Override
             protected NNffbpAlphaTabFast initialValue() {
                 try {
-                    return new NNffbpAlphaTabFast(inverseWaterNnString);
+                    return new NNffbpAlphaTabFast(detritusNnString);
+                } catch (IOException e) {
+                    throw new OperatorException("Not able to init neural net", e);
+                }
+            }
+        };
+        threadLocalGelbstoffNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+            @Override
+            protected NNffbpAlphaTabFast initialValue() {
+                try {
+                    return new NNffbpAlphaTabFast(gelbstoffNnString);
+                } catch (IOException e) {
+                    throw new OperatorException("Not able to init neural net", e);
+                }
+            }
+        };
+        threadLocalPigmentNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+            @Override
+            protected NNffbpAlphaTabFast initialValue() {
+                try {
+                    return new NNffbpAlphaTabFast(pigmentNnString);
+                } catch (IOException e) {
+                    throw new OperatorException("Not able to init neural net", e);
+                }
+            }
+        };
+        threadLocalSuspendedMatterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+            @Override
+            protected NNffbpAlphaTabFast initialValue() {
+                try {
+                    return new NNffbpAlphaTabFast(suspendedMatterNnString);
                 } catch (IOException e) {
                     throw new OperatorException("Not able to init neural net", e);
                 }
@@ -426,9 +482,13 @@ public class RegionalWaterOp extends PixelOperator {
             targetSamples[TARGET_FLAG_INDEX].set(WHITECAPS_BIT_INDEX, true);
         }
 
-        NNffbpAlphaTabFast inverseWaterNet = threadLocalInverseWaterNet.get();
+        NNffbpAlphaTabFast detritusNet = threadLocalDetritusNet.get();
+        NNffbpAlphaTabFast gelbstoffNet = threadLocalGelbstoffNet.get();
+        NNffbpAlphaTabFast pigmentNet = threadLocalPigmentNet.get();
+        NNffbpAlphaTabFast suspendedMatterNet = threadLocalSuspendedMatterNet.get();
         NNffbpAlphaTabFast forwardWaterNet = threadLocalForwardWaterNet.get();
-        double[] logRLw = waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
+        double[] logRLw = waterAlgorithm.perform(detritusNet, gelbstoffNet, pigmentNet, suspendedMatterNet,
+                                                 forwardWaterNet,
                                                  solzen, satzen, azi_diff_deg, sourceSamples, targetSamples,
                                                  inputReflecAre);
         if (performChiSquareFit) {
@@ -438,11 +498,23 @@ public class RegionalWaterOp extends PixelOperator {
     }
 
     protected String getDefaultForwardWaterNetResourcePath() {
-        return "/org/esa/beam/meris/case2/regional/CC_std_forw_23x7x16_191.2.net";
+        return "/org/esa/beam/meris/case2/regional/multi/forward/27x17x11_19.7.net";
     }
 
-    protected String getDefaultInverseWaterNetResourcePath() {
-        return "/org/esa/beam/meris/case2/regional/CC_std_backw_23x7x16_34286.9.net";
+    protected String getDefaultDetritusNetResourcePath() {
+        return "/org/esa/beam/meris/case2/regional/multi/a_detritus/27x17x11_503.9.net";
+    }
+
+    protected String getDefaultGelbstoffNetResourcePath() {
+        return "/org/esa/beam/meris/case2/regional/multi/a_gelbstoff/27x17x11_54.2.net";
+    }
+
+    protected String getDefaultPigmentNetResourcePath() {
+        return "/org/esa/beam/meris/case2/regional/multi/a_pig/27x17x11_25.0.net";
+    }
+
+    protected String getDefaultSuspendedMatterNetResourcePath() {
+        return "/org/esa/beam/meris/case2/regional/multi/b_min/27x17x11_33.3.net";
     }
 
     protected WaterAlgorithm createAlgorithm() {
@@ -551,19 +623,12 @@ public class RegionalWaterOp extends PixelOperator {
         return band;
     }
 
-    private String readNeuralNetString(String resourceNetName, File neuralNetFile) {
-        InputStream neuralNetStream;
-        if (neuralNetFile == null) {
-            neuralNetStream = getClass().getResourceAsStream(resourceNetName);
-        } else {
-            try {
-                //noinspection IOResourceOpenedButNotSafelyClosed
-                neuralNetStream = new FileInputStream(neuralNetFile);
-            } catch (FileNotFoundException e) {
-                throw new OperatorException(e);
-            }
-        }
+    private String readNeuralNet(String resourceNetName, File neuralNetFile) {
+        InputStream neuralNetStream = getNeuralNetStream(resourceNetName, neuralNetFile);
+        return readNeuralNetFromStream(neuralNetStream);
+    }
 
+    private String readNeuralNetFromStream(InputStream neuralNetStream) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(neuralNetStream));
         try {
             String line = reader.readLine();
@@ -582,6 +647,21 @@ public class RegionalWaterOp extends PixelOperator {
             } catch (IOException ignore) {
             }
         }
+    }
+
+    private InputStream getNeuralNetStream(String resourceNetName, File neuralNetFile) {
+        InputStream neuralNetStream;
+        if (neuralNetFile == null) {
+            neuralNetStream = getClass().getResourceAsStream(resourceNetName);
+        } else {
+            try {
+                //noinspection IOResourceOpenedButNotSafelyClosed
+                neuralNetStream = new FileInputStream(neuralNetFile);
+            } catch (FileNotFoundException e) {
+                throw new OperatorException(e);
+            }
+        }
+        return neuralNetStream;
     }
 
     public static class Spi extends OperatorSpi {

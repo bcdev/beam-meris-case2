@@ -92,8 +92,11 @@ public class WaterAlgorithm {
 
     }
 
-    public double[] perform(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
-                            double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
+    public double[] perform(NNffbpAlphaTabFast detritusNet, NNffbpAlphaTabFast gelbstoffNet,
+                            NNffbpAlphaTabFast pigmentNet, NNffbpAlphaTabFast suspendedMatterNet,
+                            NNffbpAlphaTabFast forwardWaterNet, double solzen,
+                            double satzen, double azi_diff_deg,
+                            Sample[] sourceSamples,
                             WritableSample[] targetSamples, ReflectanceEnum inputReflecAre) {
         // test RLw against lowest or cut value in NN and set in lower
         double[] RLw = new double[12];
@@ -120,31 +123,38 @@ public class WaterAlgorithm {
         }
 
 
-        /* prepare for water net */
+        // prepare for water net
+        // input van be used for all nets
         double[] backwardWaterInput = getBackwardWaterInput(solzen, satzen, azi_diff_deg, averageSalinity,
                                                             averageTemperature,
                                                             logRLw);
 
         // test if water leaving radiance reflectance are within training range,
-        // otherwise set to training range
-        if (isInputInTrainigRange(backwardWaterInput, inverseWaterNet)) {
+        // otherwise set to training range; all nets have the same range so we use detritus
+        if (isInputInTrainigRange(backwardWaterInput, detritusNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(WLR_OOR_BIT_INDEX, true);
         }
 
         /* calculate concentrations using the water nn */
-        double[] backwardWaterOutput = inverseWaterNet.calc(backwardWaterInput);
+        double[] detritusOutput = detritusNet.calc(backwardWaterInput);
+        double[] gelbstoffOutput = gelbstoffNet.calc(backwardWaterInput);
+        double[] pigmentOutput = pigmentNet.calc(backwardWaterInput);
+        double[] suspendedMatterOutput = suspendedMatterNet.calc(backwardWaterInput);
 
-        fillTargetSamples(backwardWaterOutput, targetSamples);
+        fillTargetSamples(detritusOutput[0], gelbstoffOutput[0], pigmentOutput[0], suspendedMatterOutput[0],
+                          targetSamples);
 
         /* test if concentrations are within training range */
-        if (isWaterConcentrationOOR(backwardWaterOutput, inverseWaterNet)) {
+        if (isWaterConcentrationOOR(pigmentOutput, pigmentNet)) {   // todo - ???
             targetSamples[TARGET_FLAG_INDEX].set(CONC_OOR_BIT_INDEX, true);
         }
 
         /* do forward NN computation */
         double[] forwardWaterInput = getForwardWaterInput(solzen, satzen, azi_diff_deg, averageTemperature,
-                                                          averageSalinity, backwardWaterOutput
-        );
+                                                          averageSalinity, pigmentOutput[0], detritusOutput[0],
+                                                          gelbstoffOutput[0],
+                                                          suspendedMatterOutput[0]);
+
         double[] forwardWaterOutput = forwardWaterNet.calc(forwardWaterInput);
 
         /* compute chi square deviation on log scale between measured and computed spectrum */
@@ -161,7 +171,9 @@ public class WaterAlgorithm {
         // If we use the k_min computed by the neural net, it won't be consistent with the kd-spectrum
         // If we use the k_min from the class KMin we have a huge difference
 //        double k_min = kMin.computeKMinValue();
-        double k_min = Math.exp(backwardWaterOutput[6]);
+
+        // todo parameter should log_mean_kdmin; this is missing
+        double k_min = 0;// Math.exp(backwardWaterOutput[6]);
         targetSamples[TARGET_K_MIN_INDEX].set(k_min);
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
 
@@ -206,37 +218,39 @@ public class WaterAlgorithm {
     }
 
     private double[] getForwardWaterInput(double solzen, double satzen, double azi_diff_deg,
-                                          double averageTemperature, double averageSalinity, double[] waterOutnet) {
-        double[] forwardWaterInnet = new double[10];
+                                          double averageTemperature, double averageSalinity,
+                                          double pigment, double detritus, double gelbstoff,
+                                          double suspendedMatter) {
+        double[] forwardWaterInnet = new double[9];
         forwardWaterInnet[0] = solzen;
         forwardWaterInnet[1] = satzen;
         forwardWaterInnet[2] = azi_diff_deg;
         forwardWaterInnet[3] = averageTemperature;
         forwardWaterInnet[4] = averageSalinity;
-        forwardWaterInnet[5] = waterOutnet[1]; // log_conc_apart
-        forwardWaterInnet[6] = waterOutnet[2]; // log_conc_agelb
-        forwardWaterInnet[7] = waterOutnet[3]; // log_conc_apig
-        forwardWaterInnet[8] = waterOutnet[4]; // log_conc_bpart
-        forwardWaterInnet[9] = waterOutnet[5]; // log_conc_bwit
+        forwardWaterInnet[5] = pigment; // log_conc_apig
+        forwardWaterInnet[6] = detritus; // log_conc_adet
+        forwardWaterInnet[7] = gelbstoff; // log_conc_agelb
+        forwardWaterInnet[8] = suspendedMatter; // log_conc_bmin
         return forwardWaterInnet;
 
     }
 
-    private void fillTargetSamples(double[] backwardWaterOutput, WritableSample[] targetSamples) {
-        double chlConc = Math.exp(backwardWaterOutput[0]);
-
+    private void fillTargetSamples(double detritus, double gelbstoff, double pigment, double suspendedMatter,
+                                   WritableSample[] targetSamples) {
+        double chlConc = Math.exp((pigment + 2.8134107) / 0.65);
         targetSamples[TARGET_CHL_CONC_INDEX].set(chlConc);
 
-        double aPart = Math.exp(backwardWaterOutput[1]);
-        double aGelbstoff = Math.exp(backwardWaterOutput[2]);
-        double aPig = Math.exp(backwardWaterOutput[3]);
+        double aGelbstoff = Math.exp(gelbstoff) + 0.0012 * Math.pow(chlConc, 0.065);
+        double aPig = Math.exp(pigment);
+        double amin = Math.exp(suspendedMatter);
+        double adet = Math.exp(detritus);
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
         targetSamples[TARGET_A_PIGMENT_INDEX].set(aPig);
-        targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff + aPart);
+        targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + adet + aGelbstoff + amin);
 
-        double bTsm = Math.exp(backwardWaterOutput[4]);
-        targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
-        targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + backwardWaterOutput[4] * tsmExponent));
+        double bTsm = Math.exp(suspendedMatter);
+        targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);    // todo
+        targetSamples[TARGET_TSM_INDEX].set(bTsm);  // todo
 
         if (outputAPoc) {
             // todo - How to compute a_poc_443?
