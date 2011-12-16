@@ -26,8 +26,6 @@ import org.esa.beam.framework.gpf.pointop.SampleConfigurer;
 import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.jai.ResolutionLevel;
 import org.esa.beam.jai.VirtualBandOpImage;
-import org.esa.beam.meris.case2.fit.ChiSquareFitting;
-import org.esa.beam.meris.case2.fit.MerisGLM;
 import org.esa.beam.meris.case2.water.WaterAlgorithm;
 import org.esa.beam.nn.NNffbpAlphaTabFast;
 import org.esa.beam.waterradiance.AuxdataProvider;
@@ -149,10 +147,6 @@ public class RegionalWaterOp extends PixelOperator {
     private double tsmConversionExponent;
     @Parameter(defaultValue = "1.73", description = "Factor for conversion from TSM to B_TSM")
     private double tsmConversionFactor;
-    @Parameter(defaultValue = "1.04", description = "Exponent for conversion from A_PIG to CHL_CONC")
-    private double chlConversionExponent;
-    @Parameter(defaultValue = "21.0", description = "Factor for conversion from A_PIG to CHL_CONC")
-    private double chlConversionFactor;
 
     @Parameter(label = "Use climatology map for salinity and temperature", defaultValue = "true",
                description = "By default a climatology map is used. If set to 'false' the specified average values are used " +
@@ -486,28 +480,18 @@ public class RegionalWaterOp extends PixelOperator {
             salinity = averageSalinity;
             temperature = averageTemperature;
         }
-        double[] logRLw = waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
-                                                 solzen, satzen, azi_diff_deg, sourceSamples, targetSamples,
-                                                 inputReflecAre, salinity, temperature);
+        waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
+                               solzen, satzen, azi_diff_deg, sourceSamples, targetSamples,
+                               inputReflecAre, salinity, temperature);
         if (outputSnT) {
             targetSamples[TARGET_SALINITY_INDEX].set(salinity);
             targetSamples[TARGET_TEMPERATURE_INDEX].set(temperature);
-        }
-
-        if (performChiSquareFit) {
-            final ChiSquareFitting fitting = createChiSquareFitting();
-            fitting.perform(forwardWaterNet, logRLw, solzen, satzen, azi_diff_deg, targetSamples);
         }
     }
 
     protected WaterAlgorithm createAlgorithm() {
         return new WaterAlgorithm(isOutputKdSpectrum(), isOutputAPoc(), getSpectrumOutOfScopeThreshold(),
                                   tsmConversionExponent, tsmConversionFactor);
-    }
-
-    protected ChiSquareFitting createChiSquareFitting() {
-        return new ChiSquareFitting(tsmConversionExponent, tsmConversionFactor,
-                                    chlConversionExponent, chlConversionFactor, new MerisGLM(11, 8));
     }
 
 

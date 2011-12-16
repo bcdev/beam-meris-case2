@@ -139,16 +139,6 @@ public class Case2IOPOperator extends Operator {
                description = "Factor for conversion from TSM to B_TSM.")
     private Double tsmConversionFactor;
 
-    @Parameter(label = "Chl conversion exponent",
-               defaultValue = "1.04",
-               description = "Exponent for conversion from A_PIG to CHL_CONC. ")
-    private Double chlConversionExponent;
-
-    @Parameter(label = "Chl conversion factor",
-               defaultValue = "21.0",
-               description = "Factor for conversion from A_PIG to CHL_CONC. ")
-    private Double chlConversionFactor;
-
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope.")
     private double spectrumOutOfScopeThreshold;
 
@@ -204,6 +194,8 @@ public class Case2IOPOperator extends Operator {
         case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
         case2Op.setParameter("outputKdSpectrum", outputKdSpectrum);
         case2Op.setParameter("outputAPoc", outputAPoc);
+        case2Op.setParameter("tsmConversionExponent", tsmConversionExponent);
+        case2Op.setParameter("tsmConversionFactor", tsmConversionFactor);
         case2Op.setSourceProduct("acProduct", inputProduct);
         final Product case2Product = case2Op.getTargetProduct();
 
