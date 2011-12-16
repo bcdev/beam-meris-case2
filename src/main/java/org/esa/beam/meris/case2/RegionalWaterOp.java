@@ -400,8 +400,8 @@ public class RegionalWaterOp extends PixelOperator {
         }
         centerPixel = MerisFlightDirection.findNadirColumnIndex(sourceProduct);
         waterAlgorithm = createAlgorithm();
-        inverseWaterNnString = readNeuralNetString(DEFAULT_INVERSE_WATER_NET, inverseWaterNnFile);
-        forwardWaterNnString = readNeuralNetString(DEFAULT_FORWARD_WATER_NET, forwardWaterNnFile);
+        inverseWaterNnString = readNeuralNet(DEFAULT_INVERSE_WATER_NET, inverseWaterNnFile);
+        forwardWaterNnString = readNeuralNet(DEFAULT_FORWARD_WATER_NET, forwardWaterNnFile);
         threadLocalInverseWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
             @Override
             protected NNffbpAlphaTabFast initialValue() {
@@ -596,19 +596,12 @@ public class RegionalWaterOp extends PixelOperator {
         return band;
     }
 
-    private String readNeuralNetString(String resourceNetName, File neuralNetFile) {
-        InputStream neuralNetStream;
-        if (neuralNetFile.equals(new File(resourceNetName))) {
-            neuralNetStream = getClass().getResourceAsStream(resourceNetName);
-        } else {
-            try {
-                //noinspection IOResourceOpenedButNotSafelyClosed
-                neuralNetStream = new FileInputStream(neuralNetFile);
-            } catch (FileNotFoundException e) {
-                throw new OperatorException(e);
-            }
-        }
+    private String readNeuralNet(String resourceNetName, File neuralNetFile) {
+        InputStream neuralNetStream = getNeuralNetStream(resourceNetName, neuralNetFile);
+        return readNeuralNetFromStream(neuralNetStream);
+    }
 
+    private String readNeuralNetFromStream(InputStream neuralNetStream) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(neuralNetStream));
         try {
             String line = reader.readLine();
@@ -627,6 +620,21 @@ public class RegionalWaterOp extends PixelOperator {
             } catch (IOException ignore) {
             }
         }
+    }
+
+    private InputStream getNeuralNetStream(String resourceNetName, File neuralNetFile) {
+        InputStream neuralNetStream;
+        if (neuralNetFile.equals(new File(resourceNetName))) {
+            neuralNetStream = getClass().getResourceAsStream(resourceNetName);
+        } else {
+            try {
+                //noinspection IOResourceOpenedButNotSafelyClosed
+                neuralNetStream = new FileInputStream(neuralNetFile);
+            } catch (FileNotFoundException e) {
+                throw new OperatorException(e);
+            }
+        }
+        return neuralNetStream;
     }
 
     public static class Spi extends OperatorSpi {
