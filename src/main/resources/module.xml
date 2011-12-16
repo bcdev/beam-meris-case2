@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-case2-regional</symbolicName>
-    <version>1.6.5-CC</version>
+    <version>1.7-CC</version>
     <name>MERIS Case-2-Regional Processor</name>
 
     <description>
@@ -52,7 +52,10 @@
         <module>beam-envisat-reader</module>
     </dependency>
     <dependency>
-        <module>beam-visat</module>
+        <module>beam-waterradiance-auxdata</module>
+    </dependency>
+    <dependency>
+        <module>beam-visat-rcp</module>
         <optional>true</optional>
     </dependency>
 

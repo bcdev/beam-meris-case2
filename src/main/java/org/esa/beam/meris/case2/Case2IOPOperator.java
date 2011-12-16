@@ -39,7 +39,7 @@ import java.util.List;
                   description = "Performs IOP retrieval on L1b MERIS products, including radiometric correction and atmospheric correction.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2011 by Brockmann Consult",
-                  version = "1.6.5-CC3")
+                  version = "1.7-CC")
 public class Case2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
@@ -53,6 +53,7 @@ public class Case2IOPOperator extends Operator {
     private boolean doAtmosphericCorrection;
 
     @Parameter(label = "Alternative atm. corr. neural net (optional)",
+               defaultValue = GlintCorrectionOperator.MERIS_ATMOSPHERIC_NET_NAME,
                description = "The file of the atmospheric net to be used instead of the default neural net.")
     private File atmoNetFile;
 
@@ -112,11 +113,20 @@ public class Case2IOPOperator extends Operator {
     ///////////  Case2WaterOp  ///////////////////////////
     ///////////
 
+    @Parameter(label = "Use climatology map for salinity and temperature", defaultValue = "true",
+               description = "By default a climatology map is used. If set to 'false' the specified average values are used " +
+                             "for the whole scene.")
+    private boolean useSnTMap;
 
-    @Parameter(label = "Average salinity", defaultValue = "35", unit = "PSU", description = "The salinity of the water")
+    @Parameter(label = "Output salinity and temperature bands", defaultValue = "false",
+               description = "Toggles the output of the salinity and temperature band.")
+    private boolean outputSnT;
+
+    @Parameter(label = "Average salinity", defaultValue = "35", unit = "PSU",
+               description = "The salinity of the water.")
     private double averageSalinity;
 
-    @Parameter(label = "Average temperature", defaultValue = "15", unit = "°C", description = "The Water temperature")
+    @Parameter(label = "Average temperature", defaultValue = "15", unit = "°C", description = "The water temperature.")
     private double averageTemperature;
 
     @Parameter(label = "Tsm conversion exponent",
@@ -147,10 +157,12 @@ public class Case2IOPOperator extends Operator {
     private String invalidPixelExpression;
 
     @Parameter(label = "Alternative inverse water neural net (optional)",
+               defaultValue = RegionalWaterOp.DEFAULT_INVERSE_WATER_NET,
                description = "The file of the inverse water neural net to be used instead of the default.")
     private File inverseWaterNnFile;
 
     @Parameter(label = "Alternative forward water neural net (optional)",
+               defaultValue = RegionalWaterOp.DEFAULT_FORWARD_WATER_NET,
                description = "The file of the forward water neural net to be used instead of the default.")
     private File forwardWaterNnFile;
 
@@ -170,6 +182,7 @@ public class Case2IOPOperator extends Operator {
             atmoCorOp.setParameter("outputNormReflec", outputNormReflec);
             atmoCorOp.setParameter("outputPath", outputPath);
             atmoCorOp.setParameter("outputTransmittance", outputTransmittance);
+            atmoCorOp.setParameter("useSnTMap", useSnTMap);
             atmoCorOp.setParameter("averageSalinity", averageSalinity);
             atmoCorOp.setParameter("averageTemperature", averageTemperature);
             atmoCorOp.setParameter("landExpression", landExpression);
@@ -180,6 +193,8 @@ public class Case2IOPOperator extends Operator {
 
         Operator case2Op = new RegionalWaterOp();
 
+        case2Op.setParameter("useSnTMap", useSnTMap);
+        case2Op.setParameter("outputSnT", outputSnT);
         case2Op.setParameter("averageSalinity", averageSalinity);
         case2Op.setParameter("averageTemperature", averageTemperature);
         case2Op.setParameter("inputReflecAre", outputReflecAs);

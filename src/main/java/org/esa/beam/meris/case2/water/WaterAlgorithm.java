@@ -54,6 +54,8 @@ public class WaterAlgorithm {
     public static final int TARGET_CHI_SQUARE_FIT_INDEX = 24;
     public static final int TARGET_N_ITER_FIT_INDEX = 25;
     public static final int TARGET_PARAM_CHANGE_FIT_INDEX = 26;
+    public static final int TARGET_SALINITY_INDEX = 27;
+    public static final int TARGET_TEMPERATURE_INDEX = 28;
     public static final int TARGET_KD_SPECTRUM_START_INDEX = 50;
 
     public static final int WLR_OOR_BIT_INDEX = 0;
@@ -71,8 +73,6 @@ public class WaterAlgorithm {
     public static final double BTSM_TO_SPM_FACTOR = 0.01;
 
     private final double spectrumOutOfScopeThreshold;
-    private double averageSalinity;
-    private double averageTemperature;
     private boolean outputKdSpectrum;
 
     private final double tsmExponent;
@@ -80,21 +80,19 @@ public class WaterAlgorithm {
     private boolean outputAPoc;
 
     public WaterAlgorithm(boolean outputAllKds, boolean outputAPoc, double spectrumOutOfScopeThreshold,
-                          double tsmExponent, double tsmFactor,
-                          double averageSalinity, double averageTemperature) {
+                          double tsmExponent, double tsmFactor) {
         this.outputKdSpectrum = outputAllKds;
         this.outputAPoc = outputAPoc;
         this.spectrumOutOfScopeThreshold = spectrumOutOfScopeThreshold;
         this.tsmExponent = tsmExponent;
         this.tsmFactor = tsmFactor;
-        this.averageSalinity = averageSalinity;
-        this.averageTemperature = averageTemperature;
 
     }
 
     public double[] perform(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
                             double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
-                            WritableSample[] targetSamples, ReflectanceEnum inputReflecAre) {
+                            WritableSample[] targetSamples, ReflectanceEnum inputReflecAre, double salinity,
+                            double temperature) {
         // test RLw against lowest or cut value in NN and set in lower
         double[] RLw = new double[12];
         RLw[0] = sourceSamples[SOURCE_REFLEC_1_INDEX].getDouble();
@@ -121,8 +119,7 @@ public class WaterAlgorithm {
 
 
         /* prepare for water net */
-        double[] backwardWaterInput = getBackwardWaterInput(solzen, satzen, azi_diff_deg, averageSalinity,
-                                                            averageTemperature,
+        double[] backwardWaterInput = getBackwardWaterInput(solzen, satzen, azi_diff_deg, salinity, temperature,
                                                             logRLw);
 
         // test if water leaving radiance reflectance are within training range,
@@ -142,8 +139,8 @@ public class WaterAlgorithm {
         }
 
         /* do forward NN computation */
-        double[] forwardWaterInput = getForwardWaterInput(solzen, satzen, azi_diff_deg, averageTemperature,
-                                                          averageSalinity, backwardWaterOutput
+        double[] forwardWaterInput = getForwardWaterInput(solzen, satzen, azi_diff_deg, salinity, temperature,
+                                                          backwardWaterOutput
         );
         double[] forwardWaterOutput = forwardWaterNet.calc(forwardWaterInput);
 
@@ -206,13 +203,13 @@ public class WaterAlgorithm {
     }
 
     private double[] getForwardWaterInput(double solzen, double satzen, double azi_diff_deg,
-                                          double averageTemperature, double averageSalinity, double[] waterOutnet) {
+                                          double salinity, double temperature, double[] waterOutnet) {
         double[] forwardWaterInnet = new double[10];
         forwardWaterInnet[0] = solzen;
         forwardWaterInnet[1] = satzen;
         forwardWaterInnet[2] = azi_diff_deg;
-        forwardWaterInnet[3] = averageTemperature;
-        forwardWaterInnet[4] = averageSalinity;
+        forwardWaterInnet[3] = temperature;
+        forwardWaterInnet[4] = salinity;
         forwardWaterInnet[5] = waterOutnet[1]; // log_conc_apart
         forwardWaterInnet[6] = waterOutnet[2]; // log_conc_agelb
         forwardWaterInnet[7] = waterOutnet[3]; // log_conc_apig
@@ -244,14 +241,14 @@ public class WaterAlgorithm {
         }
     }
 
-    private double[] getBackwardWaterInput(double solzen, double satzen, double azi_diff_deg, double averageSalinity,
-                                           double averageTemperature, double[] logRLw) {
+    private double[] getBackwardWaterInput(double solzen, double satzen, double azi_diff_deg, double salinity,
+                                           double temperature, double[] logRLw) {
         double[] waterInnet = new double[16];
         waterInnet[0] = solzen;
         waterInnet[1] = satzen;
         waterInnet[2] = azi_diff_deg;
-        waterInnet[3] = averageTemperature;
-        waterInnet[4] = averageSalinity;
+        waterInnet[3] = temperature;
+        waterInnet[4] = salinity;
         waterInnet[5] = logRLw[0]; // 412 reflec_1
         waterInnet[6] = logRLw[1]; // 443 reflec_2
         waterInnet[7] = logRLw[2]; // 490 reflec_3

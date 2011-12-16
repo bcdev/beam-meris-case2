@@ -25,12 +25,12 @@ public class RegionalWaterAlgorithmTest {
 
     @Test
     public void testComputation() throws Exception {
-        final WaterAlgorithm regionalAlgo = new WaterAlgorithm(false, false, 4.0, 1.0, 1.73, 35.0, 15.0);
+        final WaterAlgorithm regionalAlgo = new WaterAlgorithm(false, false, 4.0, 1.0, 1.73);
         final double aziDiff = RegionalWaterOp.getAzimuthDifference(89.83, 283.79);
         final Sample[] sourceSamples = createSourceSamples();
         final WritableSample[] targetSamples = createTargetSamples();
         regionalAlgo.perform(inverseNet, forwardNet, 23.255, 16.845, aziDiff, sourceSamples, targetSamples,
-                             ReflectanceEnum.RADIANCE_REFLECTANCES);
+                             ReflectanceEnum.RADIANCE_REFLECTANCES, 35.0, 15.0);
         assertFalse(Double.isNaN(targetSamples[WaterAlgorithm.TARGET_A_GELBSTOFF_INDEX].getDouble()));
         assertFalse(Double.isNaN(targetSamples[WaterAlgorithm.TARGET_A_PIGMENT_INDEX].getDouble()));
         assertFalse(Double.isNaN(targetSamples[WaterAlgorithm.TARGET_A_TOTAL_INDEX].getDouble()));
