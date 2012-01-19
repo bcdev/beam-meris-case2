@@ -20,9 +20,10 @@
     the command-line interface and the common processing request file format.</p>
 
 <h4>Content</h4>
-<li><a href="#InOutTab">The In- and Output Parameters tab</a></li>
-<li><a href="#ProcParamTab">The Processing Parameters tab</a></li>
-
+<ul>
+    <li><a href="#InOutTab">The In- and Output Parameters tab</a></li>
+    <li><a href="#ProcParamTab">The Processing Parameters tab</a></li>
+</ul>
 <a name="InOutTab"></a>
 
 <h3>The In- and Output Parameters</h3>
@@ -90,9 +91,14 @@
 </p>
 
 <p class="i1">
-    <b>Output normalization of bidirectional reflectances: </b><br>
-    Whether to add normalised reflectance bands to the target product or not. Only enabled if atmospheric correction is
-    enabled too.
+    <b>Output water leaving reflectance: </b><br>
+    Whether to add water leaving reflectance bands to the target product or not. These are either computed by the
+    atmospheric correction or are provided by the source product.
+</p>
+
+<p class="i1">
+    <b>Output water leaving reflectance as: </b><br>
+    Specifies if the water leaving reflectance are given as radiance reflectance or irradiance reflectance.
 </p>
 
 <p class="i1">
@@ -108,40 +114,57 @@
 </p>
 
 <p class="i1">
+    <b>Output Kd spectrum: </b><br>
+    Whether to add a Kd spectrum to the target product or not.
+</p>
+
+<p class="i1">
+    <b>Output normalised bidirectional reflectances: </b><br>
+    Whether to add normalised reflectance bands to the target product or not. Only enabled if atmospheric correction is
+    enabled too.
+</p>
+
+<p class="i1">
+    <b>Output A_Poc: </b><br>
+    Whether to add A_Poc band to the target product or not. Currently not implemented. The resulting band will be empty.
+</p>
+
+<p class="i1">
     <b>Land detection expression: </b><br>
     An expression to detect land pixels. Only enabled if atmospheric correction is enabled too.
 </p>
 
 <p class="i1">
-    <b>Land detection expression: </b><br>
+    <b>Cloud/Ice detection expression: </b><br>
     An expression to detect cloud/ice pixels. Only enabled if atmospheric correction is enabled too.
 </p>
 
 <p class="i1">
-    <b>Water algorithm: </b><br>
-    The algorithm used to compute the Case-2 IOPs. Must be <a
-        href="RegionalBioOpticalModelSpecification.html">REGIONAL</a>.
+    <b>Use climatology map for salinity and temperature: </b><br>
+    For salinity and temperature a climatology map is used if enabled. Otherwise the specified average values are used
+    for the whole scene.
 </p>
 
 <p class="i1">
-    <b>Output water leaving reflectance: </b><br>
-    Whether to add water leaving reflectance bands to the target product or not. These are either computed by the
-    atmospheric correction or are provided by the source product.
+    <b>Output salinity and temperature bands: </b><br>
+    Whether to output salinity and temperature bands with the values used for the processing.
+</p>
+
+<p class="i1">
+    <b>Average salinity: </b><br>
+    The average salinity value used for the processing.
+</p>
+
+<p class="i1">
+    <b>Average temperature: </b><br>
+    The average salinity value used for the processing.
 </p>
 
 <p class="i1">
     <b>Tsm conversion exponent: </b><br>
     <b>Tsm conversion factor: </b><br>
     Factors for converting particle scattering into total suspended matter dry weight. <br>
-    <font face="monospace">Ctsm (g m-3) = tsmConversionFactor * b443^tsmConversionExponent</font>
-</p>
-
-<p class="i1">
-    <b>Chl conversion exponent: </b><br>
-    <b>Chl conversion factor: </b><br>
-    Factors for converting absorption of phytoplankton pigment at 443 into chlorophyll
-    concentration. <br>
-    <font face="monospace">Chlorophyll (mg m-3) = chlConversionFactor a_pig443^chlConversionExponent</font>
+    <font face="monospace">tsm (g m-3) = tsmConversionFactor * b443^tsmConversionExponent</font>
 </p>
 
 <p class="i1">
@@ -156,12 +179,12 @@
 </p>
 
 <p class="i1">
-    <b>Inverse water neural net: </b><br>
+    <b>Alternative inverse water neural net (optional): </b><br>
     Path to the neural network file for the inverse model (reflectances, geometry --> concentrations).
 </p>
 
 <p class="i1">
-    <b>Forward water neural net: </b><br>
+    <b>Alternative forward water neural net: </b><br>
     Path to the neural network file for the forward model (concentrations, geometry --> reflectances).
 </p>
 
