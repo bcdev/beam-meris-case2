@@ -49,7 +49,7 @@ import static org.esa.beam.meris.case2.water.WaterAlgorithm.*;
                   description = "Performs IOP retrieval on atmospherically corrected MERIS products.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2010 by Brockmann Consult",
-                  version = "1.7-CC",
+                  version = "1.7-WR",
                   internal = true)
 public class RegionalWaterOp extends PixelOperator {
 
