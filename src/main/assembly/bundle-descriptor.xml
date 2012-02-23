@@ -1,0 +1,105 @@
+<bundleDescriptor>
+    <bundleName>case2-regional</bundleName>
+    <bundleVersion>1.5.2</bundleVersion>
+
+    <processorDescriptors>
+        <processorDescriptor>
+            <executableName>Meris.Case2Regional</executableName>
+            <processorName>MERIS Case2 Regional</processorName>
+            <processorVersion>1.5.2</processorVersion>
+            <defaultParameters>
+                <![CDATA[<parameters>
+    <doAtmosphericCorrection>true</doAtmosphericCorrection>
+    <doSmileCorrection>true</doSmileCorrection>
+    <outputTosa>false</outputTosa>
+    <outputReflec>true</outputReflec>
+    <outputReflecAs>RADIANCE_REFLECTANCES</outputReflecAs>
+    <outputPath>true</outputPath>
+    <outputTransmittance>false</outputTransmittance>
+    <outputNormReflec>false</outputNormReflec>
+    <landExpression>toa_reflec_10 > toa_reflec_6 AND toa_reflec_13 > 0.0475</landExpression>
+    <cloudIceExpression>toa_reflec_14 > 0.2</cloudIceExpression>
+    <algorithm>REGIONAL</algorithm>
+    <tsmConversionExponent>1.0</tsmConversionExponent>
+    <tsmConversionFactor>1.73</tsmConversionFactor>
+    <chlConversionExponent>1.04</chlConversionExponent>
+    <chlConversionFactor>21.0</chlConversionFactor>
+    <spectrumOutOfScopeThreshold>4.0</spectrumOutOfScopeThreshold>
+    <invalidPixelExpression>agc_flags.INVALID</invalidPixelExpression>
+</parameters>]]></defaultParameters>
+            <outputFormats>BEAM-DIMAP,NetCDF,GeoTIFF</outputFormats>
+            <descriptionHtml>
+                <![CDATA[<p>This is the case2-regional processor from BEAM 4.9.</p>]]></descriptionHtml>
+            <inputProductTypes>MERIS_L1B</inputProductTypes>
+            <outputProductType>MERIS_Case2R</outputProductType>
+            <validMaskExpression>!case2_flags.INVALID</validMaskExpression>
+            <outputVariables>
+                <outputVariable>
+                    <name>a_total_443</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>a_ys_443</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>a_pig_443</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>bb_spm_443</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>tsm</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>chl_conc</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>chiSquare</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>K_min</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>Kd_490</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>Z90_max</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>turbidity_index</name>
+                    <defaultAggregator>AVG</defaultAggregator>
+                    <defaultWeightCoeff>1.0</defaultWeightCoeff>
+                </outputVariable>
+                <outputVariable>
+                    <name>l1_flags</name>
+                </outputVariable>
+                <outputVariable>
+                    <name>agc_flags</name>
+                </outputVariable>
+                <outputVariable>
+                    <name>case2_flags</name>
+                </outputVariable>
+            </outputVariables>
+        </processorDescriptor>
+
+    </processorDescriptors>
+</bundleDescriptor>
