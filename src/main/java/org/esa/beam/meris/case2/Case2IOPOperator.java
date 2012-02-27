@@ -199,7 +199,7 @@ public class Case2IOPOperator extends Operator {
         case2Op.setSourceProduct("acProduct", inputProduct);
         final Product case2Product = case2Op.getTargetProduct();
 
-        List<MergeOp.BandDesc> bandDescList = new ArrayList<MergeOp.BandDesc>();
+        List<MergeOp.NodeDescriptor> bandDescList = new ArrayList<MergeOp.NodeDescriptor>();
         final String[] names = inputProduct.getBandNames();
         for (String name : names) {
             if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
@@ -211,8 +211,8 @@ public class Case2IOPOperator extends Operator {
             if (case2Product.containsBand(name)) {
                 continue;
             }
-            final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
-            bandDesc.setProduct("inputProduct");
+            final MergeOp.NodeDescriptor bandDesc = new MergeOp.NodeDescriptor();
+            bandDesc.setProductId("inputProduct");
             bandDesc.setNamePattern(name);
             bandDescList.add(bandDesc);
         }
@@ -223,8 +223,8 @@ public class Case2IOPOperator extends Operator {
                 (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
                 continue;
             }
-            final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
-            bandDesc.setProduct("case2Product");
+            final MergeOp.NodeDescriptor bandDesc = new MergeOp.NodeDescriptor();
+            bandDesc.setProductId("case2Product");
             bandDesc.setNamePattern(name);
             bandDescList.add(bandDesc);
         }
@@ -236,7 +236,7 @@ public class Case2IOPOperator extends Operator {
         mergeOp.setParameter("productName", case2Product.getName());
         mergeOp.setParameter("productType", case2Product.getProductType());
         mergeOp.setParameter("copyGeoCodingFrom", "case2Product");
-        mergeOp.setParameter("bands", bandDescList.toArray(new MergeOp.BandDesc[bandDescList.size()]));
+        mergeOp.setParameter("bands", bandDescList.toArray(new MergeOp.NodeDescriptor[bandDescList.size()]));
         final Product targetProduct = mergeOp.getTargetProduct();
         final MetadataElement metadataRoot = targetProduct.getMetadataRoot();
         removeAllMetadata(metadataRoot);
