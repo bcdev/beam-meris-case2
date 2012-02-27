@@ -34,7 +34,11 @@
             <artifactId>beam-meris-glint</artifactId>
             <version>1.2.2-SNAPSHOT</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.esa.beam</groupId>
+            <artifactId>beam-meris-sdr</artifactId>
+            <version>2.3</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
