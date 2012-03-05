@@ -199,7 +199,13 @@ public class Case2IOPOperator extends Operator {
         case2Op.setSourceProduct("acProduct", inputProduct);
         final Product case2Product = case2Op.getTargetProduct();
 
-        List<MergeOp.NodeDescriptor> bandDescList = new ArrayList<MergeOp.NodeDescriptor>();
+        Product targetProduct = new Product(case2Product.getName(), case2Product.getProductType(),
+                                            case2Product.getSceneRasterWidth(), case2Product.getSceneRasterHeight());
+        ProductUtils.copyGeoCoding(inputProduct, targetProduct);
+        ProductUtils.copyTiePointGrids(inputProduct, targetProduct);
+        targetProduct.setStartTime(inputProduct.getStartTime());
+        targetProduct.setEndTime(inputProduct.getEndTime());
+
         final String[] names = inputProduct.getBandNames();
         for (String name : names) {
             if (name.contains("flags") || name.contains("b_tsm") || name.contains("a_tot")) {
@@ -211,44 +217,20 @@ public class Case2IOPOperator extends Operator {
             if (case2Product.containsBand(name)) {
                 continue;
             }
-            final MergeOp.NodeDescriptor bandDesc = new MergeOp.NodeDescriptor();
-            bandDesc.setProductId("inputProduct");
-            bandDesc.setNamePattern(name);
-            bandDescList.add(bandDesc);
+            ProductUtils.copyBand(name, inputProduct, targetProduct, true);
         }
 
         final String[] case2names = case2Product.getBandNames();
+
         for (String name : case2names) {
             if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&
                 (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
                 continue;
             }
-            final MergeOp.NodeDescriptor bandDesc = new MergeOp.NodeDescriptor();
-            bandDesc.setProductId("case2Product");
-            bandDesc.setNamePattern(name);
-            bandDescList.add(bandDesc);
+            ProductUtils.copyBand(name, case2Product, targetProduct, true);
         }
 
-
-        final MergeOp mergeOp = new MergeOp();
-        mergeOp.setSourceProduct("inputProduct", inputProduct);
-        mergeOp.setSourceProduct("case2Product", case2Product);
-        mergeOp.setParameter("productName", case2Product.getName());
-        mergeOp.setParameter("productType", case2Product.getProductType());
-        mergeOp.setParameter("copyGeoCodingFrom", "case2Product");
-        mergeOp.setParameter("bands", bandDescList.toArray(new MergeOp.NodeDescriptor[bandDescList.size()]));
-        final Product targetProduct = mergeOp.getTargetProduct();
-        final MetadataElement metadataRoot = targetProduct.getMetadataRoot();
-        removeAllMetadata(metadataRoot);
-        ProductUtils.copyMetadata(case2Product, targetProduct);
         setTargetProduct(targetProduct);
-    }
-
-    private void removeAllMetadata(MetadataElement metadataRoot) {
-        final MetadataElement[] elements = metadataRoot.getElements();
-        for (MetadataElement element : elements) {
-            metadataRoot.removeElement(element);
-        }
     }
 
     public static class Spi extends OperatorSpi {
