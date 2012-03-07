@@ -203,7 +203,8 @@ public class Case2IOPOperator extends Operator {
         final Product case2Product = case2Op.getTargetProduct();
         final String[] case2names = case2Product.getBandNames();
         for (String name : case2names) {
-            if (isPixelGeoCodingBandName(name, inputProduct.getGeoCoding())) {
+            if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&
+                (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
                 continue;
             }
             final MergeOp.BandDesc bandDesc = new MergeOp.BandDesc();
