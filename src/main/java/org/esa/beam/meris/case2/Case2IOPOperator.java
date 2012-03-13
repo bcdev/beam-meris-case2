@@ -185,8 +185,8 @@ public class Case2IOPOperator extends Operator {
 
         Product targetProduct = new Product(case2Product.getName(), case2Product.getProductType(),
                                             case2Product.getSceneRasterWidth(), case2Product.getSceneRasterHeight());
-        ProductUtils.copyGeoCoding(inputProduct, targetProduct);
         ProductUtils.copyTiePointGrids(inputProduct, targetProduct);
+        ProductUtils.copyGeoCoding(inputProduct, targetProduct);
         targetProduct.setStartTime(inputProduct.getStartTime());
         targetProduct.setEndTime(inputProduct.getEndTime());
 
