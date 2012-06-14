@@ -73,7 +73,7 @@ public class Case2IOPOperator extends Operator {
     @Parameter(defaultValue = "RADIANCE_REFLECTANCES", valueSet = {"RADIANCE_REFLECTANCES", "IRRADIANCE_REFLECTANCES"},
                label = "Output water leaving reflectance as",
                description = "Select if reflectances shall be written as radiances or irradiances. " +
-                             "The irradiances are compatible with standard MERIS product.")
+                       "The irradiances are compatible with standard MERIS product.")
     private ReflectanceEnum outputReflecAs;
 
     @Parameter(defaultValue = "true", label = "Output path reflectance",
@@ -86,7 +86,7 @@ public class Case2IOPOperator extends Operator {
 
     @Parameter(defaultValue = "false", label = "Output Kd spectrum",
                description = "Toggles the output of downwelling irradiance attenuation coefficients. " +
-                             "If disabled only Kd_490 is added to the output.")
+                       "If disabled only Kd_490 is added to the output.")
     private boolean outputKdSpectrum;
 
     @Parameter(defaultValue = "false",
@@ -115,7 +115,7 @@ public class Case2IOPOperator extends Operator {
 
     @Parameter(label = "Use climatology map for salinity and temperature", defaultValue = "true",
                description = "By default a climatology map is used. If set to 'false' the specified average values are used " +
-                             "for the whole scene.")
+                       "for the whole scene.")
     private boolean useSnTMap;
 
     @Parameter(label = "Output salinity and temperature bands", defaultValue = "false",
@@ -201,8 +201,8 @@ public class Case2IOPOperator extends Operator {
 
         Product targetProduct = new Product(case2Product.getName(), case2Product.getProductType(),
                                             case2Product.getSceneRasterWidth(), case2Product.getSceneRasterHeight());
-        ProductUtils.copyGeoCoding(inputProduct, targetProduct);
         ProductUtils.copyTiePointGrids(inputProduct, targetProduct);
+        ProductUtils.copyGeoCoding(inputProduct, targetProduct);
         targetProduct.setStartTime(inputProduct.getStartTime());
         targetProduct.setEndTime(inputProduct.getEndTime());
 
@@ -224,10 +224,12 @@ public class Case2IOPOperator extends Operator {
 
         for (String name : case2names) {
             if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&
-                (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
+                    (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
                 continue;
             }
-            ProductUtils.copyBand(name, case2Product, targetProduct, true);
+            if (!targetProduct.containsBand(name)) {
+                ProductUtils.copyBand(name, case2Product, targetProduct, true);
+            }
         }
 
         setTargetProduct(targetProduct);
