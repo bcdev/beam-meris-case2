@@ -9,6 +9,7 @@ import org.esa.beam.meris.case2.RegionalWaterOp;
 import org.esa.beam.nn.NNffbpAlphaTabFast;
 import org.esa.beam.util.BitSetter;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -43,6 +44,7 @@ public class RegionalWaterAlgorithmTest {
         };
     }
 
+    @Ignore
     @Test
     public void testComputation() throws Exception {
 //        final WaterAlgorithm regionalAlgo = new WaterAlgorithm(false, false, 4.0, 1.0, 1.73,
