@@ -18,7 +18,6 @@ package org.esa.beam.meris.case2;
 
 import org.esa.beam.atmosphere.operator.GlintCorrectionOperator;
 import org.esa.beam.atmosphere.operator.ReflectanceEnum;
-import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.Operator;
@@ -27,12 +26,9 @@ import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProduct;
-import org.esa.beam.gpf.operators.standard.MergeOp;
 import org.esa.beam.util.ProductUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @OperatorMetadata(alias = "Meris.Case2Regional",
@@ -139,6 +135,16 @@ public class Case2IOPOperator extends Operator {
                description = "Factor for conversion from TSM to B_TSM.")
     private Double tsmConversionFactor;
 
+    @Parameter(label = "Chl conversion factor",
+               defaultValue = "1.04",
+               description = "Exponent for conversion from A_PIG to CHL_CONC")
+    private double chlConversionExponent;
+
+    @Parameter(label = "Chl conversion exponent",
+               defaultValue = "21.0",
+               description = "Factor for conversion from A_PIG to CHL_CONC")
+    private double chlConversionFactor;
+
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope.")
     private double spectrumOutOfScopeThreshold;
 
@@ -146,15 +152,20 @@ public class Case2IOPOperator extends Operator {
                description = "Expression defining pixels not considered for processing.")
     private String invalidPixelExpression;
 
-    @Parameter(label = "Alternative inverse water neural net (optional)",
-               defaultValue = RegionalWaterOp.DEFAULT_INVERSE_WATER_NET,
-               description = "The file of the inverse water neural net to be used instead of the default.")
-    private File inverseWaterNnFile;
+    @Parameter(label = "Alternative inverse iop neural net (optional)",
+               defaultValue = RegionalWaterOp.DEFAULT_INVERSE_IOP_NET,
+               description = "The file of the inverse iop neural net to be used instead of the default.")
+    private File inverseIopNnFile;
 
-    @Parameter(label = "Alternative forward water neural net (optional)",
-               defaultValue = RegionalWaterOp.DEFAULT_FORWARD_WATER_NET,
-               description = "The file of the forward water neural net to be used instead of the default.")
-    private File forwardWaterNnFile;
+    @Parameter(label = "Alternative inverse kd neural net (optional)",
+               defaultValue = RegionalWaterOp.DEFAULT_INVERSE_KD_NET,
+               description = "The file of the inverse kd neural net to be used instead of the default.")
+    private File inverseKdNnFile;
+
+    @Parameter(label = "Alternative forward iop neural net (optional)",
+               defaultValue = RegionalWaterOp.DEFAULT_FORWARD_IOP_NET,
+               description = "The file of the forward iop neural net to be used instead of the default.")
+    private File forwardIopNnFile;
 
     @Override
     public void initialize() throws OperatorException {
@@ -190,8 +201,9 @@ public class Case2IOPOperator extends Operator {
         case2Op.setParameter("inputReflecAre", outputReflecAs);
         case2Op.setParameter("spectrumOutOfScopeThreshold", spectrumOutOfScopeThreshold);
         case2Op.setParameter("invalidPixelExpression", invalidPixelExpression);
-        case2Op.setParameter("inverseWaterNnFile", inverseWaterNnFile);
-        case2Op.setParameter("forwardWaterNnFile", forwardWaterNnFile);
+        case2Op.setParameter("inverseIopNnFile", inverseIopNnFile);
+        case2Op.setParameter("inverseKdNnFile", inverseKdNnFile);
+        case2Op.setParameter("forwardIopNnFile", forwardIopNnFile);
         case2Op.setParameter("outputKdSpectrum", outputKdSpectrum);
         case2Op.setParameter("outputAPoc", outputAPoc);
         case2Op.setParameter("tsmConversionExponent", tsmConversionExponent);

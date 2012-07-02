@@ -28,19 +28,17 @@ import static org.junit.Assert.*;
 public class NNInputMapperTest {
 
     @Test
-    public void testCreate() throws Exception {
+    public void testNoReflBands() throws Exception {
         NNInputMapper mapper = NNInputMapper.create("the net has 10 inputs:\n" +
-                                                                   "input  1 is sun_thet in [0.002010,75.000000]\n" +
-                                                                   "input  2 is view_zeni in [0.000000,50.000000]");
+                                                            "input  1 is sun_thet in [0.002010,75.000000]\n" +
+                                                            "input  2 is view_zeni in [0.000000,50.000000]");
         String[] inputNames = mapper.getInputNames();
         assertNotNull(inputNames);
-        assertEquals(2, inputNames.length);
-        assertEquals("sun_thet", inputNames[0]);
-        assertEquals("view_zeni", inputNames[1]);
+        assertEquals(0, inputNames.length);
     }
 
     @Test
-    public void testCreateFromNet() throws Exception {
+    public void testLog() throws Exception {
         InputStream is = getClass().getResourceAsStream("/org/esa/beam/meris/case2/water_invers/23x7x16_34286.9.net");
         InputStreamReader inputStreamReader = new InputStreamReader(is);
         String netString = FileUtils.readText(inputStreamReader);
@@ -48,34 +46,77 @@ public class NNInputMapperTest {
 
         String[] inputNames = mapper.getInputNames();
         assertNotNull(inputNames);
-        assertEquals(16, inputNames.length);
-        assertEquals("sun_thet", inputNames[0]);
-        assertEquals("view_zeni", inputNames[1]);
-        assertEquals("azi_diff_hl", inputNames[2]);
-        assertEquals("temperature", inputNames[3]);
-        assertEquals("salinity", inputNames[4]);
-        assertEquals("log_rlw_412", inputNames[5]);
-        assertEquals("log_rlw_443", inputNames[6]);
-        assertEquals("log_rlw_490", inputNames[7]);
-        assertEquals("log_rlw_510", inputNames[8]);
-        assertEquals("log_rlw_560", inputNames[9]);
-        assertEquals("log_rlw_620", inputNames[10]);
-        assertEquals("log_rlw_665", inputNames[11]);
-        assertEquals("log_rlw_708", inputNames[12]);
-        assertEquals("log_rlw_753", inputNames[13]);
-        assertEquals("log_rlw_778", inputNames[14]);
-        assertEquals("log_rlw_865", inputNames[15]);
+        assertEquals(11, inputNames.length);
+        assertEquals("log_rlw_412", inputNames[0]);
+        assertEquals("log_rlw_443", inputNames[1]);
+        assertEquals("log_rlw_490", inputNames[2]);
+        assertEquals("log_rlw_510", inputNames[3]);
+        assertEquals("log_rlw_560", inputNames[4]);
+        assertEquals("log_rlw_620", inputNames[5]);
+        assertEquals("log_rlw_665", inputNames[6]);
+        assertEquals("log_rlw_708", inputNames[7]);
+        assertEquals("log_rlw_753", inputNames[8]);
+        assertEquals("log_rlw_778", inputNames[9]);
+        assertEquals("log_rlw_865", inputNames[10]);
+
+        int[] mapping = mapper.getMapping();
+        assertNotNull(mapping);
+        assertEquals(11, mapping.length);
+
+        assertEquals(0, mapping[0]);
+        assertEquals(1, mapping[1]);
+        assertEquals(2, mapping[2]);
+        assertEquals(3, mapping[3]);
+        assertEquals(4, mapping[4]);
+        assertEquals(5, mapping[5]);
+        assertEquals(6, mapping[6]);
+
+        assertEquals(8, mapping[7]);
+        assertEquals(9, mapping[8]);
+        assertEquals(10, mapping[9]);
+        assertEquals(11, mapping[10]);
+
+        assertTrue(mapper.isLogScaled());
     }
 
     @Test
-    public void testIsLogScaled() throws Exception {
-        assertTrue(NNInputMapper.isLogScaled("log_rlw_865"));
-        assertFalse(NNInputMapper.isLogScaled("rlw_865"));
+    public void testWithoutLog() throws Exception {
+        InputStream is = getClass().getResourceAsStream("/org/esa/beam/meris/case2/all_m1-m9/inv_iop_meris_b10/27x41x27_36447.3.net");
+        InputStreamReader inputStreamReader = new InputStreamReader(is);
+        String netString = FileUtils.readText(inputStreamReader);
+        NNInputMapper mapper = NNInputMapper.create(netString);
+
+        String[] inputNames = mapper.getInputNames();
+        assertNotNull(inputNames);
+        assertEquals(10, inputNames.length);
+        assertEquals("rw_412", inputNames[0]);
+        assertEquals("rw_443", inputNames[1]);
+        assertEquals("rw_489", inputNames[2]);
+        assertEquals("rw_510", inputNames[3]);
+        assertEquals("rw_560", inputNames[4]);
+        assertEquals("rw_620", inputNames[5]);
+        assertEquals("rw_665", inputNames[6]);
+        assertEquals("rw_681", inputNames[7]);
+        assertEquals("rw_709", inputNames[8]);
+        assertEquals("rw_754", inputNames[9]);
+
+        int[] mapping = mapper.getMapping();
+        assertNotNull(mapping);
+        assertEquals(10, mapping.length);
+
+        assertEquals(0, mapping[0]);
+        assertEquals(1, mapping[1]);
+        assertEquals(2, mapping[2]);
+        assertEquals(3, mapping[3]);
+        assertEquals(4, mapping[4]);
+        assertEquals(5, mapping[5]);
+        assertEquals(6, mapping[6]);
+        assertEquals(7, mapping[7]);
+        assertEquals(8, mapping[8]);
+        assertEquals(9, mapping[9]);
+
+        assertFalse(mapper.isLogScaled());
     }
 
-    @Test
-    public void testGetReflBandIndex() throws Exception {
-        NNInputMapper.getReflBandIndex("log_rlw_412");
-    }
 
 }

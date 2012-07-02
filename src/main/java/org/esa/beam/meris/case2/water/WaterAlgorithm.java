@@ -4,6 +4,7 @@ import org.esa.beam.atmosphere.operator.ReflectanceEnum;
 import org.esa.beam.framework.gpf.pointop.Sample;
 import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.meris.case2.algorithm.KMin;
+import org.esa.beam.meris.case2.util.NNInputMapper;
 import org.esa.beam.nn.NNffbpAlphaTabFast;
 
 public class WaterAlgorithm {
@@ -72,27 +73,47 @@ public class WaterAlgorithm {
 
     public static final double BTSM_TO_SPM_FACTOR = 0.01;
 
+    private final boolean outputKdSpectrum;
+    private final boolean outputAPoc;
     private final double spectrumOutOfScopeThreshold;
-    private boolean outputKdSpectrum;
-
     private final double tsmExponent;
     private final double tsmFactor;
-    private boolean outputAPoc;
+    private final double chlExponent;
+    private final double chlFactor;
+    private final ReflectanceEnum inputReflecAre;
+
+
+    private final ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardIopNet;
+    private final ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseIopNet;
+    private final NNInputMapper invIopMapper;
+    private final ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseKdNet;
+    private final NNInputMapper invKdMapper;
 
     public WaterAlgorithm(boolean outputAllKds, boolean outputAPoc, double spectrumOutOfScopeThreshold,
-                          double tsmExponent, double tsmFactor) {
+                          double tsmExponent, double tsmFactor,
+                          double chlExponent, double chlFactor,
+                          ReflectanceEnum inputReflecAre,
+                          NNInputMapper invIopMapper, NNInputMapper invKdMapper,
+                          ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardIopNet,
+                          ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseIopNet,
+                          ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseKdNet) {
         this.outputKdSpectrum = outputAllKds;
         this.outputAPoc = outputAPoc;
         this.spectrumOutOfScopeThreshold = spectrumOutOfScopeThreshold;
         this.tsmExponent = tsmExponent;
         this.tsmFactor = tsmFactor;
-
+        this.chlExponent = chlExponent;
+        this.chlFactor = chlFactor;
+        this.inputReflecAre = inputReflecAre;
+        this.invIopMapper = invIopMapper;
+        this.invKdMapper = invKdMapper;
+        this.threadLocalForwardIopNet = threadLocalForwardIopNet;
+        this.threadLocalInverseIopNet = threadLocalInverseIopNet;
+        this.threadLocalInverseKdNet = threadLocalInverseKdNet;
     }
 
-    public double[] perform(NNffbpAlphaTabFast inverseWaterNet, NNffbpAlphaTabFast forwardWaterNet,
-                            double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
-                            WritableSample[] targetSamples, ReflectanceEnum inputReflecAre, double salinity,
-                            double temperature) {
+    public void perform(double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
+                            WritableSample[] targetSamples, double salinity, double temperature) {
         // test RLw against lowest or cut value in NN and set in lower
         double[] RLw = new double[12];
         RLw[0] = sourceSamples[SOURCE_REFLEC_1_INDEX].getDouble();
@@ -112,53 +133,50 @@ public class WaterAlgorithm {
                 RLw[i] /= Math.PI;
             }
         }
-        double[] logRLw = new double[RLw.length];
-        for (int i = 0; i < RLw.length; i++) {
-            logRLw[i] = Math.log(RLw[i]);
-        }
-
 
         /* prepare for water net */
-        double[] backwardWaterInput = getBackwardWaterInput(solzen, satzen, azi_diff_deg, salinity, temperature,
-                                                            logRLw);
-
-        // test if water leaving radiance reflectance are within training range,
-        // otherwise set to training range
-        if (isInputInTrainigRange(backwardWaterInput, inverseWaterNet)) {
+        double[] backwardIOPInput = getBackwardWaterInput(invIopMapper, solzen, satzen, azi_diff_deg, salinity, temperature, RLw);
+        NNffbpAlphaTabFast inverseIopNet = threadLocalInverseIopNet.get();
+        // test if water leaving radiance reflectance are within training range, otherwise set to training range
+        if (isInputInTrainigRange(backwardIOPInput, inverseIopNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(WLR_OOR_BIT_INDEX, true);
         }
 
         /* calculate concentrations using the water nn */
-        double[] backwardWaterOutput = inverseWaterNet.calc(backwardWaterInput);
-
-        fillTargetSamples(backwardWaterOutput, targetSamples);
+        double[] backwardWaterOutput = inverseIopNet.calc(backwardIOPInput);
+        fillTargetSamplesIOP(backwardWaterOutput, targetSamples);
 
         /* test if concentrations are within training range */
-        if (isWaterConcentrationOOR(backwardWaterOutput, inverseWaterNet)) {
+        if (isWaterConcentrationOOR(backwardWaterOutput, inverseIopNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(CONC_OOR_BIT_INDEX, true);
         }
 
         /* do forward NN computation */
         double[] forwardWaterInput = getForwardWaterInput(solzen, satzen, azi_diff_deg, salinity, temperature,
-                                                          backwardWaterOutput
-        );
-        double[] forwardWaterOutput = forwardWaterNet.calc(forwardWaterInput);
+                                                          backwardWaterOutput);
+        NNffbpAlphaTabFast forwardIopNet = threadLocalForwardIopNet.get();
+        double[] forwardWaterOutput = forwardIopNet.calc(forwardWaterInput);
 
         /* compute chi square deviation on log scale between measured and computed spectrum */
-        double chiSquare = computeChiSquare(forwardWaterOutput, logRLw);
+        double chiSquare = computeChiSquare(forwardWaterOutput, RLw);
 
         targetSamples[TARGET_CHI_SQUARE_INDEX].set(chiSquare);
 
         if (chiSquare > spectrumOutOfScopeThreshold) {
             targetSamples[TARGET_FLAG_INDEX].set(OOTR_BIT_INDEX, true);
         }
+
+        NNffbpAlphaTabFast inverseKdNet = threadLocalInverseKdNet.get();
+        double[] backwardKdInput = getBackwardWaterInput(invKdMapper, solzen, satzen, azi_diff_deg, salinity, temperature, RLw);
+        double[] backwardKdOutput = inverseKdNet.calc(backwardKdInput);
+
         // compute k_min and z90_max RD 20060811
         final KMin kMin = createKMin(targetSamples);
         // todo - What shall we use?
         // If we use the k_min computed by the neural net, it won't be consistent with the kd-spectrum
         // If we use the k_min from the class KMin we have a huge difference
 //        double k_min = kMin.computeKMinValue();
-        double k_min = Math.exp(backwardWaterOutput[6]);
+        double k_min = Math.exp(backwardKdOutput[0]);
         targetSamples[TARGET_K_MIN_INDEX].set(k_min);
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
 
@@ -172,10 +190,8 @@ public class WaterAlgorithm {
             targetSamples[TARGET_KD_490_INDEX].set(kMin.computeKd490());
         }
 
-        final double turbidity = computeTurbidityIndex(RLw[5]);// parameter Rlw at 620 'reflec_6'
+        final double turbidity = computeTurbidityIndex(Math.log(RLw[5]));// parameter Rlw at 620 'reflec_6'
         targetSamples[TARGET_TURBIDITY_INDEX_INDEX].set(turbidity);
-        return logRLw;
-
     }
 
     private double computeTurbidityIndex(double rlw620) {
@@ -210,30 +226,31 @@ public class WaterAlgorithm {
         forwardWaterInnet[2] = azi_diff_deg;
         forwardWaterInnet[3] = temperature;
         forwardWaterInnet[4] = salinity;
-        forwardWaterInnet[5] = waterOutnet[1]; // log_conc_apart
-        forwardWaterInnet[6] = waterOutnet[2]; // log_conc_agelb
-        forwardWaterInnet[7] = waterOutnet[3]; // log_conc_apig
-        forwardWaterInnet[8] = waterOutnet[4]; // log_conc_bpart
-        forwardWaterInnet[9] = waterOutnet[5]; // log_conc_bwit
+        forwardWaterInnet[5] = waterOutnet[0];
+        forwardWaterInnet[6] = waterOutnet[1];
+        forwardWaterInnet[7] = waterOutnet[2];
+        forwardWaterInnet[8] = waterOutnet[3];
+        forwardWaterInnet[9] = waterOutnet[4];
         return forwardWaterInnet;
 
     }
 
-    private void fillTargetSamples(double[] backwardWaterOutput, WritableSample[] targetSamples) {
-        double chlConc = Math.exp(backwardWaterOutput[0]);
+    private void fillTargetSamplesIOP(double[] backwardWaterOutput, WritableSample[] targetSamples) {
+        double aPig = Math.exp(backwardWaterOutput[0]);
+        double aDet = Math.exp(backwardWaterOutput[1]);
+        double aPart = aDet;
+        double aGelbstoff = Math.exp(backwardWaterOutput[2]);
 
+        double chlConc = Math.exp(Math.log(chlFactor) + backwardWaterOutput[0] * chlExponent);
         targetSamples[TARGET_CHL_CONC_INDEX].set(chlConc);
 
-        double aPart = Math.exp(backwardWaterOutput[1]);
-        double aGelbstoff = Math.exp(backwardWaterOutput[2]);
-        double aPig = Math.exp(backwardWaterOutput[3]);
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
         targetSamples[TARGET_A_PIGMENT_INDEX].set(aPig);
         targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff + aPart);
 
-        double bTsm = Math.exp(backwardWaterOutput[4]);
+        double bTsm = Math.exp(backwardWaterOutput[3]);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
-        targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + backwardWaterOutput[4] * tsmExponent));
+        targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + backwardWaterOutput[3] * tsmExponent));
 
         if (outputAPoc) {
             // todo - How to compute a_poc_443?
@@ -241,25 +258,26 @@ public class WaterAlgorithm {
         }
     }
 
-    private double[] getBackwardWaterInput(double solzen, double satzen, double azi_diff_deg, double salinity,
-                                           double temperature, double[] logRLw) {
-        double[] waterInnet = new double[16];
+    private static double[] getBackwardWaterInput(NNInputMapper inputMapper, double solzen, double satzen, double azi_diff_deg, double salinity,
+                                           double temperature, double[] rlw) {
+        int numReflInputs = inputMapper.getNumInputs();
+        int[] mapping = inputMapper.getMapping();
+        boolean isLogScaled = inputMapper.isLogScaled();
+        double[] waterInnet = new double[5 + numReflInputs];
+
         waterInnet[0] = solzen;
         waterInnet[1] = satzen;
         waterInnet[2] = azi_diff_deg;
         waterInnet[3] = temperature;
         waterInnet[4] = salinity;
-        waterInnet[5] = logRLw[0]; // 412 reflec_1
-        waterInnet[6] = logRLw[1]; // 443 reflec_2
-        waterInnet[7] = logRLw[2]; // 490 reflec_3
-        waterInnet[8] = logRLw[3]; // 510 reflec_4
-        waterInnet[9] = logRLw[4]; // 560 reflec_5
-        waterInnet[10] = logRLw[5]; // 620 reflec_6
-        waterInnet[11] = logRLw[6]; // 665 reflec_7
-        waterInnet[12] = logRLw[8]; // 708 reflec_9
-        waterInnet[13] = logRLw[9]; // 753 reflec_10
-        waterInnet[14] = logRLw[10]; // 778 reflec_12
-        waterInnet[15] = logRLw[11]; // 865 reflec_13
+
+        for (int i = 5; i < waterInnet.length; i++) {
+            double v = rlw[mapping[i - 5]];
+            if (isLogScaled) {
+                v = Math.log(v);
+            }
+            waterInnet[i] = v;
+        }
         return waterInnet;
     }
 
@@ -288,7 +306,7 @@ public class WaterAlgorithm {
      **	test water constituents as output of neural network for out of training range
      **
     --------------------------------------------------------------------------------*/
-    private boolean isWaterConcentrationOOR(double[] backwardWaterOutput, NNffbpAlphaTabFast backwardWaterNet) {
+    private static boolean isWaterConcentrationOOR(double[] backwardWaterOutput, NNffbpAlphaTabFast backwardWaterNet) {
         final double[] outmax = backwardWaterNet.getOutmax();
         final double[] outmin = backwardWaterNet.getOutmin();
         for (int i = 0; i < outmin.length; i++) {

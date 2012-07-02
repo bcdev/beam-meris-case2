@@ -26,6 +26,7 @@ import org.esa.beam.framework.gpf.pointop.SampleConfigurer;
 import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.jai.ResolutionLevel;
 import org.esa.beam.jai.VirtualBandOpImage;
+import org.esa.beam.meris.case2.util.NNInputMapper;
 import org.esa.beam.meris.case2.water.WaterAlgorithm;
 import org.esa.beam.nn.NNffbpAlphaTabFast;
 import org.esa.beam.waterradiance.AuxdataProvider;
@@ -53,8 +54,9 @@ import static org.esa.beam.meris.case2.water.WaterAlgorithm.*;
                   internal = true)
 public class RegionalWaterOp extends PixelOperator {
 
-    public static final String DEFAULT_FORWARD_WATER_NET = "water_forward/23x7x16_191.2.net";
-    public static final String DEFAULT_INVERSE_WATER_NET = "water_invers/23x7x16_34286.9.net";
+    public static final String DEFAULT_FORWARD_IOP_NET = "all_m1-m9/for_iop_meris_b12/17x27x17_487.0.net";
+    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_36447.3.net";
+    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_829.1.net";
 
     // todo move to EnivsatConstants
     private static final String MERIS_ZONAL_WIND_DS_NAME = "zonal_wind";
@@ -126,13 +128,17 @@ public class RegionalWaterOp extends PixelOperator {
                description = "Expression defining pixels not considered for processing")
     private String invalidPixelExpression;
 
-    @Parameter(label = "Inverse water neural net (optional)", defaultValue = DEFAULT_INVERSE_WATER_NET,
-               description = "The file of the inverse water neural net to be used instead of the default.")
-    private File inverseWaterNnFile;
+    @Parameter(label = "Inverse iop neural net (optional)", defaultValue = DEFAULT_INVERSE_IOP_NET,
+               description = "The file of the inverse iop neural net to be used instead of the default.")
+    private File inverseIopNnFile;
 
-    @Parameter(label = "Forward water neural net (optional)", defaultValue = DEFAULT_FORWARD_WATER_NET,
-               description = "The file of the forward water neural net to be used instead of the default.")
-    private File forwardWaterNnFile;
+    @Parameter(label = "Inverse kd neural net (optional)", defaultValue = DEFAULT_INVERSE_KD_NET,
+               description = "The file of the inverse kd neural net to be used instead of the default.")
+    private File inverseKdNnFile;
+
+    @Parameter(label = "Forward iop neural net (optional)", defaultValue = DEFAULT_FORWARD_IOP_NET,
+               description = "The file of the forward iop neural net to be used instead of the default.")
+    private File forwardIopNnFile;
 
     @Parameter(label = "Perform Chi-Square fitting", defaultValue = "false",
                description = "Whether or not to perform the Chi-Square fitting.")
@@ -147,6 +153,10 @@ public class RegionalWaterOp extends PixelOperator {
     private double tsmConversionExponent;
     @Parameter(defaultValue = "1.73", description = "Factor for conversion from TSM to B_TSM")
     private double tsmConversionFactor;
+    @Parameter(defaultValue = "1.04", description = "Exponent for conversion from A_PIG to CHL_CONC")
+    private double chlConversionExponent;
+    @Parameter(defaultValue = "21.0", description = "Factor for conversion from A_PIG to CHL_CONC")
+    private double chlConversionFactor;
 
     @Parameter(label = "Use climatology map for salinity and temperature", defaultValue = "true",
                description = "By default a climatology map is used. If set to 'false' the specified average values are used " +
@@ -164,10 +174,6 @@ public class RegionalWaterOp extends PixelOperator {
     private int centerPixel;
     private boolean isFullResolution;
     private org.esa.beam.meris.case2.water.WaterAlgorithm waterAlgorithm;
-    private String inverseWaterNnString;
-    private String forwardWaterNnString;
-    private ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseWaterNet;
-    private ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardWaterNet;
     private VirtualBandOpImage invalidOpImage;
     private static final String[] REQUIRED_REFLEC_BAND_NAMES = new String[]{
             MERIS_L2_REFLEC_1_BAND_NAME,
@@ -192,9 +198,7 @@ public class RegionalWaterOp extends PixelOperator {
             MERIS_MERID_WIND_DS_NAME
     };
     private AuxdataProvider snTProvider;
-    private Date date;
-    private Band salinityBand;
-    private Band tempBand;
+    private Date productStartTime;
 
     @Override
     protected void configureTargetProduct(final ProductConfigurer productConfigurer) {
@@ -285,11 +289,11 @@ public class RegionalWaterOp extends PixelOperator {
         addTargetBand(productConfigurer, BAND_NAME_TURBIDITY_INDEX, -1, false, ProductData.TYPE_FLOAT32,
                       "Turbidity index in FNU (Formazine Nephelometric Unit).", "FNU");
         if (outputSnT) {
-            salinityBand = addTargetBand(productConfigurer, BAND_NAME_SALINITY, -1, false, ProductData.TYPE_FLOAT32,
+            Band salinityBand = addTargetBand(productConfigurer, BAND_NAME_SALINITY, -1, false, ProductData.TYPE_FLOAT32,
                                          "Water salinity.", "PSU");
             salinityBand.setNoDataValueUsed(true);
             salinityBand.setNoDataValue(Float.NaN);
-            tempBand = addTargetBand(productConfigurer, BAND_NAME_TEMPERATURE, -1, false, ProductData.TYPE_FLOAT32,
+            Band tempBand = addTargetBand(productConfigurer, BAND_NAME_TEMPERATURE, -1, false, ProductData.TYPE_FLOAT32,
                                      "Water temperature.", "°C");
             tempBand.setNoDataValueUsed(true);
             tempBand.setNoDataValue(Float.NaN);
@@ -396,27 +400,38 @@ public class RegionalWaterOp extends PixelOperator {
 
         if (useSnTMap) {
             snTProvider = createSnTProvider();
-            date = sourceProduct.getStartTime().getAsDate();
+            productStartTime = sourceProduct.getStartTime().getAsDate();
         }
         centerPixel = MerisFlightDirection.findNadirColumnIndex(sourceProduct);
-        waterAlgorithm = createAlgorithm();
-        inverseWaterNnString = readNeuralNet(DEFAULT_INVERSE_WATER_NET, inverseWaterNnFile);
-        forwardWaterNnString = readNeuralNet(DEFAULT_FORWARD_WATER_NET, forwardWaterNnFile);
-        threadLocalInverseWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
+
+        String fwdIOPnn = readNeuralNet(DEFAULT_FORWARD_IOP_NET, forwardIopNnFile);
+        ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardIopNet = createNeurallNet(fwdIOPnn);
+
+        String invIOPnn = readNeuralNet(DEFAULT_INVERSE_IOP_NET, inverseIopNnFile);
+        ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseIopNet = createNeurallNet(invIOPnn);
+
+        String invKdnn = readNeuralNet(DEFAULT_INVERSE_KD_NET, inverseKdNnFile);
+        ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseKdNet = createNeurallNet(invKdnn);
+        try {
+            NNInputMapper invIopMapper = NNInputMapper.create(invIOPnn);
+            NNInputMapper invKdMapper = NNInputMapper.create(invKdnn);
+            waterAlgorithm = new WaterAlgorithm(outputKdSpectrum, outputAPoc, spectrumOutOfScopeThreshold,
+                                                tsmConversionExponent, tsmConversionFactor,
+                                                chlConversionExponent, chlConversionFactor,
+                                                inputReflecAre,
+                                                invIopMapper, invKdMapper,
+                                                threadLocalForwardIopNet, threadLocalInverseIopNet, threadLocalInverseKdNet);
+        } catch (IOException e) {
+            throw new OperatorException(e);
+        }
+    }
+
+    private ThreadLocal<NNffbpAlphaTabFast> createNeurallNet(final String nnString) {
+        return new ThreadLocal<NNffbpAlphaTabFast>() {
             @Override
             protected NNffbpAlphaTabFast initialValue() {
                 try {
-                    return new NNffbpAlphaTabFast(inverseWaterNnString);
-                } catch (IOException e) {
-                    throw new OperatorException("Not able to init neural net", e);
-                }
-            }
-        };
-        threadLocalForwardWaterNet = new ThreadLocal<NNffbpAlphaTabFast>() {
-            @Override
-            protected NNffbpAlphaTabFast initialValue() {
-                try {
-                    return new NNffbpAlphaTabFast(forwardWaterNnString);
+                    return new NNffbpAlphaTabFast(nnString);
                 } catch (IOException e) {
                     throw new OperatorException("Not able to init neural net", e);
                 }
@@ -463,16 +478,14 @@ public class RegionalWaterOp extends PixelOperator {
             targetSamples[TARGET_FLAG_INDEX].set(WHITECAPS_BIT_INDEX, true);
         }
 
-        NNffbpAlphaTabFast inverseWaterNet = threadLocalInverseWaterNet.get();
-        NNffbpAlphaTabFast forwardWaterNet = threadLocalForwardWaterNet.get();
         double salinity;
         double temperature;
         if (snTProvider != null) {
             GeoCoding geoCoding = source.getGeoCoding();
             GeoPos geoPos = geoCoding.getGeoPos(new PixelPos(x + 0.5f, y + 0.5f), null);
             try {
-                salinity = snTProvider.getSalinity(date, geoPos.getLat(), geoPos.getLon());
-                temperature = snTProvider.getTemperature(date, geoPos.getLat(), geoPos.getLon());
+                salinity = snTProvider.getSalinity(productStartTime, geoPos.getLat(), geoPos.getLon());
+                temperature = snTProvider.getTemperature(productStartTime, geoPos.getLat(), geoPos.getLon());
             } catch (Exception e) {
                 throw new OperatorException(e);
             }
@@ -480,31 +493,11 @@ public class RegionalWaterOp extends PixelOperator {
             salinity = averageSalinity;
             temperature = averageTemperature;
         }
-        waterAlgorithm.perform(inverseWaterNet, forwardWaterNet,
-                               solzen, satzen, azi_diff_deg, sourceSamples, targetSamples,
-                               inputReflecAre, salinity, temperature);
+        waterAlgorithm.perform(solzen, satzen, azi_diff_deg, sourceSamples, targetSamples, salinity, temperature);
         if (outputSnT) {
             targetSamples[TARGET_SALINITY_INDEX].set(salinity);
             targetSamples[TARGET_TEMPERATURE_INDEX].set(temperature);
         }
-    }
-
-    protected WaterAlgorithm createAlgorithm() {
-        return new WaterAlgorithm(isOutputKdSpectrum(), isOutputAPoc(), getSpectrumOutOfScopeThreshold(),
-                                  tsmConversionExponent, tsmConversionFactor);
-    }
-
-
-    protected double getSpectrumOutOfScopeThreshold() {
-        return spectrumOutOfScopeThreshold;
-    }
-
-    protected boolean isOutputKdSpectrum() {
-        return outputKdSpectrum;
-    }
-
-    protected boolean isOutputAPoc() {
-        return outputAPoc;
     }
 
     private void validateSourceProduct(Product sourceProduct) {

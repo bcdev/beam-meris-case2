@@ -2,6 +2,7 @@ package org.esa.beam.meris.case2.water;
 
 import org.esa.beam.atmosphere.operator.ReflectanceEnum;
 import org.esa.beam.framework.datamodel.RasterDataNode;
+import org.esa.beam.framework.gpf.OperatorException;
 import org.esa.beam.framework.gpf.pointop.Sample;
 import org.esa.beam.framework.gpf.pointop.WritableSample;
 import org.esa.beam.meris.case2.RegionalWaterOp;
@@ -9,6 +10,10 @@ import org.esa.beam.nn.NNffbpAlphaTabFast;
 import org.esa.beam.util.BitSetter;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
@@ -23,14 +28,29 @@ public class RegionalWaterAlgorithmTest {
         forwardNet = new NNffbpAlphaTabFast(getClass().getResourceAsStream("regional_forward_test.net"));
     }
 
+    private ThreadLocal<NNffbpAlphaTabFast> createNeuralNet(final String resourceNetName) {
+        final InputStream inputStream = getClass().getResourceAsStream(resourceNetName);
+        return new ThreadLocal<NNffbpAlphaTabFast>() {
+            @Override
+            protected NNffbpAlphaTabFast initialValue() {
+                try {
+
+                    return new NNffbpAlphaTabFast(inputStream);
+                } catch (IOException e) {
+                    throw new OperatorException("Not able to init neural net", e);
+                }
+            }
+        };
+    }
+
     @Test
     public void testComputation() throws Exception {
-        final WaterAlgorithm regionalAlgo = new WaterAlgorithm(false, false, 4.0, 1.0, 1.73);
+//        final WaterAlgorithm regionalAlgo = new WaterAlgorithm(false, false, 4.0, 1.0, 1.73,
+//                                                               ReflectanceEnum.RADIANCE_REFLECTANCES, threadLocalForwardIopNet, threadLocalInverseIopNet, threadLocalInverseKdNet);
         final double aziDiff = RegionalWaterOp.getAzimuthDifference(89.83, 283.79);
         final Sample[] sourceSamples = createSourceSamples();
         final WritableSample[] targetSamples = createTargetSamples();
-        regionalAlgo.perform(inverseNet, forwardNet, 23.255, 16.845, aziDiff, sourceSamples, targetSamples,
-                             ReflectanceEnum.RADIANCE_REFLECTANCES, 35.0, 15.0);
+//        regionalAlgo.perform(inverseNet, forwardNet, 23.255, 16.845, aziDiff, sourceSamples, targetSamples, 35.0, 15.0);
         assertFalse(Double.isNaN(targetSamples[WaterAlgorithm.TARGET_A_GELBSTOFF_INDEX].getDouble()));
         assertFalse(Double.isNaN(targetSamples[WaterAlgorithm.TARGET_A_PIGMENT_INDEX].getDouble()));
         assertFalse(Double.isNaN(targetSamples[WaterAlgorithm.TARGET_A_TOTAL_INDEX].getDouble()));
