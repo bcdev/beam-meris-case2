@@ -35,7 +35,7 @@ import java.io.File;
                   description = "Performs IOP retrieval on L1b MERIS products, including atmospheric correction.",
                   authors = "Roland Doerffer (HGZ); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2011 by Brockmann Consult",
-                  version = "1.5.3")
+                  version = "1.5.6")
 public class Case2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
@@ -127,7 +127,7 @@ public class Case2IOPOperator extends Operator {
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope.")
     private double spectrumOutOfScopeThreshold;
 
-    @Parameter(defaultValue = "agc_flags.INVALID",
+    @Parameter(defaultValue = "l1_flags.INVALID",
                description = "Expression defining pixels not considered for processing.")
     private String invalidPixelExpression;
 

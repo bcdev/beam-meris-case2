@@ -17,8 +17,10 @@
     <changelog>
         <![CDATA[
         Changes in version 1.5.6:<br/>
-         [CIIR-46] Metadata of the source product is not copied to the result<br/>
+          Set default invalid pixel expression to 'l1_flags_INVALID'.
         Changes in version 1.5.5:<br/>
+          [CIIR-46] Metadata of the source product is not copied to the result<br/>
+        Changes in version 1.5.4:<br/>
           [BEAM-1408] Case 2 Regional Processor aborts with error java.lang.IllegalArgumentException<br/>
         Changes in version 1.5.3:<br/>
           [CIIR-37] Error occures if MERIS FSG products are processed<br/>
@@ -26,7 +28,7 @@
           [CIIR-43] Reintroduce separate lakes processor<br/>
           [CIIR-42] Handle PixelGeoCoding more generic<br/>
         Changes in version 1.5.1:<br/>
-          [CIIR-38] Allow specifing the kind of reflectances<br/>
+          [CIIR-38] Allow specifying the kind of reflectances<br/>
           [CIIR-37] Error occures if MERIS FSG products are processed<br/>
           [CIIR-36] Make normalized reflectances as additional output<br/>
           [CIIR-35]	Remove option for ChiSquare computation<br/>

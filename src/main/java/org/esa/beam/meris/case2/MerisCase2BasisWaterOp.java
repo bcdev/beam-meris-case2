@@ -106,7 +106,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope")
     private double spectrumOutOfScopeThreshold;
 
-    @Parameter(defaultValue = "agc_flags.INVALID",
+    @Parameter(defaultValue = "l1_flags.INVALID",
                description = "Expression defining pixels not considered for processing")
     private String invalidPixelExpression;
 

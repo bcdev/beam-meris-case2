@@ -57,19 +57,20 @@ class Case2IOPForm extends JTabbedPane {
         bindingContext.bindEnabledState("outputTransmittance", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("landExpression", true, "doAtmosphericCorrection", true);
         bindingContext.bindEnabledState("cloudIceExpression", true, "doAtmosphericCorrection", true);
-        bindingContext.addPropertyChangeListener("doAtmosphericCorrection", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                final Boolean enabled = (Boolean) evt.getNewValue();
-                if (enabled) {
-                    final Property invalidProperty = propertyContainer.getProperty("invalidPixelExpression");
-                    final Object defaultValue = invalidProperty.getDescriptor().getDefaultValue();
-                    propertyContainer.setValue("invalidPixelExpression", defaultValue);
-                } else {
-                    propertyContainer.setValue("invalidPixelExpression", "");
-                }
-            }
-        });
+        // the following does not seem to make sense - todo: clarify
+//        bindingContext.addPropertyChangeListener("doAtmosphericCorrection", new PropertyChangeListener() {
+//            @Override
+//            public void propertyChange(PropertyChangeEvent evt) {
+//                final Boolean enabled = (Boolean) evt.getNewValue();
+//                if (enabled) {
+//                    final Property invalidProperty = propertyContainer.getProperty("invalidPixelExpression");
+//                    final Object defaultValue = invalidProperty.getDescriptor().getDefaultValue();
+//                    propertyContainer.setValue("invalidPixelExpression", defaultValue);
+//                } else {
+//                    propertyContainer.setValue("invalidPixelExpression", "");
+//                }
+//            }
+//        });
         bindingContext.addPropertyChangeListener("algorithm", new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {

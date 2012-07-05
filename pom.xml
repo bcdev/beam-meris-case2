@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.esa.beam</groupId>
     <artifactId>beam-meris-case2-regional</artifactId>
-    <version>1.5.6-SNAPSHOT</version>
+    <version>1.5.6</version>
     <packaging>jar</packaging>
     <name>BEAM MERIS Case-2 Regional Processor</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <beam.version>4.10</beam.version>
+        <beam.version>4.10.3</beam.version>
     </properties>
 
     <dependencies>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.esa.beam</groupId>
             <artifactId>beam-envisat-reader</artifactId>
-            <version>1.5</version>
+            <version>1.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.esa.beam</groupId>

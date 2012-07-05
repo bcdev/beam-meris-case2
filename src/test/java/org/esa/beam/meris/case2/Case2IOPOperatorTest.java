@@ -61,6 +61,7 @@ public class Case2IOPOperatorTest {
     public void testInitializationWithoutAtmoCorr() throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("doAtmosphericCorrection", false);
+        parameters.put("invalidPixelExpression", "agc_flags.INVALID");
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
@@ -90,6 +91,7 @@ public class Case2IOPOperatorTest {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("doAtmosphericCorrection", false);
         parameters.put("outputReflec", false);
+        parameters.put("invalidPixelExpression", "agc_flags.INVALID");
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
