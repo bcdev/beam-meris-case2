@@ -55,7 +55,12 @@ public class Case2IOPOperatorTest {
                 "case2_flags"
         };
         Assert.assertArrayEquals(expectedTargetBands, bandNames);
-
+        Product.AutoGrouping autoGrouping = c2rProduct.getAutoGrouping();
+        Assert.assertTrue(autoGrouping.indexOf("tosa_reflec") != -1);
+        Assert.assertTrue(autoGrouping.indexOf("reflec") != -1);
+        Assert.assertTrue(autoGrouping.indexOf("path") != -1);
+        Assert.assertTrue(autoGrouping.indexOf("norm_refl") != -1);
+        Assert.assertTrue(autoGrouping.indexOf("trans") != -1);
     }
 
     @Test

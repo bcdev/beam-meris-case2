@@ -220,6 +220,7 @@ public class Case2IOPOperator extends Operator {
             ProductUtils.copyBand("cloud_top_press", ctpProduct, targetProduct, true);
         }
 
+        targetProduct.setAutoGrouping("tosa_reflec:reflec:norm_refl:path:trans");
         setTargetProduct(targetProduct);
     }
 
