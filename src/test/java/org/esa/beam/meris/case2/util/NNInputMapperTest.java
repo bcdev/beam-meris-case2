@@ -81,7 +81,9 @@ public class NNInputMapperTest {
 
     @Test
     public void testWithoutLog() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/org/esa/beam/meris/case2/all_m1-m9/inv_iop_meris_b10/27x41x27_36447.3.net");
+//        InputStream is = getClass().getResourceAsStream("/org/esa/beam/meris/case2/all_m1-m9/inv_iop_meris_b10/27x41x27_36447.3.net");
+        // new net RD, 20120704:
+        InputStream is = getClass().getResourceAsStream("/org/esa/beam/meris/case2/all_m1-m9/inv_iop_meris_b10/27x41x27_6477.8.net");
         InputStreamReader inputStreamReader = new InputStreamReader(is);
         String netString = FileUtils.readText(inputStreamReader);
         NNInputMapper mapper = NNInputMapper.create(netString);

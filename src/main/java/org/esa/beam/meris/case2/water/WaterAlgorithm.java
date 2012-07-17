@@ -30,34 +30,37 @@ public class WaterAlgorithm {
 
     public static final int TARGET_A_GELBSTOFF_INDEX = 0;
     public static final int TARGET_A_PIGMENT_INDEX = 1;
-    public static final int TARGET_A_TOTAL_INDEX = 2;
-    public static final int TARGET_A_POC_INDEX = 3;
-    public static final int TARGET_BB_SPM_INDEX = 4;
-    public static final int TARGET_TSM_INDEX = 5;
-    public static final int TARGET_CHL_CONC_INDEX = 6;
-    public static final int TARGET_CHI_SQUARE_INDEX = 7;
-    public static final int TARGET_K_MIN_INDEX = 8;
-    public static final int TARGET_Z90_MAX_INDEX = 9;
-    public static final int TARGET_KD_490_INDEX = 10;
-    public static final int TARGET_TURBIDITY_INDEX_INDEX = 11;
-    public static final int TARGET_FLAG_INDEX = 12;
-    public static final int TARGET_A_GELBSTOFF_FIT_INDEX = 13;
-    public static final int TARGET_A_GELBSTOFF_FIT_MAX_INDEX = 14;
-    public static final int TARGET_A_GELBSTOFF_FIT_MIN_INDEX = 15;
-    public static final int TARGET_A_PIG_FIT_INDEX = 16;
-    public static final int TARGET_A_PIG_FIT_MAX_INDEX = 17;
-    public static final int TARGET_A_PIG_FIT_MIN_INDEX = 18;
-    public static final int TARGET_B_TSM_FIT_INDEX = 19;
-    public static final int TARGET_B_TSM_FIT_MAX_INDEX = 20;
-    public static final int TARGET_B_TSM_FIT_MIN_INDEX = 21;
-    public static final int TARGET_TSM_FIT_INDEX = 22;
-    public static final int TARGET_CHL_CONC_FIT_INDEX = 23;
-    public static final int TARGET_CHI_SQUARE_FIT_INDEX = 24;
-    public static final int TARGET_N_ITER_FIT_INDEX = 25;
-    public static final int TARGET_PARAM_CHANGE_FIT_INDEX = 26;
-    public static final int TARGET_SALINITY_INDEX = 27;
-    public static final int TARGET_TEMPERATURE_INDEX = 28;
-    public static final int TARGET_KD_SPECTRUM_START_INDEX = 50;
+    public static final int TARGET_A_DET_INDEX = 2;
+    public static final int TARGET_A_TOTAL_INDEX = 3;
+    public static final int TARGET_A_POC_INDEX = 4;
+    public static final int TARGET_B_TSM_INDEX = 5;
+    public static final int TARGET_B_WHIT_INDEX = 6;
+    public static final int TARGET_BB_SPM_INDEX = 7;
+    public static final int TARGET_TSM_INDEX = 8;
+    public static final int TARGET_CHL_CONC_INDEX = 9;
+    public static final int TARGET_CHI_SQUARE_INDEX = 10;
+    public static final int TARGET_K_MIN_INDEX = 11;
+    public static final int TARGET_Z90_MAX_INDEX = 12;
+    public static final int TARGET_KD_490_INDEX = 13;
+    public static final int TARGET_TURBIDITY_INDEX_INDEX = 14;
+    public static final int TARGET_FLAG_INDEX = 15;
+    public static final int TARGET_A_GELBSTOFF_FIT_INDEX = 16;
+    public static final int TARGET_A_GELBSTOFF_FIT_MAX_INDEX = 17;
+    public static final int TARGET_A_GELBSTOFF_FIT_MIN_INDEX = 18;
+    public static final int TARGET_A_PIG_FIT_INDEX = 19;
+    public static final int TARGET_A_PIG_FIT_MAX_INDEX = 20;
+    public static final int TARGET_A_PIG_FIT_MIN_INDEX = 21;
+    public static final int TARGET_B_TSM_FIT_INDEX = 22;
+    public static final int TARGET_B_TSM_FIT_MAX_INDEX = 23;
+    public static final int TARGET_B_TSM_FIT_MIN_INDEX = 24;
+    public static final int TARGET_TSM_FIT_INDEX = 25;
+    public static final int TARGET_CHL_CONC_FIT_INDEX = 26;
+    public static final int TARGET_CHI_SQUARE_FIT_INDEX = 27;
+    public static final int TARGET_N_ITER_FIT_INDEX = 28;
+    public static final int TARGET_PARAM_CHANGE_FIT_INDEX = 29;
+    public static final int TARGET_SALINITY_INDEX = 30;
+    public static final int TARGET_TEMPERATURE_INDEX = 31;
+    public static final int TARGET_KD_SPECTRUM_START_INDEX = 32;
 
     public static final int WLR_OOR_BIT_INDEX = 0;
     public static final int CONC_OOR_BIT_INDEX = 1;
@@ -210,10 +213,10 @@ public class WaterAlgorithm {
         return new KMin(bTsm, aPig, aGelbstoff);
     }
 
-    private double computeChiSquare(double[] forwardWaterOutput, double[] logRLw_cut) {
+    private double computeChiSquare(double[] forwardWaterOutput, double[] rlw) {
         double chiSquare = 0.0;
         for (int i = 0; i < forwardWaterOutput.length; i++) {
-            chiSquare += Math.pow(forwardWaterOutput[i] - logRLw_cut[i], 2);
+            chiSquare += Math.pow(forwardWaterOutput[i] - rlw[i], 2);
         }
         return chiSquare;
     }
@@ -245,10 +248,14 @@ public class WaterAlgorithm {
         targetSamples[TARGET_CHL_CONC_INDEX].set(chlConc);
 
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
+        targetSamples[TARGET_A_DET_INDEX].set(aDet);
         targetSamples[TARGET_A_PIGMENT_INDEX].set(aPig);
         targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff + aPart);
 
         double bTsm = Math.exp(backwardWaterOutput[3]);
+        double bWhit = Math.exp(backwardWaterOutput[4]);
+        targetSamples[TARGET_B_TSM_INDEX].set(bTsm);
+        targetSamples[TARGET_B_WHIT_INDEX].set(bWhit);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
         targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + backwardWaterOutput[3] * tsmExponent));
 

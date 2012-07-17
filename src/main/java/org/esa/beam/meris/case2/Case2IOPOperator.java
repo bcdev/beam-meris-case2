@@ -148,7 +148,7 @@ public class Case2IOPOperator extends Operator {
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope.")
     private double spectrumOutOfScopeThreshold;
 
-    @Parameter(defaultValue = "agc_flags.INVALID",
+    @Parameter(defaultValue = "agc_flags.INPUT_INVALID",
                description = "Expression defining pixels not considered for processing.")
     private String invalidPixelExpression;
 

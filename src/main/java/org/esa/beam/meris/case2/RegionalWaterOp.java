@@ -55,8 +55,12 @@ import static org.esa.beam.meris.case2.water.WaterAlgorithm.*;
 public class RegionalWaterOp extends PixelOperator {
 
     public static final String DEFAULT_FORWARD_IOP_NET = "all_m1-m9/for_iop_meris_b12/17x27x17_487.0.net";
-    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_36447.3.net";
-    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_829.1.net";
+//    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_36447.3.net";
+    // new net RD, 20120704:
+    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_6477.8.net";
+//    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_829.1.net";
+    // new net RD, 20120704:
+    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_70.9.net";
 
     // todo move to EnivsatConstants
     private static final String MERIS_ZONAL_WIND_DS_NAME = "zonal_wind";
@@ -72,8 +76,11 @@ public class RegionalWaterOp extends PixelOperator {
 
     private static final String BAND_NAME_A_TOTAL = "a_total_443";
     private static final String BAND_NAME_A_GELBSTOFF = "a_ys_443";
+    private static final String BAND_NAME_A_DET = "a_det_443";
     private static final String BAND_NAME_A_PIGMENT = "a_pig_443";
     private static final String BAND_NAME_A_POC = "a_poc_443";
+    private static final String BAND_NAME_B_TSM = "b_tsm_443";
+    private static final String BAND_NAME_B_WHIT = "b_whit_443";
     private static final String BAND_NAME_BB_SPM = "bb_spm_443";
     private static final String BAND_NAME_A_GELBSTOFF_FIT = BAND_NAME_A_GELBSTOFF + "_Fit";
     private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = BAND_NAME_A_GELBSTOFF + "_Fit_max";
@@ -247,11 +254,20 @@ public class RegionalWaterOp extends PixelOperator {
         addTargetBand(productConfigurer, BAND_NAME_A_PIGMENT, 443, true, ProductData.TYPE_FLOAT32,
                       "Pigment absorption coefficient at 443 nm.", "m^-1");
 
+        addTargetBand(productConfigurer, BAND_NAME_A_DET, 443, true, ProductData.TYPE_FLOAT32,
+                      "Pigment absorption at 443 nm.", "m^-1");
+
         if (outputAPoc) {
             addTargetBand(productConfigurer, BAND_NAME_A_POC, 443, true, ProductData.TYPE_FLOAT32,
                           "Absorption by particulate organic matter at 443 nm.", "m^-1");
 
         }
+        addTargetBand(productConfigurer, BAND_NAME_B_TSM, 443, true, ProductData.TYPE_FLOAT32,
+                      "Backscattering of total suspended particulate matter at 443 nm.", "m^-1");
+
+        addTargetBand(productConfigurer, BAND_NAME_B_WHIT, 443, true, ProductData.TYPE_FLOAT32,
+                      "Backscattering of suspended particulate matter at 443 nm.", "m^-1");
+
         addTargetBand(productConfigurer, BAND_NAME_BB_SPM, 443, true, ProductData.TYPE_FLOAT32,
                       "Backscattering of suspended particulate matter at 443 nm.", "m^-1");
 
@@ -332,12 +348,26 @@ public class RegionalWaterOp extends PixelOperator {
 
     @Override
     protected void configureTargetSamples(SampleConfigurer configurator) {
+
+//        public static final int TARGET_A_GELBSTOFF_INDEX = 0;
+//        public static final int TARGET_A_PIGMENT_INDEX = 1;
+//        public static final int TARGET_A_DET_INDEX = 1;
+//        public static final int TARGET_A_TOTAL_INDEX = 2;
+//        public static final int TARGET_A_POC_INDEX = 3;
+//        public static final int TARGET_B_TSM_INDEX = 4;
+//        public static final int TARGET_B_WHIT_INDEX = 4;
+//        public static final int TARGET_BB_SPM_INDEX = 4;
+//        public static final int TARGET_TSM_INDEX = 5;
+
         configurator.defineSample(TARGET_A_GELBSTOFF_INDEX, BAND_NAME_A_GELBSTOFF);
         configurator.defineSample(TARGET_A_PIGMENT_INDEX, BAND_NAME_A_PIGMENT);
+        configurator.defineSample(TARGET_A_DET_INDEX, BAND_NAME_A_DET);
         configurator.defineSample(TARGET_A_TOTAL_INDEX, BAND_NAME_A_TOTAL);
         if (outputAPoc) {
             configurator.defineSample(TARGET_A_POC_INDEX, BAND_NAME_A_POC);
         }
+        configurator.defineSample(TARGET_B_TSM_INDEX, BAND_NAME_B_TSM);
+        configurator.defineSample(TARGET_B_WHIT_INDEX, BAND_NAME_B_WHIT);
         configurator.defineSample(TARGET_BB_SPM_INDEX, BAND_NAME_BB_SPM);
         configurator.defineSample(TARGET_TSM_INDEX, BAND_NAME_TSM);
         configurator.defineSample(TARGET_CHL_CONC_INDEX, BAND_NAME_CHL_CONC);
@@ -555,7 +585,7 @@ public class RegionalWaterOp extends PixelOperator {
         case2FlagCoding.addFlag("OOTR", OOTR, "RLw out of training range");
         case2FlagCoding.addFlag("WHITECAPS", WHITECAPS, "Whitecaps pixels");
         case2FlagCoding.addFlag("FIT_FAILED", FIT_FAILED, "Fit failed");
-        case2FlagCoding.addFlag("INVALID", INVALID, "not valid");
+        case2FlagCoding.addFlag("INPUT_INVALID", INVALID, "not valid");
         targetProduct.getFlagCodingGroup().add(case2FlagCoding);
         final Band case2Flags = targetProduct.addBand(BAND_NAME_CASE2_FLAGS, ProductData.TYPE_UINT8);
         case2Flags.setSampleCoding(case2FlagCoding);
@@ -567,7 +597,7 @@ public class RegionalWaterOp extends PixelOperator {
         addMask(maskGroup, "case2_ootr", "RLw out of training range", "case2_flags.OOTR", Color.ORANGE, 0.5f);
         addMask(maskGroup, "case2_whitecaps", "Whitecaps pixels", "case2_flags.WHITECAPS", Color.PINK, 0.5f);
         addMask(maskGroup, "case2_fit_failed", "Fit failed", "case2_flags.FIT_FAILED", Color.MAGENTA, 0.5f);
-        addMask(maskGroup, "case2_invalid", "invalid case2 pixel", "case2_flags.INVALID", Color.RED, 0.0f);
+        addMask(maskGroup, "case2_invalid", "invalid case2 pixel", "case2_flags.INPUT_INVALID", Color.RED, 0.0f);
     }
 
     private static void addMask(ProductNodeGroup<Mask> maskGroup, String name, String description,
@@ -582,7 +612,7 @@ public class RegionalWaterOp extends PixelOperator {
                                        boolean log10Scaled, int dataType) {
         final Band band = productConfigurer.addBand(bandName, dataType);
         band.setLog10Scaled(log10Scaled);
-        band.setValidPixelExpression("!case2_flags.INVALID");
+        band.setValidPixelExpression("!case2_flags.INPUT_INVALID");
         if (wavelength > 0) {
             band.setSpectralWavelength(wavelength);
         }

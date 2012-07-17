@@ -35,12 +35,16 @@ public class Case2IOPOperatorTest {
                 "path_7", "path_8", "path_9",
                 "path_10", "path_12", "path_13",
                 "tau_550", "tau_778", "tau_865",
+                "tosa_quality_indicator",
                 "glint_ratio",
                 "ang_443_865",
                 "detector_index",
                 "a_total_443",
                 "a_ys_443",
                 "a_pig_443",
+                "a_det_443",
+                "b_tsm_443",
+                "b_whit_443",
                 "bb_spm_443",
                 "tsm",
                 "chl_conc",
@@ -72,7 +76,10 @@ public class Case2IOPOperatorTest {
                 "a_total_443",
                 "a_ys_443",
                 "a_pig_443",
+                "a_det_443",
                 "a_poc_443",
+                "b_tsm_443",
+                "b_whit_443",
                 "bb_spm_443",
                 "tsm",
                 "chl_conc",
@@ -99,7 +106,10 @@ public class Case2IOPOperatorTest {
                 "a_total_443",
                 "a_ys_443",
                 "a_pig_443",
+                "a_det_443",
                 "a_poc_443",
+                "b_tsm_443",
+                "b_whit_443",
                 "bb_spm_443",
                 "tsm",
                 "chl_conc",
@@ -179,7 +189,7 @@ public class Case2IOPOperatorTest {
         product.addTiePointGrid(new TiePointGrid("merid_wind", width, height, 0, 0, 1, 1, tiePointData));
 
         FlagCoding agc_flags = new FlagCoding("agc_flags");
-        agc_flags.addFlag("INVALID", 0x01, "No Description.");
+        agc_flags.addFlag("INPUT_INVALID", 0x01, "No Description.");
         product.getBand("agc_flags").setSampleCoding(agc_flags);
         product.getFlagCodingGroup().add(agc_flags);
         product.setStartTime(ProductData.UTC.parse("12-Mar-2003 13:45:36"));
