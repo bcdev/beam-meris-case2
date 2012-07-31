@@ -20,6 +20,7 @@ import org.esa.beam.atmosphere.operator.GlintCorrectionOperator;
 import org.esa.beam.atmosphere.operator.ReflectanceEnum;
 import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.gpf.GPF;
 import org.esa.beam.framework.gpf.Operator;
 import org.esa.beam.framework.gpf.OperatorException;
 import org.esa.beam.framework.gpf.OperatorSpi;
@@ -29,6 +30,7 @@ import org.esa.beam.framework.gpf.annotations.SourceProduct;
 import org.esa.beam.util.ProductUtils;
 
 import java.io.File;
+import java.util.HashMap;
 
 
 @OperatorMetadata(alias = "Meris.Case2Regional",
@@ -83,6 +85,11 @@ public class Case2IOPOperator extends Operator {
                label = "Output normalised bidirectional reflectances",
                description = "Toggles the output of normalised reflectances.")
     private boolean outputNormReflec;
+
+    @Parameter(defaultValue = "false",
+               label = "Output cloud top pressure",
+               description = "Toggles the output of cloud top pressure.")
+    private boolean outputCtp;
 
     @Parameter(defaultValue = "toa_reflec_10 > toa_reflec_6 AND toa_reflec_13 > 0.0475",
                label = "Land detection expression",
@@ -210,6 +217,11 @@ public class Case2IOPOperator extends Operator {
             ProductUtils.copyBand(name, case2Product, targetProduct, true);
         }
 
+        if (outputCtp) {
+            Product ctpProduct = GPF.createProduct("Meris.CloudTopPressureOp", new HashMap<String, Object>(),
+                                                   sourceProduct);
+            ProductUtils.copyBand("cloud_top_press", ctpProduct, targetProduct, true);
+        }
 
         setTargetProduct(targetProduct);
     }
