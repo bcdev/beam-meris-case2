@@ -223,6 +223,9 @@ public class Case2IOPOperator extends Operator {
             ProductUtils.copyBand("cloud_top_press", ctpProduct, targetProduct, true);
         }
 
+        ProductUtils.copyMasks(inputProduct, targetProduct);
+        ProductUtils.copyMasks(case2Product, targetProduct);
+
         setTargetProduct(targetProduct);
     }
 

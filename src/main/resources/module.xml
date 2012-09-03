@@ -17,7 +17,8 @@
     <changelog>
         <![CDATA[
         Changes in version 1.5.6:<br/>
-          Set default invalid pixel expression to 'l1_flags_INVALID'.
+          [CIIR-47] Output product contains no masks<br/>
+          Set default invalid pixel expression to 'l1_flags_INVALID'.<br/>
         Changes in version 1.5.5:<br/>
           [CIIR-46] Metadata of the source product is not copied to the result<br/>
         Changes in version 1.5.4:<br/>

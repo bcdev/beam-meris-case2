@@ -1,18 +1,23 @@
 package org.esa.beam.meris.case2;
 
 import org.esa.beam.framework.datamodel.FlagCoding;
+import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.MetadataAttribute;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
+import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.gpf.GPF;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.HashMap;
+
+import static org.junit.Assert.*;
 
 public class Case2IOPOperatorTest {
 
@@ -54,6 +59,15 @@ public class Case2IOPOperatorTest {
                 "case2_flags"
         };
         Assert.assertArrayEquals(expectedTargetBands, bandNames);
+        ProductNodeGroup<Mask> maskGroup = c2rProduct.getMaskGroup();
+        assertTrue(maskGroup.getNodeCount() > 0);
+        assertTrue(maskGroup.contains("agc_land"));
+        assertTrue(maskGroup.contains("cloud_ice"));
+        assertTrue(maskGroup.contains("solzen"));
+        assertTrue(maskGroup.contains("agc_invalid"));
+        assertTrue(maskGroup.contains("case2_wlr_oor"));
+        assertTrue(maskGroup.contains("case2_whitecaps"));
+        assertTrue(maskGroup.contains("case2_invalid"));
 
     }
 
@@ -61,7 +75,7 @@ public class Case2IOPOperatorTest {
     public void testInitializationWithoutAtmoCorr() throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("doAtmosphericCorrection", false);
-        parameters.put("invalidPixelExpression", "agc_flags.INVALID");
+        parameters.put("invalidPixelExpression", "ac_flags.INVALID");
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
@@ -80,10 +94,18 @@ public class Case2IOPOperatorTest {
                 "Z90_max",
                 "Kd_490",
                 "turbidity_index",
-                "agc_flags",
+                "ac_flags",
                 "case2_flags"
         };
-        Assert.assertArrayEquals(expectedTargetBands, bandNames);
+        assertArrayEquals(expectedTargetBands, bandNames);
+        ProductNodeGroup<Mask> maskGroup = c2rProduct.getMaskGroup();
+        assertTrue(maskGroup.getNodeCount() > 0);
+        assertTrue(maskGroup.contains("AC_INVALID"));
+        assertTrue(maskGroup.contains("case2_wlr_oor"));
+        assertTrue(maskGroup.contains("case2_whitecaps"));
+        assertTrue(maskGroup.contains("case2_invalid"));
+
+
     }
 
     @Test
@@ -91,7 +113,7 @@ public class Case2IOPOperatorTest {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("doAtmosphericCorrection", false);
         parameters.put("outputReflec", false);
-        parameters.put("invalidPixelExpression", "agc_flags.INVALID");
+        parameters.put("invalidPixelExpression", "ac_flags.INVALID");
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
@@ -106,10 +128,16 @@ public class Case2IOPOperatorTest {
                 "Z90_max",
                 "Kd_490",
                 "turbidity_index",
-                "agc_flags",
+                "ac_flags",
                 "case2_flags"
         };
-        Assert.assertArrayEquals(expectedTargetBands, bandNames);
+        assertArrayEquals(expectedTargetBands, bandNames);
+        ProductNodeGroup<Mask> maskGroup = c2rProduct.getMaskGroup();
+        assertTrue(maskGroup.getNodeCount() > 0);
+        assertTrue(maskGroup.contains("AC_INVALID"));
+        assertTrue(maskGroup.contains("case2_wlr_oor"));
+        assertTrue(maskGroup.contains("case2_whitecaps"));
+        assertTrue(maskGroup.contains("case2_invalid"));
 
     }
 
@@ -167,7 +195,7 @@ public class Case2IOPOperatorTest {
             product.addBand(String.format("reflec_%d", (i + 1)), ProductData.TYPE_UINT16).setSpectralBandIndex(i);
 
         }
-        product.addBand("agc_flags", ProductData.TYPE_UINT8);
+        product.addBand("ac_flags", ProductData.TYPE_UINT8);
         float[] tiePointData = new float[width * height];
         product.addTiePointGrid(new TiePointGrid("sun_zenith", width, height, 0, 0, 1, 1, tiePointData));
         product.addTiePointGrid(new TiePointGrid("sun_azimuth", width, height, 0, 0, 1, 1, tiePointData));
@@ -176,10 +204,12 @@ public class Case2IOPOperatorTest {
         product.addTiePointGrid(new TiePointGrid("zonal_wind", width, height, 0, 0, 1, 1, tiePointData));
         product.addTiePointGrid(new TiePointGrid("merid_wind", width, height, 0, 0, 1, 1, tiePointData));
 
-        FlagCoding agc_flags = new FlagCoding("agc_flags");
+        FlagCoding agc_flags = new FlagCoding("ac_flags");
         agc_flags.addFlag("INVALID", 0x01, "No Description.");
-        product.getBand("agc_flags").setSampleCoding(agc_flags);
+        product.getBand("ac_flags").setSampleCoding(agc_flags);
         product.getFlagCodingGroup().add(agc_flags);
+        product.addMask("AC_INVALID", "ac_flags.INVALID", "No Description.", Color.ORANGE, 0.4);
+
         product.setStartTime(ProductData.UTC.parse("12-Mar-2003 13:45:36"));
         product.setEndTime(ProductData.UTC.parse("12-Mar-2003 13:48:12"));
         final MetadataElement sph = new MetadataElement("SPH");
