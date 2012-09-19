@@ -516,6 +516,12 @@ public class RegionalWaterOp extends PixelOperator {
             try {
                 salinity = snTProvider.getSalinity(productStartTime, geoPos.getLat(), geoPos.getLon());
                 temperature = snTProvider.getTemperature(productStartTime, geoPos.getLat(), geoPos.getLon());
+                if (Double.isNaN(salinity)) {
+                    salinity = averageSalinity;
+                }
+                if (Double.isNaN(temperature)) {
+                    temperature = averageTemperature;
+                }
             } catch (Exception e) {
                 throw new OperatorException(e);
             }

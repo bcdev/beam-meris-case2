@@ -35,7 +35,7 @@ public class Case2IOPOperatorTest {
                 "path_7", "path_8", "path_9",
                 "path_10", "path_12", "path_13",
                 "tau_550", "tau_778", "tau_865",
-                "tosa_quality_indicator",
+                "quality_indicator",
                 "glint_ratio",
                 "ang_443_865",
                 "detector_index",
