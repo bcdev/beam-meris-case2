@@ -244,7 +244,7 @@ public class WaterAlgorithm {
         double aPart = aDet;
         double aGelbstoff = Math.exp(backwardWaterOutput[2]);
 
-        double chlConc = Math.exp(Math.log(chlFactor) + backwardWaterOutput[0] * chlExponent);
+        double chlConc = chlFactor * Math.pow(aPig, chlExponent);
         targetSamples[TARGET_CHL_CONC_INDEX].set(chlConc);
 
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
@@ -257,7 +257,7 @@ public class WaterAlgorithm {
         targetSamples[TARGET_B_TSM_INDEX].set(bTsm);
         targetSamples[TARGET_B_WHIT_INDEX].set(bWhit);
         targetSamples[TARGET_BB_SPM_INDEX].set(bTsm * BTSM_TO_SPM_FACTOR);
-        targetSamples[TARGET_TSM_INDEX].set(Math.exp(Math.log(tsmFactor) + backwardWaterOutput[3] * tsmExponent));
+        targetSamples[TARGET_TSM_INDEX].set(tsmFactor * Math.pow(bTsm + bWhit, tsmExponent));
 
         if (outputAPoc) {
             // todo - How to compute a_poc_443?
