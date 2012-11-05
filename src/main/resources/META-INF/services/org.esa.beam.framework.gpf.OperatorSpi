@@ -1,5 +1,2 @@
-org.esa.beam.meris.case2.EutrophicWaterOp$Spi
-org.esa.beam.meris.case2.BorealWaterOp$Spi
 org.esa.beam.meris.case2.RegionalWaterOp$Spi
 org.esa.beam.meris.case2.Case2IOPOperator$Spi
-org.esa.beam.meris.case2.LakesIOPOperator$Spi
