@@ -55,12 +55,12 @@ import static org.esa.beam.meris.case2.water.WaterAlgorithm.*;
 public class RegionalWaterOp extends PixelOperator {
 
     public static final String DEFAULT_FORWARD_IOP_NET = "all_m1-m9/for_iop_meris_b12/17x27x17_487.0.net";
-//    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_36447.3.net";
+    //    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_36447.3.net";
     // new net RD, 20120704:
     public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_6477.8.net";
-//    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_829.1.net";
+    //    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_829.1.net";
     // new net RD, 20120704:
-    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_70.9.net";
+    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/27x41x27_70.9.net";
 
     // todo move to EnivsatConstants
     private static final String MERIS_ZONAL_WIND_DS_NAME = "zonal_wind";
@@ -131,7 +131,7 @@ public class RegionalWaterOp extends PixelOperator {
     @Parameter(defaultValue = "4.0", description = "Threshold to indicate Spectrum is Out of Scope")
     private double spectrumOutOfScopeThreshold;
 
-    @Parameter(defaultValue = "agc_flags.INVALID",
+    @Parameter(defaultValue = "agc_flags.INPUT_INVALID",
                description = "Expression defining pixels not considered for processing")
     private String invalidPixelExpression;
 
@@ -305,12 +305,13 @@ public class RegionalWaterOp extends PixelOperator {
         addTargetBand(productConfigurer, BAND_NAME_TURBIDITY_INDEX, -1, false, ProductData.TYPE_FLOAT32,
                       "Turbidity index in FNU (Formazine Nephelometric Unit).", "FNU");
         if (outputSnT) {
-            Band salinityBand = addTargetBand(productConfigurer, BAND_NAME_SALINITY, -1, false, ProductData.TYPE_FLOAT32,
-                                         "Water salinity.", "PSU");
+            Band salinityBand = addTargetBand(productConfigurer, BAND_NAME_SALINITY, -1, false,
+                                              ProductData.TYPE_FLOAT32,
+                                              "Water salinity.", "PSU");
             salinityBand.setNoDataValueUsed(true);
             salinityBand.setNoDataValue(Float.NaN);
             Band tempBand = addTargetBand(productConfigurer, BAND_NAME_TEMPERATURE, -1, false, ProductData.TYPE_FLOAT32,
-                                     "Water temperature.", "°C");
+                                          "Water temperature.", "°C");
             tempBand.setNoDataValueUsed(true);
             tempBand.setNoDataValue(Float.NaN);
 
@@ -450,7 +451,8 @@ public class RegionalWaterOp extends PixelOperator {
                                                 chlConversionExponent, chlConversionFactor,
                                                 inputReflecAre,
                                                 invIopMapper, invKdMapper,
-                                                threadLocalForwardIopNet, threadLocalInverseIopNet, threadLocalInverseKdNet);
+                                                threadLocalForwardIopNet, threadLocalInverseIopNet,
+                                                threadLocalInverseKdNet);
         } catch (IOException e) {
             throw new OperatorException(e);
         }
