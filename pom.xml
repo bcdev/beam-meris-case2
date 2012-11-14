@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.esa.beam</groupId>
             <artifactId>beam-meris-glint</artifactId>
-            <version>1.4-CC-SNAPSHOT</version>
+            <version>1.4.1-CC-SNAPSHOT</version>
         </dependency>
 
         <dependency>
