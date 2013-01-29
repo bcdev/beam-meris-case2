@@ -1,9 +1,11 @@
 package org.esa.beam.meris.case2;
 
+import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.MetadataAttribute;
 import org.esa.beam.framework.datamodel.MetadataElement;
+import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
@@ -141,6 +143,19 @@ public class Case2IOPOperatorTest {
 
     }
 
+    @Test
+    public void testCoastColourNetCDFL1P() throws Exception {
+        Product l1pProduct = getL1pProduct();
+        try {
+            GPF.createProduct("Meris.Case2Regional", GPF.NO_PARAMS, l1pProduct);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("already contains a band with the name 'lat'")) {
+                e.printStackTrace();
+                fail("Exception is not expected: " + e.getMessage());
+            }
+        }
+    }
+
     private static Product getL1bProduct() throws ParseException {
         int width = 10;
         int height = 10;
@@ -183,6 +198,23 @@ public class Case2IOPOperatorTest {
         product.getMetadataRoot().addElement(sph);
         return product;
     }
+
+    private static Product getL1pProduct() throws ParseException {
+        Product product = getL1bProduct();
+
+        product.addBand("l1p_flags", ProductData.TYPE_UINT8);
+        FlagCoding l1pFlagCoding = new FlagCoding("l1p_flags");
+        l1pFlagCoding.addFlag("CC_LAND", 0x01, "No Description.");
+        l1pFlagCoding.addFlag("CC_COASTLINE", 0x02, "No Description.");
+        l1pFlagCoding.addFlag("CC_CLOUD", 0x04, "No Description.");
+        product.getBand("l1p_flags").setSampleCoding(l1pFlagCoding);
+        product.getFlagCodingGroup().add(l1pFlagCoding);
+        Band lat = product.addBand("lat", ProductData.TYPE_FLOAT32);
+        Band lon = product.addBand("lon", ProductData.TYPE_FLOAT32);
+        product.setGeoCoding(new PixelGeoCoding(lat, lon, null, 5));
+        return product;
+    }
+
 
     private static Product getAtmoCorrectedProduct() throws ParseException {
         int width = 10;

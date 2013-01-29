@@ -18,6 +18,8 @@ package org.esa.beam.meris.case2;
 
 import org.esa.beam.atmosphere.operator.GlintCorrectionOperator;
 import org.esa.beam.atmosphere.operator.ReflectanceEnum;
+import org.esa.beam.framework.datamodel.Band;
+import org.esa.beam.framework.datamodel.GeoCoding;
 import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.GPF;
@@ -210,8 +212,7 @@ public class Case2IOPOperator extends Operator {
         final String[] case2names = case2Product.getBandNames();
 
         for (String name : case2names) {
-            if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&
-                (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
+            if (isPixelGeoCodingBandName(name, inputProduct.getGeoCoding())) {
                 continue;
             }
             ProductUtils.copyBand(name, case2Product, targetProduct, true);
@@ -227,6 +228,16 @@ public class Case2IOPOperator extends Operator {
         ProductUtils.copyMasks(case2Product, targetProduct);
 
         setTargetProduct(targetProduct);
+    }
+
+    private boolean isPixelGeoCodingBandName(String name, GeoCoding geoCoding) {
+        if (geoCoding instanceof PixelGeoCoding) {
+            PixelGeoCoding pixelGeoCoding = (PixelGeoCoding) geoCoding;
+            Band latBand = pixelGeoCoding.getLatBand();
+            Band lonBand = pixelGeoCoding.getLonBand();
+            return latBand.getName().equals(name) || lonBand.getName().equals(name);
+        }
+        return false;
     }
 
     private void initConversionDefaults() {
