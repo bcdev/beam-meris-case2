@@ -31,9 +31,9 @@ import org.esa.beam.meris.case2.water.WaterAlgorithm;
 
 @OperatorMetadata(alias = "Meris.EutrophicWater",
                   description = "Performs IOP retrieval on atmospherically corrected MERIS products.",
-                  authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
+                  authors = "Roland Doerffer (HZG); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2010 by Brockmann Consult",
-                  version = "1.5.7",
+                  version = "1.5.8",
                   internal = true)
 public class EutrophicWaterOp extends MerisCase2BasisWaterOp {
 

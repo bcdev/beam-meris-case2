@@ -37,9 +37,9 @@ import java.util.HashMap;
 
 @OperatorMetadata(alias = "Meris.Case2Regional",
                   description = "Performs IOP retrieval on L1b MERIS products, including atmospheric correction.",
-                  authors = "Roland Doerffer (HGZ); Marco Peters (Brockmann Consult)",
+                  authors = "Roland Doerffer (HZG); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2011 by Brockmann Consult",
-                  version = "1.5.7")
+                  version = "1.5.8")
 public class Case2IOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")
