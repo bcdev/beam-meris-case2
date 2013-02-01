@@ -60,7 +60,9 @@ public class RegionalWaterOp extends PixelOperator {
     public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_6477.8.net";
     //    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_829.1.net";
     // new net RD, 20120704:
-    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/27x41x27_70.9.net";
+//    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/27x41x27_70.9.net";
+    // new net RD, 20130131, has all Kd outputs 1-10:
+    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/27x41x27_425.4.net";
 
     // todo move to EnivsatConstants
     private static final String MERIS_ZONAL_WIND_DS_NAME = "zonal_wind";
@@ -107,9 +109,16 @@ public class RegionalWaterOp extends PixelOperator {
     private static final String BAND_NAME_CHI_SQUARE_FIT = "chiSquareFit";
     private static final String BAND_NAME_N_ITER = "nIter";
     private static final String BAND_NAME_PARAM_CHANGE = "paramChange";
+//    private static final String[] BAND_NAMES_KD_SPECTRUM = new String[]{
+//            "Kd_412", "Kd_443", "Kd_490", "Kd_510",
+//            "Kd_560", "Kd_620", "Kd_664", "Kd_680",
+//    };
+
+    // we have now the Kd spectrum as output from the net (new net 27x41x27_425.4.net, RD 20130131),
+    // with 10 nodes instead of 8
     private static final String[] BAND_NAMES_KD_SPECTRUM = new String[]{
             "Kd_412", "Kd_443", "Kd_490", "Kd_510",
-            "Kd_560", "Kd_620", "Kd_664", "Kd_680",
+            "Kd_560", "Kd_620", "Kd_664", "Kd_680", "Kd_709", "Kd_754"
     };
 
     private static final double WINDSPEED_THRESHOLD = 12.0;

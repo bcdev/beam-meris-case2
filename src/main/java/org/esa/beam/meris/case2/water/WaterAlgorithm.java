@@ -184,10 +184,16 @@ public class WaterAlgorithm {
         targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
 
         if (outputKdSpectrum) {
-            double[] kdSpectrum = kMin.computeKdSpectrum();
+//            double[] kdSpectrum = kMin.computeKdSpectrum();
+//            for (int i = 0; i < kdSpectrum.length; i++) {
+//                double aKdSpectrum = kdSpectrum[i];
+//                targetSamples[TARGET_KD_SPECTRUM_START_INDEX + i].set(aKdSpectrum);
+//            }
+
+            // we have now the Kd spectrum as output from the net (new net 27x41x27_425.4.net, RD 20130131)
+            double[] kdSpectrum = backwardKdOutput;
             for (int i = 0; i < kdSpectrum.length; i++) {
-                double aKdSpectrum = kdSpectrum[i];
-                targetSamples[TARGET_KD_SPECTRUM_START_INDEX + i].set(aKdSpectrum);
+                targetSamples[TARGET_KD_SPECTRUM_START_INDEX + i].set(kdSpectrum[i]);
             }
         } else {
             targetSamples[TARGET_KD_490_INDEX].set(kMin.computeKd490());
