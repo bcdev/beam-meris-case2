@@ -54,10 +54,14 @@ import static org.esa.beam.meris.case2.water.WaterAlgorithm.*;
                   internal = true)
 public class RegionalWaterOp extends PixelOperator {
 
-    public static final String DEFAULT_FORWARD_IOP_NET = "all_m1-m9/for_iop_meris_b12/17x27x17_487.0.net";
+    //    public static final String DEFAULT_FORWARD_IOP_NET = "all_m1-m9/for_iop_meris_b12/17x27x17_487.0.net";
+    // new net RD, 20130308:
+    public static final String DEFAULT_FORWARD_IOP_NET = "all_m1-m9/for_iop_meris_b12/17x97x47_39.5.net";
     //    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_36447.3.net";
     // new net RD, 20120704:
-    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_6477.8.net";
+//    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_6477.8.net";
+    // new net RD, 20120704:
+    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/97x77x37_1097.9.net";
     //    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_829.1.net";
     // new net RD, 20120704:
 //    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/27x41x27_70.9.net";

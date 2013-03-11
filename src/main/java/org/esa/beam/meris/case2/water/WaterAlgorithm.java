@@ -160,8 +160,12 @@ public class WaterAlgorithm {
         NNffbpAlphaTabFast forwardIopNet = threadLocalForwardIopNet.get();
         double[] forwardWaterOutput = forwardIopNet.calc(forwardWaterInput);
 
+        // new NN from RD, 20130308: we have now 29 outputs instead of 12, so we need to pick the right ones...
+        double[] forwardWaterOutputReduced = reduceForwardWaterOutput(forwardWaterOutput);
+
         /* compute chi square deviation on log scale between measured and computed spectrum */
-        double chiSquare = computeChiSquare(forwardWaterOutput, RLw);
+//        double chiSquare = computeChiSquare(forwardWaterOutput, RLw);
+        double chiSquare = computeChiSquare(forwardWaterOutputReduced, RLw);
 
         targetSamples[TARGET_CHI_SQUARE_INDEX].set(chiSquare);
 
@@ -203,6 +207,27 @@ public class WaterAlgorithm {
         targetSamples[TARGET_TURBIDITY_INDEX_INDEX].set(turbidity);
     }
 
+    private double[] reduceForwardWaterOutput(double[] forwardWaterOutput) {
+        double[] reducedForwardWaterOutput = new double[12];
+
+        // pick up the right outputs,
+        // see old net (17x27x17_487.0.net, 12 outputs) and new net (17x97x47_39.5.net, 29 outputs):
+        reducedForwardWaterOutput[0] = forwardWaterOutput[1]; // 412
+        reducedForwardWaterOutput[1] = forwardWaterOutput[2]; // 443
+        reducedForwardWaterOutput[2] = forwardWaterOutput[4]; // 489
+        reducedForwardWaterOutput[3] = forwardWaterOutput[6]; // 510
+        reducedForwardWaterOutput[4] = forwardWaterOutput[11]; // 560
+        reducedForwardWaterOutput[5] = forwardWaterOutput[12]; // 620
+        reducedForwardWaterOutput[6] = forwardWaterOutput[15]; // 665
+        reducedForwardWaterOutput[7] = forwardWaterOutput[19]; // 681
+        reducedForwardWaterOutput[8] = forwardWaterOutput[20]; // 709
+        reducedForwardWaterOutput[9] = forwardWaterOutput[22]; // 754
+        reducedForwardWaterOutput[10] = forwardWaterOutput[24]; // 779
+        reducedForwardWaterOutput[11] = forwardWaterOutput[27]; // 865
+
+        return reducedForwardWaterOutput;
+    }
+
     private double computeTurbidityIndex(double rlw620) {
         if (rlw620 > RLW620_MAX) {  // maximum value for computing the turbidity Index
             rlw620 = RLW620_MAX;
@@ -238,7 +263,7 @@ public class WaterAlgorithm {
         forwardWaterInnet[5] = waterOutnet[0];
         forwardWaterInnet[6] = waterOutnet[1];
         forwardWaterInnet[7] = waterOutnet[2];
-        forwardWaterInnet[8] = waterOutnet[3];
+        forwardWaterInnet[8] = waterOutnet[3];       // we assume that bmin is same as bpart (todo: check with RD)
         forwardWaterInnet[9] = waterOutnet[4];
         return forwardWaterInnet;
 
