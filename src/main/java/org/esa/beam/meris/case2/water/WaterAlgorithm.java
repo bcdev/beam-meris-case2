@@ -160,11 +160,15 @@ public class WaterAlgorithm {
         NNffbpAlphaTabFast forwardIopNet = threadLocalForwardIopNet.get();
         double[] forwardWaterOutput = forwardIopNet.calc(forwardWaterInput);
 
-        // new NN from RD, 20130308: we have now 29 outputs instead of 12, so we need to pick the right ones...
-        double[] forwardWaterOutputReduced = reduceForwardWaterOutput(forwardWaterOutput);
+        // new NN from RD, 20130308: we may have now 29 outputs instead of 12, so we need to pick the right ones...
+        double[] forwardWaterOutputReduced;
+        if (forwardWaterOutput.length == 29) {
+            forwardWaterOutputReduced = reduceForwardWaterOutput(forwardWaterOutput);
+        } else {
+            forwardWaterOutputReduced = forwardWaterOutput;
+        }
 
         /* compute chi square deviation on log scale between measured and computed spectrum */
-//        double chiSquare = computeChiSquare(forwardWaterOutput, RLw);
         double chiSquare = computeChiSquare(forwardWaterOutputReduced, RLw);
 
         targetSamples[TARGET_CHI_SQUARE_INDEX].set(chiSquare);
