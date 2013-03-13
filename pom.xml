@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.esa.beam</groupId>
     <artifactId>beam-meris-case2-regional</artifactId>
-    <version>1.8.1-CC-SNAPSHOT</version>
+    <version>1.8.3-CC-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>BEAM MERIS Case-2 Regional Processor</name>
 
@@ -37,13 +37,13 @@
         <dependency>
             <groupId>org.esa.beam</groupId>
             <artifactId>beam-waterradiance-auxdata</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.esa.beam</groupId>
             <artifactId>beam-meris-glint</artifactId>
-            <version>1.4.2-CC-SNAPSHOT</version>
+            <version>1.4.3-CC-SNAPSHOT</version>
         </dependency>
 
         <dependency>

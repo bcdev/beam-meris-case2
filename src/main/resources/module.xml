@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-case2-regional</symbolicName>
-    <version>1.8.1-CC</version>
+    <version>1.8.3-CC</version>
     <name>MERIS Case-2-Regional Processor</name>
 
     <description>
