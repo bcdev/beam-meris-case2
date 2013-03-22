@@ -66,7 +66,9 @@ public class RegionalWaterOp extends PixelOperator {
     // new net RD, 20120704:
 //    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/27x41x27_70.9.net";
     // new net RD, 20130131, has all Kd outputs 1-10:
-    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/27x41x27_425.4.net";
+//    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/27x41x27_425.4.net";
+    // new net RD, 20130320, log_rw <--> log_Kd:
+    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/97x77x37_150.4.net";
 
     // todo move to EnivsatConstants
     private static final String MERIS_ZONAL_WIND_DS_NAME = "zonal_wind";

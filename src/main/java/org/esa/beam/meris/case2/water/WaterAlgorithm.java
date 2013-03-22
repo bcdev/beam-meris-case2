@@ -199,15 +199,25 @@ public class WaterAlgorithm {
 //            }
 
             // we have now the Kd spectrum as output from the net (new net 27x41x27_425.4.net, RD 20130131)
-            double[] kdSpectrum = backwardKdOutput;
+//            double[] kdSpectrum = backwardKdOutput;
+//            for (int i = 0; i < kdSpectrum.length; i++) {
+//                targetSamples[TARGET_KD_SPECTRUM_START_INDEX + i].set(kdSpectrum[i]);
+//            }
+
+            // NOW we have the Kd spectrum AND Kmin as output from the NEW net (new net 97x77x37_150.4.net, RD 20130320)
+            // compared to 27x41x27_425.4.net, it's now log-log instead of lin-lin
+            targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
+            double[] kdSpectrum = new double[backwardKdOutput.length-1];
             for (int i = 0; i < kdSpectrum.length; i++) {
+                kdSpectrum[i] = Math.exp(backwardKdOutput[i+1]);
                 targetSamples[TARGET_KD_SPECTRUM_START_INDEX + i].set(kdSpectrum[i]);
             }
         } else {
             targetSamples[TARGET_KD_490_INDEX].set(kMin.computeKd490());
         }
 
-        final double turbidity = computeTurbidityIndex(Math.log(RLw[5]));// parameter Rlw at 620 'reflec_6'
+//        final double turbidity = computeTurbidityIndex(Math.log(RLw[5]));// parameter Rlw at 620 'reflec_6'
+        final double turbidity = computeTurbidityIndex(RLw[5]);// parameter Rlw at 620 'reflec_6'
         targetSamples[TARGET_TURBIDITY_INDEX_INDEX].set(turbidity);
     }
 
