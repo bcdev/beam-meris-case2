@@ -153,7 +153,7 @@ public class Case2IOPOperator extends Operator {
     private String invalidPixelExpression;
 
     @Parameter(label = "Alternative inverse iop neural net (optional)",
-               defaultValue = RegionalWaterOp.DEFAULT_INVERSE_IOP_NET,
+               defaultValue = RegionalWaterOp.DEFAULT_INVERSE_EXTREME_IOP_NET,
                description = "The file of the inverse iop neural net to be used instead of the default.")
     private File inverseIopNnFile;
 

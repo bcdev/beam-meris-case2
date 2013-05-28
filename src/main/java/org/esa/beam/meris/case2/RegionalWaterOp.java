@@ -61,7 +61,8 @@ public class RegionalWaterOp extends PixelOperator {
     // new net RD, 20120704:
 //    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/27x41x27_6477.8.net";
     // new net RD, 20120704:
-    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/97x77x37_1097.9.net";
+    public static final String DEFAULT_INVERSE_EXTREME_IOP_NET = "all_m1-m9/inv_iop_meris_b10/97x77x37_1097.9.net";
+    public static final String DEFAULT_INVERSE_IOP_NET = "all_m1-m9/inv_iop_meris_b10/97x77x37_1698.1.net";
     //    public static final String DEFAULT_INVERSE_KD_NET  = "all_m1-m9/inv_kd_meris_b9/27x41x27_829.1.net";
     // new net RD, 20120704:
 //    public static final String DEFAULT_INVERSE_KD_NET = "all_m1-m9/inv_kd_meris_b9/27x41x27_70.9.net";
@@ -150,7 +151,7 @@ public class RegionalWaterOp extends PixelOperator {
                description = "Expression defining pixels not considered for processing")
     private String invalidPixelExpression;
 
-    @Parameter(label = "Inverse iop neural net (optional)", defaultValue = DEFAULT_INVERSE_IOP_NET,
+    @Parameter(label = "Inverse iop neural net (optional)", defaultValue = DEFAULT_INVERSE_EXTREME_IOP_NET,
                description = "The file of the inverse iop neural net to be used instead of the default.")
     private File inverseIopNnFile;
 
@@ -453,7 +454,7 @@ public class RegionalWaterOp extends PixelOperator {
         String fwdIOPnn = readNeuralNet(DEFAULT_FORWARD_IOP_NET, forwardIopNnFile);
         ThreadLocal<NNffbpAlphaTabFast> threadLocalForwardIopNet = createNeurallNet(fwdIOPnn);
 
-        String invIOPnn = readNeuralNet(DEFAULT_INVERSE_IOP_NET, inverseIopNnFile);
+        String invIOPnn = readNeuralNet(DEFAULT_INVERSE_EXTREME_IOP_NET, inverseIopNnFile);
         ThreadLocal<NNffbpAlphaTabFast> threadLocalInverseIopNet = createNeurallNet(invIOPnn);
 
         String invKdnn = readNeuralNet(DEFAULT_INVERSE_KD_NET, inverseKdNnFile);
@@ -670,11 +671,16 @@ public class RegionalWaterOp extends PixelOperator {
 
     private InputStream getNeuralNetStream(String resourceNetName, File neuralNetFile) {
         InputStream neuralNetStream;
-        if (neuralNetFile.equals(new File(resourceNetName))) {
+        final String neuralNetFilePath = neuralNetFile.getPath().replace(File.separator, "/");
+        if (neuralNetFile.equals((new File(resourceNetName)))) {
+            // the default NN
             neuralNetStream = getClass().getResourceAsStream(resourceNetName);
+        } else if (getClass().getResourceAsStream(neuralNetFilePath) != null) {
+            // an optional NN which is available in the resources
+            neuralNetStream = getClass().getResourceAsStream(neuralNetFilePath);
         } else {
             try {
-                //noinspection IOResourceOpenedButNotSafelyClosed
+                // an optional NN elsewhere (full path!)
                 neuralNetStream = new FileInputStream(neuralNetFile);
             } catch (FileNotFoundException e) {
                 throw new OperatorException(e);
