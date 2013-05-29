@@ -547,7 +547,7 @@ public class RegionalWaterOp extends PixelOperator {
             salinity = averageSalinity;
             temperature = averageTemperature;
         }
-        waterAlgorithm.perform(solzen, satzen, azi_diff_deg, sourceSamples, targetSamples, salinity, temperature);
+        waterAlgorithm.perform(x, y, solzen, satzen, azi_diff_deg, sourceSamples, targetSamples, salinity, temperature);
         if (outputSnT) {
             targetSamples[TARGET_SALINITY_INDEX].set(salinity);
             targetSamples[TARGET_TEMPERATURE_INDEX].set(temperature);

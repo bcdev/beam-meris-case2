@@ -115,8 +115,8 @@ public class WaterAlgorithm {
         this.threadLocalInverseKdNet = threadLocalInverseKdNet;
     }
 
-    public void perform(double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
-                            WritableSample[] targetSamples, double salinity, double temperature) {
+    public void perform(int x, int y, double solzen, double satzen, double azi_diff_deg, Sample[] sourceSamples,
+                        WritableSample[] targetSamples, double salinity, double temperature) {
         // test RLw against lowest or cut value in NN and set in lower
         double[] RLw = new double[12];
         RLw[0] = sourceSamples[SOURCE_REFLEC_1_INDEX].getDouble();
@@ -141,7 +141,7 @@ public class WaterAlgorithm {
         double[] backwardIOPInput = getBackwardWaterInput(invIopMapper, solzen, satzen, azi_diff_deg, salinity, temperature, RLw);
         NNffbpAlphaTabFast inverseIopNet = threadLocalInverseIopNet.get();
         // test if water leaving radiance reflectance are within training range, otherwise set to training range
-        if (isInputInTrainigRange(backwardIOPInput, inverseIopNet)) {
+        if (isInputOutOfTrainingRange(backwardIOPInput, inverseIopNet)) {
             targetSamples[TARGET_FLAG_INDEX].set(WLR_OOR_BIT_INDEX, true);
         }
 
@@ -207,9 +207,9 @@ public class WaterAlgorithm {
             // NOW we have the Kd spectrum AND Kmin as output from the NEW net (new net 97x77x37_150.4.net, RD 20130320)
             // compared to 27x41x27_425.4.net, it's now log-log instead of lin-lin
             targetSamples[TARGET_Z90_MAX_INDEX].set(-1.0 / k_min);
-            double[] kdSpectrum = new double[backwardKdOutput.length-1];
+            double[] kdSpectrum = new double[backwardKdOutput.length - 1];
             for (int i = 0; i < kdSpectrum.length; i++) {
-                kdSpectrum[i] = Math.exp(backwardKdOutput[i+1]);
+                kdSpectrum[i] = Math.exp(backwardKdOutput[i + 1]);
                 targetSamples[TARGET_KD_SPECTRUM_START_INDEX + i].set(kdSpectrum[i]);
             }
         } else {
@@ -311,7 +311,7 @@ public class WaterAlgorithm {
     }
 
     private static double[] getBackwardWaterInput(NNInputMapper inputMapper, double solzen, double satzen, double azi_diff_deg, double salinity,
-                                           double temperature, double[] rlw) {
+                                                  double temperature, double[] rlw) {
         int numReflInputs = inputMapper.getNumInputs();
         int[] mapping = inputMapper.getMapping();
         boolean isLogScaled = inputMapper.isLogScaled();
@@ -337,18 +337,18 @@ public class WaterAlgorithm {
      **	test water leaving radiances as input to neural network for out of training range
      **	if out of range set to lower or upper boundary value
     -----------------------------------------------------------------------------------*/
-    private boolean isInputInTrainigRange(double[] backwardWaterInput, NNffbpAlphaTabFast backwardWaterNet) {
+    private boolean isInputOutOfTrainingRange(double[] backwardWaterInput, NNffbpAlphaTabFast backwardWaterNet) {
         final double[] inmax = backwardWaterNet.getInmax();
         final double[] inmin = backwardWaterNet.getInmin();
         boolean isOutOfRange = false;
         for (int i = 0; i < backwardWaterInput.length; i++) {
             if (backwardWaterInput[i] > inmax[i]) {
                 backwardWaterInput[i] = inmax[i];
-                isOutOfRange |= true;
+                isOutOfRange = true;
             }
             if (backwardWaterInput[i] < inmin[i]) {
                 backwardWaterInput[i] = inmin[i];
-                isOutOfRange |= true;
+                isOutOfRange = true;
             }
         }
         return isOutOfRange;
