@@ -30,7 +30,7 @@ public class Case2IOPOperatorTest {
                 "reflec_4", "reflec_5", "reflec_6",
                 "reflec_7", "reflec_8", "reflec_9",
                 "reflec_10", "reflec_12", "reflec_13",
-                "tau_550", "tau_778", "tau_865",
+                "tau_550",
                 "quality_indicator",
                 "glint_ratio",
                 "ang_443_865",
