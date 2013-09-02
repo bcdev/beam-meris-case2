@@ -1,12 +1,12 @@
 <bundleDescriptor>
     <bundleName>case2-regional</bundleName>
-    <bundleVersion>1.5.6</bundleVersion>
+    <bundleVersion>1.5.9</bundleVersion>
 
     <processorDescriptors>
         <processorDescriptor>
             <executableName>Meris.Case2Regional</executableName>
             <processorName>MERIS Case2 Regional</processorName>
-            <processorVersion>1.5.6</processorVersion>
+            <processorVersion>1.5.9-SNAPSHOT</processorVersion>
             <defaultParameters>
                 <![CDATA[<parameters>
     <doAtmosphericCorrection>true</doAtmosphericCorrection>
