@@ -1,8 +1,10 @@
 package org.esa.beam.meris.case2;
 
+import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.MetadataAttribute;
 import org.esa.beam.framework.datamodel.MetadataElement;
+import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.TiePointGrid;
@@ -22,6 +24,7 @@ public class Case2IOPOperatorTest {
         GPF.getDefaultInstance().getOperatorSpiRegistry().loadOperatorSpis();
     }
 
+    @SuppressWarnings("ListIndexOfReplaceableByContains")
     @Test
     public void testInitializationWithAtmoCorr() throws Exception {
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", GPF.NO_PARAMS, getL1bProduct());
@@ -42,7 +45,6 @@ public class Case2IOPOperatorTest {
                 "a_total_443",
                 "a_ys_443",
                 "a_pig_443",
-                "a_poc_443",
                 "bb_spm_443",
                 "tsm",
                 "chl_conc",
@@ -57,11 +59,11 @@ public class Case2IOPOperatorTest {
         };
         assertArrayEquals(expectedTargetBands, bandNames);
         Product.AutoGrouping autoGrouping = c2rProduct.getAutoGrouping();
-        assertTrue(autoGrouping.contains("tosa_reflec"));
-        assertTrue(autoGrouping.contains("reflec"));
-        assertTrue(autoGrouping.contains("path"));
-        assertTrue(autoGrouping.contains("norm_refl"));
-        assertTrue(autoGrouping.contains("trans"));
+        assertTrue(autoGrouping.indexOf("tosa_reflec") != -1);
+        assertTrue(autoGrouping.indexOf("reflec") != -1);
+        assertTrue(autoGrouping.indexOf("path") != -1);
+        assertTrue(autoGrouping.indexOf("norm_refl") != -1);
+        assertTrue(autoGrouping.indexOf("trans") != -1);
     }
 
     @Test
@@ -78,7 +80,6 @@ public class Case2IOPOperatorTest {
                 "a_total_443",
                 "a_ys_443",
                 "a_pig_443",
-                "a_poc_443",
                 "bb_spm_443",
                 "tsm",
                 "chl_conc",
@@ -98,13 +99,13 @@ public class Case2IOPOperatorTest {
         final HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("doAtmosphericCorrection", false);
         parameters.put("outputReflec", false);
+        parameters.put("outputTosa", false);
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
         final String[] expectedTargetBands = {
                 "a_total_443",
                 "a_ys_443",
                 "a_pig_443",
-                "a_poc_443",
                 "bb_spm_443",
                 "tsm",
                 "chl_conc",
@@ -118,6 +119,52 @@ public class Case2IOPOperatorTest {
         };
         assertArrayEquals(expectedTargetBands, bandNames);
 
+    }
+
+    @Test
+    public void testMER_FSG_WithPixelGeoCoding() throws Exception {
+        final HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("doAtmosphericCorrection", true);
+        parameters.put("outputPath", false);
+        final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getFSGProduct());
+        final String[] bandNames = c2rProduct.getBandNames();
+        final String[] expectedTargetBands = {
+                "corr_latitude",
+                "corr_longitude",
+                "l1_flags",
+                "reflec_1", "reflec_2", "reflec_3",
+                "reflec_4", "reflec_5", "reflec_6",
+                "reflec_7", "reflec_8", "reflec_9",
+                "reflec_10", "reflec_12", "reflec_13",
+                "tau_550", "tau_778", "tau_865",
+                "glint_ratio",
+                "ang_443_865",
+                "detector_index",
+                "a_total_443",
+                "a_ys_443",
+                "a_pig_443",
+                "bb_spm_443",
+                "tsm",
+                "chl_conc",
+                "chiSquare",
+                "K_min",
+                "Kd_490",
+                "Z90_max",
+                "turbidity_index",
+                "agc_flags",
+                "case2_flags",
+        };
+        assertArrayEquals(expectedTargetBands, bandNames);
+
+    }
+
+    private static Product getFSGProduct() throws ParseException {
+        Product l1bProduct = getL1bProduct();
+        Band corr_longitude = l1bProduct.addBand("corr_longitude", ProductData.TYPE_FLOAT64);
+        Band corr_latitude = l1bProduct.addBand("corr_latitude", ProductData.TYPE_FLOAT64);
+        l1bProduct.addBand("altitude", ProductData.TYPE_INT16);
+        l1bProduct.setGeoCoding(new PixelGeoCoding(corr_latitude, corr_longitude, "NOT l1_flags.INVALID", 6));
+        return l1bProduct;
     }
 
     private static Product getL1bProduct() throws ParseException {

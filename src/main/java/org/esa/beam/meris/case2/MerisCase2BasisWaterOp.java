@@ -55,7 +55,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     private static final String BAND_NAME_A_TOTAL = "a_total_443";
     private static final String BAND_NAME_A_GELBSTOFF = "a_ys_443";
     private static final String BAND_NAME_A_PIGMENT = "a_pig_443";
-    private static final String BAND_NAME_A_POC = "a_poc_443";
     private static final String BAND_NAME_BB_SPM = "bb_spm_443";
     private static final String BAND_NAME_A_GELBSTOFF_FIT = BAND_NAME_A_GELBSTOFF + "_Fit";
     private static final String BAND_NAME_A_GELBSTOFF_FIT_MAX = BAND_NAME_A_GELBSTOFF + "_Fit_max";
@@ -181,8 +180,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                       "Yellow substance absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_A_PIGMENT, "m^-1",
                       "Pigment absorption coefficient at 443 nm.", true, ProductData.TYPE_FLOAT32);
-        addTargetBand(productConfigurer, BAND_NAME_A_POC, "m^-1",
-                      "Absorption by particulate organic matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_BB_SPM, "m^-1",
                       "Backscattering of suspended particulate matter at 443 nm.", true, ProductData.TYPE_FLOAT32);
         addTargetBand(productConfigurer, BAND_NAME_TSM, "g m^-3",
