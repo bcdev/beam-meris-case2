@@ -227,7 +227,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
         configurator.defineSample(TARGET_A_GELBSTOFF_INDEX, BAND_NAME_A_GELBSTOFF);
         configurator.defineSample(TARGET_A_PIGMENT_INDEX, BAND_NAME_A_PIGMENT);
         configurator.defineSample(TARGET_A_TOTAL_INDEX, BAND_NAME_A_TOTAL);
-        configurator.defineSample(TARGET_A_POC_INDEX, BAND_NAME_A_POC);
         configurator.defineSample(TARGET_BB_SPM_INDEX, BAND_NAME_BB_SPM);
         configurator.defineSample(TARGET_TSM_INDEX, BAND_NAME_TSM);
         configurator.defineSample(TARGET_CHL_CONC_INDEX, BAND_NAME_CHL_CONC);

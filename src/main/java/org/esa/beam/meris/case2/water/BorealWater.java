@@ -57,10 +57,7 @@ public class BorealWater extends WaterAlgorithm {
 
         double aGelbstoff = Math.exp(waterOutnet[2]);
         targetSamples[TARGET_A_GELBSTOFF_INDEX].set(aGelbstoff);
-        targetSamples[TARGET_A_TOTAL_INDEX].set(
-                aPig + aGelbstoff + bTsm / 0.95 * 0.089); // all water constituents absorption
-        // todo - How to compute a_poc_443?
-        targetSamples[TARGET_A_POC_INDEX].set(0.0);
+        targetSamples[TARGET_A_TOTAL_INDEX].set(aPig + aGelbstoff + bTsm / 0.95 * 0.089); // all water constituents absorption
     }
 
     @Override
