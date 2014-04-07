@@ -152,6 +152,7 @@ public class Case2IOPOperator extends Operator {
 
         if (doAtmosphericCorrection) {
             Operator atmoCorOp = new GlintCorrectionOperator();
+            atmoCorOp.setParameterDefaultValues();
             atmoCorOp.setParameter("doSmileCorrection", doSmileCorrection);
             if (atmoNetFile != null) {
                 atmoCorOp.setParameter("atmoNetMerisFile", atmoNetFile);
@@ -169,6 +170,7 @@ public class Case2IOPOperator extends Operator {
         }
 
         Operator case2Op = new RegionalWaterOp();
+        case2Op.setParameterDefaultValues();
         if (!Case2AlgorithmEnum.BOREAL.equals(algorithm)) {
             case2Op.setParameter("tsmConversionExponent", tsmConversionExponent);
             case2Op.setParameter("tsmConversionFactor", tsmConversionFactor);
