@@ -7,12 +7,13 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.gpf.GPF;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.text.ParseException;
 import java.util.HashMap;
+
+import static org.junit.Assert.*;
 
 public class Case2IOPOperatorTest {
 
@@ -54,18 +55,18 @@ public class Case2IOPOperatorTest {
                 "l1_flags",
                 "case2_flags"
         };
-        Assert.assertArrayEquals(expectedTargetBands, bandNames);
+        assertArrayEquals(expectedTargetBands, bandNames);
         Product.AutoGrouping autoGrouping = c2rProduct.getAutoGrouping();
-        Assert.assertTrue(autoGrouping.indexOf("tosa_reflec") != -1);
-        Assert.assertTrue(autoGrouping.indexOf("reflec") != -1);
-        Assert.assertTrue(autoGrouping.indexOf("path") != -1);
-        Assert.assertTrue(autoGrouping.indexOf("norm_refl") != -1);
-        Assert.assertTrue(autoGrouping.indexOf("trans") != -1);
+        assertTrue(autoGrouping.contains("tosa_reflec"));
+        assertTrue(autoGrouping.contains("reflec"));
+        assertTrue(autoGrouping.contains("path"));
+        assertTrue(autoGrouping.contains("norm_refl"));
+        assertTrue(autoGrouping.contains("trans"));
     }
 
     @Test
     public void testInitializationWithoutAtmoCorr() throws Exception {
-        final HashMap<String, Object> parameters = new HashMap<String, Object>();
+        final HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("doAtmosphericCorrection", false);
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
         final String[] bandNames = c2rProduct.getBandNames();
@@ -89,12 +90,12 @@ public class Case2IOPOperatorTest {
                 "agc_flags",
                 "case2_flags"
         };
-        Assert.assertArrayEquals(expectedTargetBands, bandNames);
+        assertArrayEquals(expectedTargetBands, bandNames);
     }
 
     @Test
     public void testOuputReflectances() throws Exception {
-        final HashMap<String, Object> parameters = new HashMap<String, Object>();
+        final HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("doAtmosphericCorrection", false);
         parameters.put("outputReflec", false);
         final Product c2rProduct = GPF.createProduct("Meris.Case2Regional", parameters, getAtmoCorrectedProduct());
@@ -115,7 +116,7 @@ public class Case2IOPOperatorTest {
                 "agc_flags",
                 "case2_flags"
         };
-        Assert.assertArrayEquals(expectedTargetBands, bandNames);
+        assertArrayEquals(expectedTargetBands, bandNames);
 
     }
 
