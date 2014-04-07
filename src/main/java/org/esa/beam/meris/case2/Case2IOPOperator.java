@@ -18,7 +18,7 @@ package org.esa.beam.meris.case2;
 
 import org.esa.beam.atmosphere.operator.GlintCorrectionOperator;
 import org.esa.beam.atmosphere.operator.ReflectanceEnum;
-import org.esa.beam.framework.datamodel.PixelGeoCoding;
+import org.esa.beam.framework.datamodel.BasicPixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.GPF;
 import org.esa.beam.framework.gpf.Operator;
@@ -209,7 +209,7 @@ public class Case2IOPOperator extends Operator {
         final String[] case2names = case2Product.getBandNames();
 
         for (String name : case2names) {
-            if (inputProduct.getGeoCoding() instanceof PixelGeoCoding &&
+            if (inputProduct.getGeoCoding() instanceof BasicPixelGeoCoding &&
                 (name.startsWith("corr_") || name.startsWith("l1_flags"))) {
                 continue;
             }
