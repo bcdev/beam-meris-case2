@@ -60,22 +60,19 @@
 
     <extension point="beam-ui:actions">
         <action>
+            <parent>processing.thematicWater</parent>
             <id>merisCase2Regional</id>
             <class>org.esa.beam.meris.case2.ui.Case2RegionalAction</class>
             <text>Case-2 Regional Processor (MERIS)...</text>
-            <shortDescr>Invokes the Case-2 Regional processor</shortDescr>
-            <longDescr>Invokes the Case-2 Regional processor for MERIS data products</longDescr>
-            <parent>tools</parent>
+            <shortDescr>Generates IOPs for Case-2 water from a MERIS product</shortDescr>
             <helpId>merisCase2Regional</helpId>
-            <placeAfter>flhMciScientificTool</placeAfter>
         </action>
         <action>
+            <parent>processing.thematicWater</parent>
             <id>merisCase2Lakes</id>
             <class>org.esa.beam.meris.case2.ui.Case2LakesAction</class>
             <text>Lakes Processor (MERIS)...</text>
-            <shortDescr>Invokes the Case-2 Lakes processor</shortDescr>
-            <longDescr>Invokes the Case-2 (Eutrophic and Boreal) Lakes processor for MERIS data products</longDescr>
-            <parent>tools</parent>
+            <shortDescr>Generates IOPs for Case-2 Lakes (Eutrophic and Boreal) water from a MERIS product</shortDescr>
             <helpId>merisCase2Regional</helpId>
             <placeAfter>merisCase2Regional</placeAfter>
         </action>
