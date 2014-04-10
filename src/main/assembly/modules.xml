@@ -18,7 +18,6 @@
                 <include>*:beam-meris-sdr*</include>
                 <include>*:beam-meris-brr*</include>
                 <include>*:beam-meris-glint*</include>
-                <include>*:flint-processor*</include>
             </includes>
         </dependencySet>
     </dependencySets>
