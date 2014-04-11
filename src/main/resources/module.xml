@@ -63,7 +63,7 @@
             <parent>processing.thematicWater</parent>
             <id>merisCase2Regional</id>
             <class>org.esa.beam.meris.case2.ui.Case2RegionalAction</class>
-            <text>Case-2 Regional Processor (MERIS)...</text>
+            <text>MERIS Case-2 Regional Processor...</text>
             <shortDescr>Generates IOPs for Case-2 water from a MERIS product</shortDescr>
             <helpId>merisCase2Regional</helpId>
         </action>
@@ -71,8 +71,8 @@
             <parent>processing.thematicWater</parent>
             <id>merisCase2Lakes</id>
             <class>org.esa.beam.meris.case2.ui.Case2LakesAction</class>
-            <text>Lakes Processor (MERIS)...</text>
-            <shortDescr>Generates IOPs for Case-2 Lakes (Eutrophic and Boreal) water from a MERIS product</shortDescr>
+            <text>MERIS Lakes Processor...</text>
+            <shortDescr>Generates IOPs for Lakes (Eutrophic and Boreal) water from a MERIS product</shortDescr>
             <helpId>merisCase2Regional</helpId>
             <placeAfter>merisCase2Regional</placeAfter>
         </action>

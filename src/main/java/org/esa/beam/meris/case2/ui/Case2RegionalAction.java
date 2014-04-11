@@ -14,10 +14,9 @@ public class Case2RegionalAction extends AbstractVisatAction {
     public void actionPerformed(CommandEvent event) {
         final OperatorMetadata opMetadata = Case2IOPOperator.class.getAnnotation(OperatorMetadata.class);
         final String version = opMetadata.version();
+        String title = "MERIS Case-2 Regional Processor - v" + version;
         final Case2IOPDialog operatorDialog = new Case2IOPDialog(OPERATOR_NAME, TARGET_NAME_SUFFIX,
-                                                                 getAppContext(), getText() + " - v" + version,
-                                                                 event.getCommand().getHelpId()
-        );
+                                                                 getAppContext(), title, event.getCommand().getHelpId());
         operatorDialog.getJDialog().pack();
         operatorDialog.show();
     }
