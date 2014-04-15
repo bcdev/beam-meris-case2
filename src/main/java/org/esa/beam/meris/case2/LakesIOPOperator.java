@@ -208,6 +208,8 @@ public class LakesIOPOperator extends Operator {
             ProductUtils.copyBand(name, case2Product, targetProduct, true);
         }
 
+        ProductUtils.copyMasks(inputProduct, targetProduct);
+        ProductUtils.copyMasks(case2Product, targetProduct);
 
         setTargetProduct(targetProduct);
     }

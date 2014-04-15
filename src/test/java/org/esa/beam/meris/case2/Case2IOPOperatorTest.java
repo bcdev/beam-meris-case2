@@ -2,16 +2,19 @@ package org.esa.beam.meris.case2;
 
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.FlagCoding;
+import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.MetadataAttribute;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
+import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.gpf.GPF;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.HashMap;
 
@@ -64,6 +67,15 @@ public class Case2IOPOperatorTest {
         assertTrue(autoGrouping.indexOf("path") != -1);
         assertTrue(autoGrouping.indexOf("norm_refl") != -1);
         assertTrue(autoGrouping.indexOf("trans") != -1);
+
+        ProductNodeGroup<Mask> maskGroup = c2rProduct.getMaskGroup();
+        assertEquals(18, maskGroup.getNodeCount());
+        assertTrue(maskGroup.contains("invalid"));
+        assertTrue(maskGroup.contains("land"));
+        assertTrue(maskGroup.contains("agc_land"));
+        assertTrue(maskGroup.contains("atc_oor"));
+        assertTrue(maskGroup.contains("case2_wlr_oor"));
+        assertTrue(maskGroup.contains("case2_fit_failed"));
     }
 
     @Test
@@ -205,6 +217,9 @@ public class Case2IOPOperatorTest {
         final MetadataAttribute sphDescriptor = new MetadataAttribute("SPH_DESCRIPTOR",
                                                                       ProductData.createInstance(
                                                                               "MER_FR__1P SPECIFIC HEADER"), true);
+
+        product.getMaskGroup().add(Mask.BandMathsType.create("invalid", "dummy", width, height, "l1_flags.INVALID", Color.RED, 0.1));
+        product.getMaskGroup().add(Mask.BandMathsType.create("land", "dummy", width, height, "l1_flags.LAND_OCEAN", Color.GREEN, 0.5));
         sph.addAttribute(sphDescriptor);
         product.getMetadataRoot().addElement(sph);
         return product;
