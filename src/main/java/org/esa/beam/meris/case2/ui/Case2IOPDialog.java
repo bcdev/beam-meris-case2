@@ -5,6 +5,7 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.GPF;
 import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.beam.framework.gpf.descriptor.OperatorDescriptor;
 import org.esa.beam.framework.gpf.ui.OperatorMenu;
 import org.esa.beam.framework.gpf.ui.OperatorParameterSupport;
 import org.esa.beam.framework.gpf.ui.SingleTargetProductDialog;
@@ -27,16 +28,16 @@ class Case2IOPDialog extends SingleTargetProductDialog {
             throw new IllegalArgumentException("operatorName");
         }
 
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<>();
         PropertyContainer propContainer = ParameterDescriptorFactory.createMapBackedOperatorPropertyContainer(
                 operatorName, parameters);
         propContainer.setDefaultValues();
         form = new Case2IOPForm(appContext, operatorSpi, propContainer, getTargetProductSelector(), targetNameSuffix);
 
-        final OperatorParameterSupport parameterSupport = new OperatorParameterSupport(operatorSpi.getOperatorClass(),
+        OperatorDescriptor operatorDescriptor = operatorSpi.getOperatorDescriptor();
+        final OperatorParameterSupport parameterSupport = new OperatorParameterSupport(operatorDescriptor,
                                                                                        propContainer, parameters, null);
-        OperatorMenu menuSupport = new OperatorMenu(this.getJDialog(),
-                                                    operatorSpi.getOperatorClass(), parameterSupport, helpID);
+        OperatorMenu menuSupport = new OperatorMenu(this.getJDialog(), operatorDescriptor, parameterSupport, appContext, helpID);
         getJDialog().setJMenuBar(menuSupport.createDefaultMenu());
     }
 
@@ -51,13 +52,11 @@ class Case2IOPDialog extends SingleTargetProductDialog {
         form.prepareShow();
         setContent(form);
         return super.show();
-
     }
 
     @Override
     public void hide() {
         form.prepareHide();
         super.hide();
-
     }
 }
