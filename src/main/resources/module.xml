@@ -16,23 +16,12 @@
 
     <changelog>
         <![CDATA[
+        Changes in version 1.6.1:<br/>
+          [CIIR-49] CoastColour L1P can not be used as source<br/>
         Changes in version 1.6:<br/>
           [CIIR-43] Reintroduce separate lakes processor<br/>
           [CIIR-40] Add band a_poc_443 as output<br/>
           [CIIR-39] Adapt target product creation according to changes in AGC processor<br/>
-        Changes in version 1.5.1:<br/>
-          [CIIR-38] Allow specifing the kind of reflectances<br/>
-          [CIIR-37] Error occures if MERIS FSG products are processed<br/>
-          [CIIR-36] Make normalized reflectances as additional output<br/>
-          [CIIR-35]	Remove option for ChiSquare computation<br/>
-          [CIIR-34] Algorithms for Eutrophic and Boreal lakes shall not be included<br/>
-          [CIIR-33] Change menu entry for processor<br/>
-        Changes in version 1.5:<br/>
-          [CIIR-32] Add Turbidity_Index to output bands<br/>
-          [CIIR-31] Add Kd_490 to output bands<br/>
-          [CIIR-30] Migrate Case2 Processors to GPF<br/>
-          [CIIR-29] Update neural net for atmospheric correction<br/>
-          [CIIR-28] Update for module reorganization in BEAM<br/>
         ]]>
     </changelog>
 

@@ -258,9 +258,7 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
     protected void configureSourceSamples(SampleConfigurer configurator) {
         final Product sourceProduct = getSourceProduct();
         validateSourceProduct(sourceProduct);
-        final MetadataElement sph = sourceProduct.getMetadataRoot().getElement("SPH");
-        final MetadataAttribute sphDescriptor = sph.getAttribute("SPH_DESCRIPTOR");
-        isFullResolution = !sphDescriptor.getData().getElemString().contains("RR");
+        isFullResolution = isFullResolution(sourceProduct);
 
         for (int i = 0; i < requiredReflecBandNames.length; i++) {
             configurator.defineSample(i, requiredReflecBandNames[i]);
@@ -297,6 +295,33 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                 }
             }
         };
+    }
+
+    static boolean isFullResolution(Product product) {
+        String productType = null;
+        MetadataElement metadataRoot = product.getMetadataRoot();
+
+        final MetadataElement sph = metadataRoot.getElement("SPH");
+        if (sph != null) {
+            final MetadataAttribute sphDescriptor = sph.getAttribute("SPH_DESCRIPTOR");
+            if (sphDescriptor != null) {
+                productType = sphDescriptor.getData().getElemString();
+            }
+        }
+        if (productType == null) {
+            MetadataElement globalAttributes = metadataRoot.getElement("Global_Attributes");
+            if (globalAttributes != null) {
+                MetadataAttribute attribute = globalAttributes.getAttribute("product_type");
+                if (attribute != null) {
+                    productType = attribute.getData().getElemString();
+                }
+            }
+        }
+        if (productType == null) {
+            productType = product.getProductType();
+        }
+
+        return !productType.contains("RR");
     }
 
     /**
@@ -376,14 +401,6 @@ public abstract class MerisCase2BasisWaterOp extends PixelOperator {
                 final String msg = String.format("Missing required tie-point grid '%s'.", requiredTPGName);
                 throw new OperatorException(msg);
             }
-        }
-        final MetadataElement sph = sourceProduct.getMetadataRoot().getElement("SPH");
-        if (sph == null) {
-            throw new OperatorException("Source product does not contain metadata element 'SPH'.");
-        }
-        final MetadataAttribute sphDescriptor = sph.getAttribute("SPH_DESCRIPTOR");
-        if (sphDescriptor == null) {
-            throw new OperatorException("Metadata element 'SPH' does not contain attribute 'SPH_DESCRIPTOR'.");
         }
         if (!sourceProduct.isCompatibleBandArithmeticExpression(invalidPixelExpression)) {
             throw new OperatorException("Expression: '" + invalidPixelExpression + "' can not be evaluated.");
