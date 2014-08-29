@@ -35,7 +35,7 @@ import java.io.File;
                   description = "Performs IOP retrieval for eutrophic and boreal Lakes on L1b MERIS products, including atmospheric correction.",
                   authors = "Roland Doerffer (GKSS); Marco Peters (Brockmann Consult)",
                   copyright = "(c) 2011 by Brockmann Consult",
-                  version = "1.6")
+                  version = "1.6.1")
 public class LakesIOPOperator extends Operator {
 
     @SourceProduct(alias = "source", label = "Name", description = "The source product.")

@@ -1,7 +1,7 @@
 <module>
     <manifestVersion>1.0.0</manifestVersion>
     <symbolicName>beam-meris-case2-regional</symbolicName>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <name>MERIS Case-2-Regional Processor</name>
 
     <description>
@@ -16,6 +16,8 @@
 
     <changelog>
         <![CDATA[
+        Changes in version 1.6.2:<br/>
+          [CIIR-50] KD_490 not computed for eutrophic case<br/>
         Changes in version 1.6.1:<br/>
           [CIIR-49] CoastColour L1P can not be used as source<br/>
         Changes in version 1.6:<br/>

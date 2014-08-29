@@ -6,7 +6,6 @@ import org.esa.beam.meris.case2.algorithm.KMin;
 
 public class EutrophicWater extends WaterAlgorithm {
 
-    public static final int TARGET_A_BTSM_INDEX = 10;
 
     private final double tsmExponent;
     private final double tsmFactor;

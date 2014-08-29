@@ -27,6 +27,7 @@ public abstract class WaterAlgorithm {
     public static final int TARGET_A_GELBSTOFF_INDEX = 0;
     public static final int TARGET_A_PIGMENT_INDEX = 1;
     public static final int TARGET_A_TOTAL_INDEX = 2;
+    public static final int TARGET_A_BTSM_INDEX = 3;  // used only in eutrophic case
     public static final int TARGET_BB_SPM_INDEX = 4;
     public static final int TARGET_TSM_INDEX = 5;
     public static final int TARGET_CHL_CONC_INDEX = 6;
