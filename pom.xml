@@ -60,9 +60,9 @@
 
     <repositories>
         <repository>
-            <id>bc-mvn-repo-http</id>
-            <name>Public Maven Repository at Brockmann Consult</name>
-            <url>http://www.brockmann-consult.de/mvn/os</url>
+            <id>snap-repo-public</id>
+            <name>Public Maven Repository for SNAP</name>
+            <url>http://nexus.senbox.net/nexus/content/repositories/public/</url>
             <releases>
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
@@ -72,18 +72,28 @@
                 <checksumPolicy>warn</checksumPolicy>
             </snapshots>
         </repository>
-        <repository>
-            <id>gt-primary</id>
-            <name>Primary GeoTools Maven Repository</name>
-            <url>http://maven.geotools.fr/repository</url>
-        </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>snap-repo-public</id>
+            <name>Public Maven Repository for SNAP</name>
+            <url>http://nexus.senbox.net/nexus/content/repositories/releases/</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+        <snapshotRepository>
+            <id>snap-repo-public</id>
+            <name>Public Maven Snapshot Repository for SNAP</name>
+            <url>http://nexus.senbox.net/nexus/content/repositories/snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
 
     <pluginRepositories>
         <pluginRepository>
-            <id>bc-mvn-repo-http</id>
-            <name>Public Maven Repository at Brockmann-Consult</name>
-            <url>http://www.brockmann-consult.de/mvn/os</url>
+            <id>snap-repo-public</id>
+            <name>Public Maven Repository for SNAP</name>
+            <url>http://nexus.senbox.net/nexus/content/repositories/public/</url>
             <releases>
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
@@ -94,22 +104,6 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
-    <distributionManagement>
-        <repository>
-            <id>bc-mvn-repo-public</id>
-            <name>Public Maven Repository at Brockmann Consult</name>
-            <url>scp://www.brockmann-consult.de/var/www/www.brockmann-consult.de/mvn/os</url>
-            <uniqueVersion>false</uniqueVersion>
-        </repository>
-        <snapshotRepository>
-            <id>bc-mvn-repo-public</id>
-            <name>Public Maven Snapshot Repository at Brockmann Consult</name>
-            <url>scp://www.brockmann-consult.de/var/www/www.brockmann-consult.de/mvn/os</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
-
 
     <build>
         <plugins>
